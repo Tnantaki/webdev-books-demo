@@ -3,7 +3,7 @@ use tokio::signal;
 
 use crate::{
    routes::books,
-   startup::{ServerError, config::Config},
+   startup::{ServerError, app_state::AppState, config::Config},
 };
 
 async fn health_check_handler() -> impl IntoResponse {
@@ -11,9 +11,11 @@ async fn health_check_handler() -> impl IntoResponse {
 }
 
 pub async fn run(config: Config) -> Result<(), ServerError<'static>> {
+   let app_state = AppState::new();
+
    let app = Router::new()
       .route("/health-check", get(health_check_handler))
-      .nest("/books", books::routes());
+      .nest("/books", books::router(app_state));
 
    let listener = tokio::net::TcpListener::bind(("0.0.0.0", config.server.port))
       .await
