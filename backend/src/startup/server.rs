@@ -1,14 +1,19 @@
 use axum::{Router, response::IntoResponse, routing::get};
 use tokio::signal;
 
-use crate::startup::{ServerError, config::Config};
+use crate::{
+   routes::books,
+   startup::{ServerError, config::Config},
+};
 
 async fn health_check_handler() -> impl IntoResponse {
    "Welcome to book store"
 }
 
 pub async fn run(config: Config) -> Result<(), ServerError<'static>> {
-   let app = Router::new().route("/health-check", get(health_check_handler));
+   let app = Router::new()
+      .route("/health-check", get(health_check_handler))
+      .nest("/books", books::routes());
 
    let listener = tokio::net::TcpListener::bind(("0.0.0.0", config.server.port))
       .await
