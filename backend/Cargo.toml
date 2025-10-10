@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-axum = "0.8.6"
+axum = { version = "0.8.6", features = ["multipart"] }
 dotenvy = "0.15.7"
 rust_decimal = { version = "1.38.0", features = ["macros", "serde-float"] }
 serde = { version = "1.0.228", features = ["derive"] }

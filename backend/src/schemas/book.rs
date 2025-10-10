@@ -15,9 +15,9 @@ pub struct Book {
    pub description: String,
    pub price_in_pound: Decimal,
    pub available: i32,
+   pub img_path: String,
    // pub averate_rating: f32,
    // pub total_ratings: i32,
-   // pub img_path: String,
 }
 
 #[derive(Deserialize, Validate)]
@@ -31,8 +31,8 @@ pub struct AddBook {
    pub price_in_pound: Decimal,
    #[validate(range(min = 0, max = 999_999_999))]
    pub available: Option<i32>,
-   // #[validate(length(min = 0, max = 255))]
-   // pub img_file_name: String
+   #[validate(length(min = 0, max = 255))]
+   pub img_path: String,
 }
 
 #[derive(Deserialize, Validate)]
@@ -46,6 +46,8 @@ pub struct EditBook {
    pub price_in_pound: Option<Decimal>,
    #[validate(range(min = 0, max = 999_999_999))]
    pub available: Option<i32>,
+   #[validate(length(min = 0, max = 255))]
+   pub img_path: Option<String>,
 }
 
 impl From<BookModel> for Book {
@@ -57,6 +59,7 @@ impl From<BookModel> for Book {
          description: book.description,
          price_in_pound: book.price_in_pound,
          available: book.available,
+         img_path: book.img_path,
       }
    }
 }

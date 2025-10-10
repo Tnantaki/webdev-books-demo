@@ -11,7 +11,7 @@ pub struct BookModel {
    pub description: String,
    pub price_in_pound: Decimal,
    pub available: i32,
-   // pub img_path: String
+   pub img_path: String,
 }
 
 impl BookModel {
@@ -23,6 +23,7 @@ impl BookModel {
          description: new_book.description,
          price_in_pound: new_book.price_in_pound,
          available: new_book.available.unwrap_or(0),
+         img_path: new_book.img_path,
       }
    }
 
@@ -42,17 +43,8 @@ impl BookModel {
       if let Some(available) = edit_book.available {
          self.available = available;
       }
+      if let Some(img_path) = edit_book.img_path {
+         self.img_path = img_path;
+      }
    }
 }
-
-// fn validate_price_decimal_float(value: f64) -> Result<(), ValidationError> {
-//    let price_str = format!("{:.10}", value);
-//    if let Some(dot_pos) = price_str.find('.') {
-//       let decimal_part = &price_str[dot_pos + 1..];
-//       let trimmed = decimal_part.trim_end_matches('0');
-//       if trimmed.len() > 2 {
-//          return Err(ValidationError::new("maxs 2 decimals"));
-//       }
-//    }
-//    Ok(())
-// }
