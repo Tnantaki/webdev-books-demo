@@ -8,6 +8,7 @@ use axum::{
 use uuid::Uuid;
 
 use crate::{
+   routes::{JsonResult, app_error::AppError},
    schemas::image::{AddImage, ImageResponse},
    startup::app_state::AppState,
 };
@@ -23,16 +24,24 @@ pub fn router(state: AppState) -> Router {
 async fn upload_image(
    State(state): State<AppState>,
    mut multipart: Multipart,
-) -> impl IntoResponse {
-   let field = multipart
-      .next_field()
-      .await
-      .map_err(|e| (StatusCode::BAD_REQUEST, e.to_string()).into_response())?
-      .ok_or((StatusCode::BAD_REQUEST, "No file provided".to_string()).into_response())?;
+) -> JsonResult<ImageResponse> {
+   let field =
+      multipart.next_field().await?.ok_or(AppError::Multipart("No file provided".to_string()))?;
+
+   let name = field.name().unwrap_or("");
+   if name != "image" {
+      return Err(AppError::Multipart(
+         "Expected field name 'image'".to_string(),
+      ));
+   }
+
+   let content_type = field.content_type().unwrap_or("").to_string();
+   if !content_type.starts_with("image/") {
+      return Err(AppError::Multipart("file is not an image type".to_string()));
+   }
 
    let filename = field.file_name().unwrap_or("unknown").to_string();
-   let content_type = field.content_type().unwrap_or("image/jpeg").to_string();
-   let data = field.bytes().await.unwrap();
+   let data = field.bytes().await.map_err(|e| AppError::Multipart(e.to_string()))?;
 
    let new_image = AddImage {
       filename: filename.clone(),
@@ -41,20 +50,23 @@ async fn upload_image(
    };
 
    if let Some(id) = state.image_repo.save_image(new_image) {
-      Ok(Json(ImageResponse {
-         id,
-         filename,
-         url: format!("/images/{}", id),
-      }))
+      Ok((
+         StatusCode::OK,
+         Json(ImageResponse {
+            id,
+            filename,
+            url: format!("/images/{}", id),
+         }),
+      ))
    } else {
-      Err(StatusCode::INTERNAL_SERVER_ERROR.into_response())
+      Err(AppError::InternalError)
    }
 }
 
 async fn get_image(
    State(state): State<AppState>,
    Path(id): Path<Uuid>,
-) -> Result<impl IntoResponse, StatusCode> {
+) -> Result<impl IntoResponse, AppError> {
    if let Some(image) = state.image_repo.get_image(id) {
       let res = (
          [(axum::http::header::CONTENT_TYPE, image.content_type)],
@@ -62,14 +74,17 @@ async fn get_image(
       );
       Ok(res)
    } else {
-      Err(StatusCode::NOT_FOUND)
+      Err(AppError::NotFound("not found image by id".to_string()))
    }
 }
 
-async fn delete_image(State(state): State<AppState>, Path(id): Path<Uuid>) -> impl IntoResponse {
+async fn delete_image(
+   State(state): State<AppState>,
+   Path(id): Path<Uuid>,
+) -> Result<StatusCode, AppError> {
    if state.image_repo.delete_image(id).is_some() {
-      (StatusCode::NO_CONTENT).into_response()
+      Ok(StatusCode::NO_CONTENT)
    } else {
-      (StatusCode::NOT_FOUND).into_response()
+      Err(AppError::NotFound("not found image by id".to_string()))
    }
 }

@@ -66,16 +66,23 @@ impl From<BookModel> for Book {
 
 fn validate_price(price: &Decimal) -> Result<(), ValidationError> {
    if price.is_sign_negative() {
-      return Err(ValidationError::new("price value can't be negative"));
+      return Err(
+         ValidationError::new("range")
+            .with_message("price value can't be negative".into()),
+      );
    }
 
    let max = Decimal::from_str("999999.99").unwrap();
    if *price > max {
-      return Err(ValidationError::new("price value max at 999,999.99"));
+      return Err(
+         ValidationError::new("range").with_message("price value max at 999,999.99".into()),
+      );
    }
 
    if price.scale() > 2 {
-      return Err(ValidationError::new("price value max at 2 decimal points"));
+      return Err(
+         ValidationError::new("decimal").with_message("price value max at 2 decimal points".into()),
+      );
    }
 
    Ok(())
