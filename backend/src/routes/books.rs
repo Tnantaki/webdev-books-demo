@@ -30,23 +30,21 @@ async fn add_book(
 ) -> JsonResult<Book> {
    payload.validate()?;
 
-   let book = state.book_repo.add_book(payload);
+   let book = state.book_repo.add_book(payload)?;
 
    Ok((StatusCode::CREATED, Json(book)))
 }
 
 async fn view_books(State(state): State<AppState>) -> JsonResult<Vec<Book>> {
-   let books = state.book_repo.view_books();
+   let books = state.book_repo.view_books()?;
 
    Ok((StatusCode::OK, Json(books)))
 }
 
 async fn view_book_by_id(State(state): State<AppState>, Path(id): Path<Uuid>) -> JsonResult<Book> {
-   if let Some(book) = state.book_repo.view_book_by_id(id) {
-      Ok((StatusCode::OK, Json(book)))
-   } else {
-      Err(AppError::NotFound("invalid book id".to_string()))
-   }
+   let book = state.book_repo.view_book_by_id(id)?;
+
+   Ok((StatusCode::OK, Json(book)))
 }
 
 async fn edit_book_by_id(
@@ -54,20 +52,16 @@ async fn edit_book_by_id(
    Path(id): Path<Uuid>,
    Json(payload): Json<EditBook>,
 ) -> JsonResult<Book> {
-   if let Some(book) = state.book_repo.edit_book(id, payload) {
-      Ok((StatusCode::OK, Json(book)))
-   } else {
-      Err(AppError::NotFound("invalid book id".to_string()))
-   }
+   let book = state.book_repo.edit_book(id, payload)?;
+
+   Ok((StatusCode::OK, Json(book)))
 }
 
 async fn delete_book_by_id(
    State(state): State<AppState>,
    Path(id): Path<Uuid>,
 ) -> Result<StatusCode, AppError> {
-   if state.book_repo.delete_book(id).is_some() {
-      Ok(StatusCode::NO_CONTENT)
-   } else {
-      Err(AppError::NotFound("invalid book id".to_string()))
-   }
+   state.book_repo.delete_book(id)?;
+
+   Ok(StatusCode::NO_CONTENT)
 }

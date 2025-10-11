@@ -2,7 +2,7 @@ use rust_decimal::dec;
 use std::{fs, path::PathBuf};
 
 use crate::{
-   repos::in_mem::{books::BookRepo, images::ImageRepo},
+   repos::in_mem::{books::BookRepo, images::ImageRepo, users::UserRepo},
    schemas::{book::AddBook, image::AddImage},
 };
 
@@ -11,12 +11,14 @@ use crate::{
 pub struct AppState {
    pub book_repo: BookRepo,
    pub image_repo: ImageRepo,
+   pub user_repo: UserRepo,
 }
 
 impl AppState {
    pub fn new() -> Self {
       let book_repo = BookRepo::new();
       let image_repo = ImageRepo::new();
+      let user_repo = UserRepo::new();
 
       let img_path = mockup_image(&image_repo);
       mockup_books(&book_repo, &img_path);
@@ -24,6 +26,7 @@ impl AppState {
       Self {
          book_repo,
          image_repo,
+         user_repo,
       }
    }
 }
@@ -63,6 +66,6 @@ pub fn mockup_books(book_repo: &BookRepo, img_path: &str) {
    ];
 
    mock_books.into_iter().for_each(|book| {
-      book_repo.add_book(book);
+      book_repo.add_book(book).unwrap();
    });
 }

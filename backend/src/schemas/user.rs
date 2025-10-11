@@ -2,6 +2,8 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::{Validate, ValidationError};
 
+use crate::models::users::UserModel;
+
 #[derive(Serialize)]
 pub struct User {
    pub id: Uuid,
@@ -18,6 +20,15 @@ pub struct RegisterUser {
    pub password: String,
    #[validate(length(min = 1, max = 255))]
    pub confirm_password: String,
+}
+
+impl From<UserModel> for User {
+   fn from(user: UserModel) -> Self {
+      Self {
+         id: user.id,
+         email: user.email,
+      }
+   }
 }
 
 // Validate that password and confirm_password match

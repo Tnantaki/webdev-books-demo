@@ -6,4 +6,5 @@ pub type JsonResult<T, E = AppError> = std::result::Result<(StatusCode, Json<T>)
 pub mod app_error;
 pub mod books;
 pub mod images;
+pub mod users;
 

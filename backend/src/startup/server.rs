@@ -2,8 +2,8 @@ use axum::{Router, response::IntoResponse, routing::get};
 use tokio::signal;
 
 use crate::{
-   routes::{books, images},
-   startup::{ServerError, app_state::AppState, config::Config},
+   routes::{books, images, users},
+   startup::{app_state::AppState, config::Config, ServerError},
 };
 
 async fn health_check_handler() -> impl IntoResponse {
@@ -15,7 +15,8 @@ pub async fn run(config: Config) -> Result<(), ServerError<'static>> {
    let app_state = AppState::new();
 
    let app = Router::new()
-      .route("/health-check", get(health_check_handler))
+      .route("/health", get(health_check_handler))
+      .nest("/users", users::router(app_state.clone()))
       .nest("/books", books::router(app_state.clone()))
       .nest("/images", images::router(app_state));
 

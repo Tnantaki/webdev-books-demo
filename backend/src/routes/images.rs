@@ -49,42 +49,34 @@ async fn upload_image(
       data,
    };
 
-   if let Some(id) = state.image_repo.save_image(new_image) {
-      Ok((
-         StatusCode::OK,
-         Json(ImageResponse {
-            id,
-            filename,
-            url: format!("/images/{}", id),
-         }),
-      ))
-   } else {
-      Err(AppError::InternalError)
-   }
+   let id = state.image_repo.save_image(new_image)?;
+   Ok((
+      StatusCode::OK,
+      Json(ImageResponse {
+         id,
+         filename,
+         url: format!("/images/{}", id),
+      }),
+   ))
 }
 
 async fn get_image(
    State(state): State<AppState>,
    Path(id): Path<Uuid>,
 ) -> Result<impl IntoResponse, AppError> {
-   if let Some(image) = state.image_repo.get_image(id) {
-      let res = (
-         [(axum::http::header::CONTENT_TYPE, image.content_type)],
-         image.data,
-      );
-      Ok(res)
-   } else {
-      Err(AppError::NotFound("not found image by id".to_string()))
-   }
+   let image = state.image_repo.get_image(id)?;
+
+   Ok((
+      [(axum::http::header::CONTENT_TYPE, image.content_type)],
+      image.data,
+   ))
 }
 
 async fn delete_image(
    State(state): State<AppState>,
    Path(id): Path<Uuid>,
 ) -> Result<StatusCode, AppError> {
-   if state.image_repo.delete_image(id).is_some() {
-      Ok(StatusCode::NO_CONTENT)
-   } else {
-      Err(AppError::NotFound("not found image by id".to_string()))
-   }
+   state.image_repo.delete_image(id)?;
+
+   Ok(StatusCode::NO_CONTENT)
 }

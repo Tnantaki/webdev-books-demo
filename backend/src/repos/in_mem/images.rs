@@ -1,4 +1,4 @@
-use crate::{models::images::ImageModel, schemas::image::AddImage};
+use crate::{models::images::ImageModel, repos::in_mem::InMemError, schemas::image::AddImage};
 use std::sync::{Arc, Mutex};
 use uuid::Uuid;
 
@@ -14,25 +14,34 @@ impl ImageRepo {
       }
    }
 
-   pub fn save_image(&self, new_image: AddImage) -> Option<Uuid> {
+   pub fn save_image(&self, new_image: AddImage) -> Result<Uuid, InMemError> {
       let image = ImageModel::add(new_image);
       let id = image.id;
       {
-         let mut images = self.images.lock().unwrap();
+         let mut images = self.images.lock().map_err(|_| InMemError::LockPoisoned)?;
          images.push(image);
       }
-      Some(id)
+      Ok(id)
    }
 
-   pub fn get_image(&self, id: Uuid) -> Option<ImageModel> {
-      let images = self.images.lock().unwrap();
+   pub fn get_image(&self, id: Uuid) -> Result<ImageModel, InMemError> {
+      let images = self.images.lock().map_err(|_| InMemError::LockPoisoned)?;
 
-      images.iter().find(|book| book.id == id).cloned()
+      images
+         .iter()
+         .find(|book| book.id == id)
+         .cloned()
+         .ok_or(InMemError::DataNotFound("invalid image id".to_string()))
    }
 
-   pub fn delete_image(&self, id: Uuid) -> Option<()> {
-      let mut images = self.images.lock().unwrap();
+   pub fn delete_image(&self, id: Uuid) -> Result<(), InMemError> {
+      let mut images = self.images.lock().map_err(|_| InMemError::LockPoisoned)?;
 
-      images.iter().position(|book| book.id == id).map(|idx| images.remove(idx)).map(|_| ())
+      images
+         .iter()
+         .position(|book| book.id == id)
+         .map(|idx| images.remove(idx))
+         .map(|_| ())
+         .ok_or(InMemError::DataNotFound("invalid image id".to_string()))
    }
 }

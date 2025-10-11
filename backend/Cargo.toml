@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+argon2 = { version = "0.5.3", features = ["std"] }
 axum = { version = "0.8.6", features = ["multipart"] }
 dotenvy = "0.15.7"
 rust_decimal = { version = "1.38.0", features = ["macros", "serde-float"] }

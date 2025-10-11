@@ -10,18 +10,33 @@ use std::collections::HashMap;
 use thiserror::Error;
 use validator::{ValidationErrors, ValidationErrorsKind};
 
+use crate::{repos::in_mem::InMemError, services::password_hashing::PasswordHashError};
+
 #[derive(Error, Debug)]
 pub enum AppError {
    #[error("Validation error")]
    Validation(ValidationErrors),
+
    #[error("Bad request error: {0}")]
    BadRequest(String),
+
+   #[error("Conflict error: {0}")]
+   Conflict(String),
+
    #[error("Upload file error: {0}")]
    Multipart(String),
+
    #[error("Not found error: {0}")]
    NotFound(String),
-   #[error("Intenal server error")]
-   InternalError,
+
+   #[error("Not found error: {0}")]
+   Unauthorized(String),
+
+   #[error("Intenal server error: {0}")]
+   InMemError(String),
+
+   #[error("Intenal server error: {0}")]
+   InternalError(String),
 }
 
 impl AppError {
@@ -33,6 +48,7 @@ impl AppError {
          }
 
          // Unauthorized errors -> 401
+         AppError::Unauthorized(_) => StatusCode::UNAUTHORIZED,
 
          // Forbidden errors -> 403
 
@@ -40,9 +56,10 @@ impl AppError {
          AppError::NotFound(_) => StatusCode::NOT_FOUND,
 
          // Conflict errors -> 409
+         AppError::Conflict(_) => StatusCode::CONFLICT,
 
          // Database errors -> 500
-         AppError::InternalError => StatusCode::INTERNAL_SERVER_ERROR,
+         AppError::InMemError(_) | AppError::InternalError(_) => StatusCode::INTERNAL_SERVER_ERROR,
       }
    }
 
@@ -92,6 +109,24 @@ impl From<ValidationErrors> for AppError {
 impl From<MultipartError> for AppError {
    fn from(error: MultipartError) -> Self {
       AppError::Multipart(error.to_string())
+   }
+}
+
+impl From<PasswordHashError> for AppError {
+   fn from(error: PasswordHashError) -> Self {
+      match error {
+         PasswordHashError::VerifyFail(msg) => AppError::Unauthorized(msg),
+         PasswordHashError::HashFail(msg) => AppError::InternalError(msg),
+      }
+   }
+}
+
+impl From<InMemError> for AppError {
+   fn from(error: InMemError) -> Self {
+      match error {
+         InMemError::DataNotFound(msg) => AppError::NotFound(msg),
+         InMemError::LockPoisoned => AppError::InternalError(error.to_string()),
+      }
    }
 }
 
