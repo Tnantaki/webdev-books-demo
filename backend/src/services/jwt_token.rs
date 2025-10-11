@@ -33,7 +33,7 @@ pub enum JwtTokenError {
    #[error("{0}")]
    TokenGenerationFailed(String),
 
-   #[error("{0}")]
+   #[error("invalid token {0}")]
    InvalidToken(String),
 }
 

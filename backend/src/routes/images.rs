@@ -1,14 +1,10 @@
 use axum::{
-   Json, Router,
-   extract::{Multipart, Path, State},
-   http::StatusCode,
-   response::IntoResponse,
-   routing::{delete, get, post},
+   extract::{Multipart, Path, State}, http::StatusCode, middleware, response::IntoResponse, routing::{delete, get, post}, Json, Router
 };
 use uuid::Uuid;
 
 use crate::{
-   routes::{JsonResult, app_error::AppError},
+   routes::{app_error::AppError, middleware::auth_cookie_admin, JsonResult},
    schemas::image::{AddImage, ImageResponse},
    startup::app_state::AppState,
 };
@@ -16,8 +12,12 @@ use crate::{
 pub fn router(state: AppState) -> Router {
    Router::new()
       .route("/", post(upload_image))
-      .route("/{id}", get(get_image))
       .route("/{id}", delete(delete_image))
+      .route_layer(middleware::from_fn_with_state(
+         state.jwt_service.clone(),
+         auth_cookie_admin,
+      ))
+      .route("/{id}", get(get_image))
       .with_state(state)
 }
 
