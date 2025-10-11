@@ -1,9 +1,11 @@
 use crate::schemas::book::{AddBook, EditBook};
+use chrono::{DateTime, Utc};
 use rust_decimal::Decimal;
+use sqlx::prelude::FromRow;
 use uuid::Uuid;
 
 // Database might not support non-negative values, So use integer
-#[derive(Clone)]
+#[derive(Clone, FromRow)]
 pub struct BookModel {
    pub id: Uuid,
    pub title: String,
@@ -12,10 +14,14 @@ pub struct BookModel {
    pub price_in_pound: Decimal,
    pub available: i32,
    pub img_path: String,
+   pub created_at: DateTime<Utc>,
+   pub updated_at: DateTime<Utc>,
 }
 
 impl BookModel {
    pub fn add(new_book: AddBook) -> Self {
+      let now: DateTime<Utc> = Utc::now();
+
       Self {
          id: Uuid::now_v7(),
          title: new_book.title,
@@ -24,6 +30,8 @@ impl BookModel {
          price_in_pound: new_book.price_in_pound,
          available: new_book.available.unwrap_or(0),
          img_path: new_book.img_path,
+         created_at: now,
+         updated_at: now,
       }
    }
 
@@ -46,5 +54,6 @@ impl BookModel {
       if let Some(img_path) = edit_book.img_path {
          self.img_path = img_path;
       }
+      self.updated_at = Utc::now();
    }
 }

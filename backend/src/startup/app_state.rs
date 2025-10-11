@@ -1,5 +1,7 @@
 use crate::{
-   repos::in_mem::InMemRepos, services::jwt_token::JwtTokenService, startup::config::Config,
+   repos::{in_mem::InMemRepos, postgres::PostgresRepos},
+   services::jwt_token::JwtTokenService,
+   startup::config::Config,
 };
 use sqlx::{Pool, Postgres};
 
@@ -8,6 +10,7 @@ pub struct AppState {
    pub jwt_service: JwtTokenService,
    pub pool: Pool<Postgres>,
    pub in_mem: InMemRepos,
+   pub postgres: PostgresRepos,
 }
 
 impl AppState {
@@ -17,6 +20,7 @@ impl AppState {
       Self {
          jwt_service,
          in_mem: InMemRepos::new(),
+         postgres: PostgresRepos::new(pool.clone()),
          pool,
       }
    }

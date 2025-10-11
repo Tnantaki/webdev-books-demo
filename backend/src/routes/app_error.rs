@@ -38,8 +38,11 @@ pub enum AppError {
    #[error("Unauthorized : {0}")]
    Unauthorized(String),
 
-   #[error("Intenal server error: {0}")]
+   #[error("In-memory error: {0}")]
    InMemError(String),
+
+   #[error("Postgres database error: {0}")]
+   DatabaseError(String),
 
    #[error("Intenal server error: {0}")]
    InternalError(String),
@@ -66,7 +69,9 @@ impl AppError {
          AppError::Conflict(_) => StatusCode::CONFLICT,
 
          // Database errors -> 500
-         AppError::InMemError(_) | AppError::InternalError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+         AppError::InMemError(_) | AppError::DatabaseError(_) | AppError::InternalError(_) => {
+            StatusCode::INTERNAL_SERVER_ERROR
+         }
       }
    }
 
@@ -142,6 +147,15 @@ impl From<JwtTokenError> for AppError {
       match error {
          JwtTokenError::InvalidToken(msg) => AppError::Unauthorized(msg),
          JwtTokenError::TokenGenerationFailed(msg) => AppError::InternalError(msg),
+      }
+   }
+}
+
+impl From<sqlx::Error> for AppError {
+   fn from(error: sqlx::Error) -> Self {
+      match error {
+         sqlx::Error::RowNotFound => AppError::NotFound(error.to_string()),
+         _ => AppError::DatabaseError(error.to_string()),
       }
    }
 }

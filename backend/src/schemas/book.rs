@@ -1,5 +1,6 @@
 use std::str::FromStr;
 
+use chrono::{DateTime, Utc};
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -16,6 +17,8 @@ pub struct Book {
    pub price_in_pound: Decimal,
    pub available: i32,
    pub img_path: String,
+   pub created_at: DateTime<Utc>,
+   pub updated_at: DateTime<Utc>,
    // pub averate_rating: f32,
    // pub total_ratings: i32,
 }
@@ -60,6 +63,8 @@ impl From<BookModel> for Book {
          price_in_pound: book.price_in_pound,
          available: book.available,
          img_path: book.img_path,
+         created_at: book.created_at,
+         updated_at: book.updated_at,
       }
    }
 }
@@ -67,8 +72,7 @@ impl From<BookModel> for Book {
 fn validate_price(price: &Decimal) -> Result<(), ValidationError> {
    if price.is_sign_negative() {
       return Err(
-         ValidationError::new("range")
-            .with_message("price value can't be negative".into()),
+         ValidationError::new("range").with_message("price value can't be negative".into()),
       );
    }
 
