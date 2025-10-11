@@ -1,19 +1,21 @@
 use axum::{Router, response::IntoResponse, routing::get};
+use sqlx::{Pool, Postgres};
 use tokio::signal;
 use tower_cookies::CookieManagerLayer;
 
 use crate::{
+   ServerError,
    routes::{auth, books, images, users},
-   startup::{ServerError, app_state::AppState, config::Config},
+   startup::{app_state::AppState, config::Config},
 };
 
 async fn health_check_handler() -> impl IntoResponse {
    "Welcome to book store"
 }
 
-pub async fn run(config: Config) -> Result<(), ServerError<'static>> {
+pub async fn run(config: Config, pool: Pool<Postgres>) -> Result<(), ServerError<'static>> {
    // Share app state in multiple route, use arc
-   let app_state = AppState::new(&config.jwt_secret);
+   let app_state = AppState::new(&config, pool);
 
    let app = Router::new()
       .route("/health", get(health_check_handler))

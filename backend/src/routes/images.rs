@@ -1,10 +1,15 @@
 use axum::{
-   extract::{Multipart, Path, State}, http::StatusCode, middleware, response::IntoResponse, routing::{delete, get, post}, Json, Router
+   Json, Router,
+   extract::{Multipart, Path, State},
+   http::StatusCode,
+   middleware,
+   response::IntoResponse,
+   routing::{delete, get, post},
 };
 use uuid::Uuid;
 
 use crate::{
-   routes::{app_error::AppError, middleware::auth_cookie_admin, JsonResult},
+   routes::{JsonResult, app_error::AppError, middleware::auth_cookie_admin},
    schemas::image::{AddImage, ImageResponse},
    startup::app_state::AppState,
 };
@@ -49,7 +54,7 @@ async fn upload_image(
       data,
    };
 
-   let id = state.image_repo.save_image(new_image)?;
+   let id = state.in_mem.image_repo.save_image(new_image)?;
    Ok((
       StatusCode::OK,
       Json(ImageResponse {
@@ -64,7 +69,7 @@ async fn get_image(
    State(state): State<AppState>,
    Path(id): Path<Uuid>,
 ) -> Result<impl IntoResponse, AppError> {
-   let image = state.image_repo.get_image(id)?;
+   let image = state.in_mem.image_repo.get_image(id)?;
 
    Ok((
       [(axum::http::header::CONTENT_TYPE, image.content_type)],
@@ -76,7 +81,7 @@ async fn delete_image(
    State(state): State<AppState>,
    Path(id): Path<Uuid>,
 ) -> Result<StatusCode, AppError> {
-   state.image_repo.delete_image(id)?;
+   state.in_mem.image_repo.delete_image(id)?;
 
    Ok(StatusCode::NO_CONTENT)
 }

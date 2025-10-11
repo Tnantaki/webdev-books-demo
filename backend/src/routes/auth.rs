@@ -37,6 +37,7 @@ async fn login(
 ) -> Result<impl IntoResponse, AppError> {
    // 1. Find email in repo
    let user = state
+      .in_mem
       .user_repo
       .get_user_by_email(&payload.email)
       .map_err(|_| AppError::Unauthorized("Invalid email".to_string()))?;

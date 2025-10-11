@@ -1,5 +1,5 @@
 use std::path::Path;
-use crate::startup::ServerError;
+use crate::ServerError;
 
 pub struct Server {
    pub port: u16,

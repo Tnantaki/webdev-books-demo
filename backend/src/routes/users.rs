@@ -19,7 +19,7 @@ async fn register_user(
    payload.validate()?;
 
    // 2. Check unique email
-   if state.user_repo.get_user_by_email(&payload.email).is_ok() {
+   if state.in_mem.user_repo.get_user_by_email(&payload.email).is_ok() {
       return Err(AppError::Conflict("Email already exists.".to_string()));
    }
 
@@ -27,7 +27,7 @@ async fn register_user(
    let password_hash = PasswordService::hash(&payload.password)?;
 
    // 4. Save to database
-   state.user_repo.add_user(payload.email, password_hash)?;
+   state.in_mem.user_repo.add_user(payload.email, password_hash)?;
 
    // 5. Response
    Ok((
