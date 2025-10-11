@@ -1,9 +1,10 @@
 use axum::{Router, response::IntoResponse, routing::get};
 use tokio::signal;
+use tower_cookies::CookieManagerLayer;
 
 use crate::{
-   routes::{books, images, users},
-   startup::{app_state::AppState, config::Config, ServerError},
+   routes::{auth, books, images, users},
+   startup::{ServerError, app_state::AppState, config::Config},
 };
 
 async fn health_check_handler() -> impl IntoResponse {
@@ -12,13 +13,15 @@ async fn health_check_handler() -> impl IntoResponse {
 
 pub async fn run(config: Config) -> Result<(), ServerError<'static>> {
    // Share app state in multiple route, use arc
-   let app_state = AppState::new();
+   let app_state = AppState::new(&config.jwt_secret);
 
    let app = Router::new()
       .route("/health", get(health_check_handler))
+      .nest("/auth", auth::router(app_state.clone()))
       .nest("/users", users::router(app_state.clone()))
       .nest("/books", books::router(app_state.clone()))
-      .nest("/images", images::router(app_state));
+      .nest("/images", images::router(app_state))
+      .layer(CookieManagerLayer::new());
 
    let listener = tokio::net::TcpListener::bind(("0.0.0.0", config.server.port))
       .await

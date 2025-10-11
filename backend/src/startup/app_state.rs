@@ -4,6 +4,7 @@ use std::{fs, path::PathBuf};
 use crate::{
    repos::in_mem::{books::BookRepo, images::ImageRepo, users::UserRepo},
    schemas::{book::AddBook, image::AddImage},
+   services::{jwt_token::JwtTokenService, password_hashing::PasswordService},
 };
 
 // in-memory storage (temporary)
@@ -12,14 +13,17 @@ pub struct AppState {
    pub book_repo: BookRepo,
    pub image_repo: ImageRepo,
    pub user_repo: UserRepo,
+   pub jwt_service: JwtTokenService,
 }
 
 impl AppState {
-   pub fn new() -> Self {
+   pub fn new(jwt_secret: &str) -> Self {
       let book_repo = BookRepo::new();
       let image_repo = ImageRepo::new();
       let user_repo = UserRepo::new();
+      let jwt_service = JwtTokenService::new(jwt_secret);
 
+      mockup_admin(&user_repo);
       let img_path = mockup_image(&image_repo);
       mockup_books(&book_repo, &img_path);
 
@@ -27,11 +31,18 @@ impl AppState {
          book_repo,
          image_repo,
          user_repo,
+         jwt_service,
       }
    }
 }
 
-pub fn mockup_image(image_repo: &ImageRepo) -> String {
+fn mockup_admin(user_repo: &UserRepo) {
+   let email = "admin@email.com".to_string();
+   let password_hash = PasswordService::hash("Admin1234").unwrap();
+   user_repo.add_admin(email, password_hash).unwrap();
+}
+
+fn mockup_image(image_repo: &ImageRepo) -> String {
    let file_path = PathBuf::from("images").join("Yuki.jpg");
    let data = fs::read(&file_path).expect("read test file from images directory.");
 
@@ -45,7 +56,7 @@ pub fn mockup_image(image_repo: &ImageRepo) -> String {
    img_path
 }
 
-pub fn mockup_books(book_repo: &BookRepo, img_path: &str) {
+fn mockup_books(book_repo: &BookRepo, img_path: &str) {
    let mock_books = vec![
       AddBook {
          title: "C++".to_string(),

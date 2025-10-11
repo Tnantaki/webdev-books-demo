@@ -10,7 +10,10 @@ use std::collections::HashMap;
 use thiserror::Error;
 use validator::{ValidationErrors, ValidationErrorsKind};
 
-use crate::{repos::in_mem::InMemError, services::password_hashing::PasswordHashError};
+use crate::{
+   repos::in_mem::InMemError,
+   services::{jwt_token::JwtTokenError, password_hashing::PasswordHashError},
+};
 
 #[derive(Error, Debug)]
 pub enum AppError {
@@ -19,6 +22,9 @@ pub enum AppError {
 
    #[error("Bad request error: {0}")]
    BadRequest(String),
+
+   #[error("Permission denied")]
+   PermissionDenied,
 
    #[error("Conflict error: {0}")]
    Conflict(String),
@@ -51,6 +57,7 @@ impl AppError {
          AppError::Unauthorized(_) => StatusCode::UNAUTHORIZED,
 
          // Forbidden errors -> 403
+         AppError::PermissionDenied => StatusCode::FORBIDDEN,
 
          // Not found errors -> 404
          AppError::NotFound(_) => StatusCode::NOT_FOUND,
@@ -126,6 +133,15 @@ impl From<InMemError> for AppError {
       match error {
          InMemError::DataNotFound(msg) => AppError::NotFound(msg),
          InMemError::LockPoisoned => AppError::InternalError(error.to_string()),
+      }
+   }
+}
+
+impl From<JwtTokenError> for AppError {
+   fn from(error: JwtTokenError) -> Self {
+      match error {
+         JwtTokenError::InvalidToken(msg) => AppError::Unauthorized(msg),
+         JwtTokenError::TokenGenerationFailed(msg) => AppError::InternalError(msg),
       }
    }
 }

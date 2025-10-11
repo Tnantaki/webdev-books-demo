@@ -19,7 +19,7 @@ async fn register_user(
    payload.validate()?;
 
    // 2. Check unique email
-   if state.user_repo.view_user_by_email(&payload.email).is_ok() {
+   if state.user_repo.get_user_by_email(&payload.email).is_ok() {
       return Err(AppError::Conflict("Email already exists.".to_string()));
    }
 

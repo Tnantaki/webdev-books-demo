@@ -15,7 +15,7 @@ impl UserRepo {
    }
 
    pub fn add_user(&self, email: String, password_hash: String) -> Result<(), InMemError> {
-      let user = UserModel::add(email, password_hash);
+      let user = UserModel::add_user(email, password_hash);
       {
          let mut users = self.users.lock().map_err(|_| InMemError::LockPoisoned)?;
          users.push(user);
@@ -23,13 +23,22 @@ impl UserRepo {
       Ok(())
    }
 
-   pub fn view_users(&self) -> Result<Vec<UserModel>, InMemError> {
+   pub fn add_admin(&self, email: String, password_hash: String) -> Result<(), InMemError> {
+      let user = UserModel::add_admin(email, password_hash);
+      {
+         let mut users = self.users.lock().map_err(|_| InMemError::LockPoisoned)?;
+         users.push(user);
+      }
+      Ok(())
+   }
+   
+   pub fn get_users(&self) -> Result<Vec<UserModel>, InMemError> {
       let users = self.users.lock().map_err(|_| InMemError::LockPoisoned)?.clone();
 
       Ok(users)
    }
 
-   pub fn view_user_by_id(&self, id: Uuid) -> Result<UserModel, InMemError> {
+   pub fn get_user_by_id(&self, id: Uuid) -> Result<UserModel, InMemError> {
       let users = self.users.lock().map_err(|_| InMemError::LockPoisoned)?;
 
       users
@@ -39,14 +48,14 @@ impl UserRepo {
          .ok_or(InMemError::DataNotFound("invalid user id".to_string()))
    }
 
-   pub fn view_user_by_email(&self, email: &str) -> Result<UserModel, InMemError> {
+   pub fn get_user_by_email(&self, email: &str) -> Result<UserModel, InMemError> {
       let users = self.users.lock().map_err(|_| InMemError::LockPoisoned)?;
 
       users
          .iter()
          .find(|user| user.email == email)
          .cloned()
-         .ok_or(InMemError::DataNotFound("invalid user id".to_string()))
+         .ok_or(InMemError::DataNotFound("invalid email".to_string()))
    }
 
    pub fn edit_password(&self, id: Uuid, new_password: String) -> Result<UserModel, InMemError> {

@@ -7,4 +7,6 @@ pub mod app_error;
 pub mod books;
 pub mod images;
 pub mod users;
+pub mod auth;
+pub mod middleware;
 

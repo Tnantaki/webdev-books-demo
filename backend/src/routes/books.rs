@@ -2,13 +2,14 @@ use axum::{
    Json, Router,
    extract::{Path, State},
    http::StatusCode,
+   middleware,
    routing::{delete, get, patch, post},
 };
 use uuid::Uuid;
 use validator::Validate;
 
 use crate::{
-   routes::{JsonResult, app_error::AppError},
+   routes::{JsonResult, app_error::AppError, middleware::auth_cookie_admin},
    schemas::book::{AddBook, Book, EditBook},
    startup::app_state::AppState,
 };
@@ -16,10 +17,14 @@ use crate::{
 pub fn router(state: AppState) -> Router {
    Router::new()
       .route("/", post(add_book))
-      .route("/", get(view_books))
-      .route("/{id}", get(view_book_by_id))
       .route("/{id}", patch(edit_book_by_id))
       .route("/{id}", delete(delete_book_by_id))
+      .route_layer(middleware::from_fn_with_state(
+         state.jwt_service.clone(),
+         auth_cookie_admin,
+      ))
+      .route("/", get(view_books))
+      .route("/{id}", get(view_book_by_id))
       .with_state(state)
 }
 
