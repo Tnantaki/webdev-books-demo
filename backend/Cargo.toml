@@ -1,5 +1,6 @@
 [package]
 name = "book-store"
+description = "Book-Store web server."
 version = "0.1.0"
 edition = "2024"
 
@@ -7,6 +8,8 @@ edition = "2024"
 argon2 = { version = "0.5.3", features = ["std"] }
 axum = { version = "0.8.6", features = ["multipart"] }
 chrono = { version = "0.4.42", features = ["serde"] }
+clap = { version = "4.5.48", features = ["derive"] }
+console = "0.16.1"
 dotenvy = "0.15.7"
 jsonwebtoken = "9.3.1"
 rust_decimal = { version = "1.38.0", features = ["macros", "serde-float"] }

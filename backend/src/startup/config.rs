@@ -1,5 +1,5 @@
-use std::path::Path;
 use crate::ServerError;
+use std::path::Path;
 
 pub struct Server {
    pub port: u16,
@@ -18,18 +18,24 @@ impl<'a> Config {
 
       let server = Server {
          port: dotenvy::var("SERVER_PORT")
-            .map_err(|_| ServerError::EnvError("SERVER_PORT env not found"))?
+            .map_err(|_| {
+               ServerError::EnvError("`SERVER_PORT` environment variable must be provided")
+            })?
             .parse()
             .map_err(|_| {
-               ServerError::EnvError("invalid value, SERVER_PORT env must be number 1024 - 49151")
+               ServerError::EnvError(
+                  "invalid value, `SERVER_PORT` environment variable must be number 1024 - 49151",
+               )
             })?,
       };
 
-      let db_url = dotenvy::var("DATABASE_URL")
-         .map_err(|_| ServerError::EnvError("DATABASE_URL env not found"))?;
+      let db_url = dotenvy::var("DATABASE_URL").map_err(|_| {
+         ServerError::EnvError("`DATABASE_URL` environment variable must be provided")
+      })?;
 
-      let jwt_secret = dotenvy::var("JWT_SECRET")
-         .map_err(|_| ServerError::EnvError("JWT_SECRET env not found"))?;
+      let jwt_secret = dotenvy::var("JWT_SECRET").map_err(|_| {
+         ServerError::EnvError("`JWT_SECRET` environment variable must be provided")
+      })?;
 
       Ok(Config {
          server,
