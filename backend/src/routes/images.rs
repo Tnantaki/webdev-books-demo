@@ -14,7 +14,7 @@ use crate::{
    startup::app_state::AppState,
 };
 
-pub fn router(state: AppState) -> Router {
+pub fn router(state: &AppState) -> Router<AppState> {
    Router::new()
       .route("/", post(upload_image))
       .route("/{id}", delete(delete_image))
@@ -23,7 +23,6 @@ pub fn router(state: AppState) -> Router {
          auth_cookie_admin,
       ))
       .route("/{id}", get(get_image))
-      .with_state(state)
 }
 
 async fn upload_image(

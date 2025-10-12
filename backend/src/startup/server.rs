@@ -19,10 +19,11 @@ pub async fn run(config: Config, pool: Pool<Postgres>) -> Result<(), ServerError
 
    let app = Router::new()
       .route("/health", get(health_check_handler))
-      .nest("/auth", auth::router(app_state.clone()))
-      .nest("/users", users::router(app_state.clone()))
-      .nest("/books", books::router(app_state.clone()))
-      .nest("/images", images::router(app_state))
+      .nest("/auth", auth::router())
+      .nest("/users", users::router(&app_state))
+      .nest("/books", books::router(&app_state))
+      .nest("/images", images::router(&app_state))
+      .with_state(app_state)
       .layer(CookieManagerLayer::new());
 
    let listener = tokio::net::TcpListener::bind(("0.0.0.0", config.server.port))

@@ -1,5 +1,6 @@
 use crate::{
    models::books::BookModel,
+   routes::app_error::AppError,
    schemas::book::{AddBook, Book, EditBook},
 };
 use sqlx::PgPool;
@@ -15,7 +16,7 @@ impl BookRepo {
       Self { pool }
    }
 
-   pub async fn get_all_book(&self) -> Result<Vec<Book>, sqlx::Error> {
+   pub async fn get_all_book(&self) -> Result<Vec<Book>, AppError> {
       let book_models = sqlx::query_as::<_, BookModel>(
          r#"
             SELECT
@@ -34,7 +35,7 @@ impl BookRepo {
       Ok(books)
    }
 
-   pub async fn get_book_by_id(&self, id: Uuid) -> Result<Book, sqlx::Error> {
+   pub async fn get_book_by_id(&self, id: Uuid) -> Result<Book, AppError> {
       let book_model = sqlx::query_as::<_, BookModel>(
          r#"
             SELECT
@@ -45,24 +46,23 @@ impl BookRepo {
       .bind(id)
       .fetch_optional(&self.pool)
       .await?
-      .ok_or(sqlx::Error::RowNotFound)?;
+      .ok_or(AppError::NotFound("invalid book id".to_string()))?;
 
       Ok(Book::from(book_model))
    }
 
-   pub async fn add_book(&self, new_book: AddBook) -> Result<Book, sqlx::Error> {
+   pub async fn add_book(&self, new_book: AddBook) -> Result<Book, AppError> {
       let book = BookModel::add(new_book);
 
       let book_model = sqlx::query_as::<_, BookModel>(
          r#"
             INSERT INTO books
                (id, title, genre, description, price_in_pound, available, img_path, created_at, updated_at)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
             RETURNING
                id, title, genre, description, price_in_pound, available, img_path, created_at, updated_at
          "#,
       )
-      .bind(&book.id)
       .bind(&book.title)
       .bind(&book.genre)
       .bind(&book.description)
@@ -77,7 +77,7 @@ impl BookRepo {
       Ok(Book::from(book_model))
    }
 
-   pub async fn edit_book(&self, id: Uuid, edit_book: EditBook) -> Result<Book, sqlx::Error> {
+   pub async fn edit_book(&self, id: Uuid, edit_book: EditBook) -> Result<Book, AppError> {
       let book_model = sqlx::query_as::<_, BookModel>(
          r#"
             UPDATE books SET
@@ -99,13 +99,14 @@ impl BookRepo {
       .bind(edit_book.available.as_ref())
       .bind(edit_book.img_path.as_ref())
       .bind(id)
-      .fetch_one(&self.pool)
-      .await?;
+      .fetch_optional(&self.pool)
+      .await?
+      .ok_or(AppError::NotFound("invalid book id".to_string()))?;
 
       Ok(Book::from(book_model))
    }
 
-   pub async fn delete_book(&self, id: Uuid) -> Result<(), sqlx::Error> {
+   pub async fn delete_book(&self, id: Uuid) -> Result<(), AppError> {
       let row_affects = sqlx::query("DELETE FROM books WHERE id = $1")
          .bind(id)
          .execute(&self.pool)
@@ -113,7 +114,7 @@ impl BookRepo {
          .rows_affected();
 
       if row_affects == 0 {
-         Err(sqlx::Error::RowNotFound)
+         Err(AppError::NotFound("invalid book id".to_string()))
       } else {
          Ok(())
       }

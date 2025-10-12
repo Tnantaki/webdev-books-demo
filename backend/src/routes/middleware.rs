@@ -9,13 +9,13 @@ use axum::{
 use tower_cookies::Cookies;
 
 pub async fn auth_cookie(
-   State(service): State<JwtTokenService>,
+   State(jwt_service): State<JwtTokenService>,
    cookies: Cookies,
    mut req: Request,
    next: Next,
 ) -> Result<Response, AppError> {
    let access_token = unwrap_cookie(&cookies, "act")?;
-   let auth_token = service.verify(&access_token)?;
+   let auth_token = jwt_service.verify(&access_token)?;
 
    // Inject auth token into request extensions
    req.extensions_mut().insert(auth_token.user_id);
@@ -24,13 +24,13 @@ pub async fn auth_cookie(
 }
 
 pub async fn auth_cookie_admin(
-   State(service): State<JwtTokenService>,
+   State(jwt_service): State<JwtTokenService>,
    cookies: Cookies,
    mut req: Request,
    next: Next,
 ) -> Result<Response, AppError> {
    let access_token = unwrap_cookie(&cookies, "act")?;
-   let auth_token = service.verify(&access_token)?;
+   let auth_token = jwt_service.verify(&access_token)?;
 
    // Verify Admin role
    if auth_token.role != Role::Admin {

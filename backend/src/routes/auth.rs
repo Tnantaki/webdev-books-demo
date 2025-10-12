@@ -22,12 +22,11 @@ pub struct Login {
    password: String,
 }
 
-pub fn router(state: AppState) -> Router {
+pub fn router() -> Router<AppState> {
    Router::new()
       .route("/login", post(login))
       .route("/logout", post(logout))
       .route("/refresh", post(refresh_token))
-      .with_state(state)
 }
 
 async fn login(
@@ -37,9 +36,10 @@ async fn login(
 ) -> Result<impl IntoResponse, AppError> {
    // 1. Find email in repo
    let user = state
-      .in_mem
+      .postgres
       .user_repo
       .get_user_by_email(&payload.email)
+      .await
       .map_err(|_| AppError::Unauthorized("Invalid email".to_string()))?;
 
    // 2. Verrify user by email & password

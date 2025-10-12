@@ -1,4 +1,7 @@
-use crate::{models::users::UserModel, repos::in_mem::InMemError};
+use crate::{
+   models::users::{Role, UserModel},
+   repos::in_mem::InMemError,
+};
 use std::sync::{Arc, Mutex};
 use uuid::Uuid;
 
@@ -14,8 +17,13 @@ impl UserRepo {
       }
    }
 
-   pub fn add_user(&self, email: String, password_hash: String) -> Result<(), InMemError> {
-      let user = UserModel::add_user(email, password_hash);
+   pub fn add_user(
+      &self,
+      email: String,
+      password_hash: String,
+      role: Role,
+   ) -> Result<(), InMemError> {
+      let user = UserModel::add_user(email, password_hash, role);
       {
          let mut users = self.users.lock().map_err(|_| InMemError::LockPoisoned)?;
          users.push(user);
@@ -23,15 +31,6 @@ impl UserRepo {
       Ok(())
    }
 
-   pub fn add_admin(&self, email: String, password_hash: String) -> Result<(), InMemError> {
-      let user = UserModel::add_admin(email, password_hash);
-      {
-         let mut users = self.users.lock().map_err(|_| InMemError::LockPoisoned)?;
-         users.push(user);
-      }
-      Ok(())
-   }
-   
    pub fn get_users(&self) -> Result<Vec<UserModel>, InMemError> {
       let users = self.users.lock().map_err(|_| InMemError::LockPoisoned)?.clone();
 

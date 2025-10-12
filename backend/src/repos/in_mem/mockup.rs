@@ -1,7 +1,5 @@
 use crate::{
-   repos::in_mem::{books::BookRepo, images::ImageRepo, users::UserRepo},
-   schemas::{book::AddBook, image::AddImage},
-   services::password_hashing::PasswordService,
+   models::users::Role, repos::in_mem::{books::BookRepo, images::ImageRepo, users::UserRepo}, schemas::{book::AddBook, image::AddImage}, services::password_hashing::PasswordService
 };
 use rust_decimal::dec;
 use std::{fs, path::PathBuf};
@@ -9,7 +7,7 @@ use std::{fs, path::PathBuf};
 pub fn mockup_admin(user_repo: &UserRepo) {
    let email = "admin@email.com".to_string();
    let password_hash = PasswordService::hash("Admin1234").unwrap();
-   user_repo.add_admin(email, password_hash).unwrap();
+   user_repo.add_user(email, password_hash, Role::Admin).unwrap();
 }
 
 pub fn mockup_image(image_repo: &ImageRepo) -> String {

@@ -20,19 +20,16 @@ pub enum AppError {
    #[error("Validation error")]
    Validation(ValidationErrors),
 
-   #[error("Bad request error: {0}")]
-   BadRequest(String),
-
    #[error("Permission denied")]
    PermissionDenied,
 
-   #[error("Conflict error: {0}")]
+   #[error("Conflict: {0}")]
    Conflict(String),
 
    #[error("Upload file error: {0}")]
    Multipart(String),
 
-   #[error("Not found error: {0}")]
+   #[error("Not found: {0}")]
    NotFound(String),
 
    #[error("Unauthorized : {0}")]
@@ -52,9 +49,7 @@ impl AppError {
    pub fn status_code(&self) -> StatusCode {
       match self {
          // Validation errors -> 400
-         AppError::Validation(_) | AppError::Multipart(_) | AppError::BadRequest(_) => {
-            StatusCode::BAD_REQUEST
-         }
+         AppError::Validation(_) | AppError::Multipart(_) => StatusCode::BAD_REQUEST,
 
          // Unauthorized errors -> 401
          AppError::Unauthorized(_) => StatusCode::UNAUTHORIZED,
