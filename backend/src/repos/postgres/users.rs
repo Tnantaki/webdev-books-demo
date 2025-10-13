@@ -17,12 +17,7 @@ impl UserRepo {
       Self { pool }
    }
 
-   pub async fn add_user(
-      &self,
-      email: String,
-      password_hash: String,
-      role: Role,
-   ) -> Result<(), AppError> {
+   pub async fn add_user(&self, email: String, password_hash: String) -> Result<(), AppError> {
       sqlx::query(
          r#"
             INSERT INTO users (email, password_hash, role)
@@ -31,7 +26,23 @@ impl UserRepo {
       )
       .bind(&email)
       .bind(&password_hash)
-      .bind(&role)
+      .bind(&Role::User)
+      .execute(&self.pool)
+      .await?;
+
+      Ok(())
+   }
+   
+   pub async fn add_admin(&self, email: String, password_hash: String) -> Result<(), AppError> {
+      sqlx::query(
+         r#"
+            INSERT INTO users (email, password_hash, role)
+            VALUES ($1, $2, $3)
+         "#,
+      )
+      .bind(&email)
+      .bind(&password_hash)
+      .bind(&Role::Admin)
       .execute(&self.pool)
       .await?;
 

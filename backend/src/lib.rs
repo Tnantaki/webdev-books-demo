@@ -6,7 +6,7 @@ pub mod services;
 pub mod startup;
 
 use crate::startup::{
-   cli::{Cli, Commands},
+   cli::{Cli, Commands, create_admin},
    config, server,
 };
 use thiserror::Error;
@@ -21,6 +21,9 @@ pub enum ServerError<'a> {
 
    #[error("Fail to connect to database: {0}")]
    DatabaseError(String),
+
+   #[error("Fail to create admin: {0}")]
+   CreateAdminError(String),
 }
 
 pub async fn run(cli: Cli) -> Result<(), ServerError<'static>> {
@@ -34,7 +37,8 @@ pub async fn run(cli: Cli) -> Result<(), ServerError<'static>> {
          server::run(config, pool).await?;
       }
       Some(Commands::CreateAdmin) => {
-         println!("Create Admin as user input..."); // TODO: implement add admin account logic
+         // println!("Create Admin as user input..."); // TODO: implement add admin account logic
+         create_admin(pool).await?;
       }
       None => {
          server::run(config, pool).await?;

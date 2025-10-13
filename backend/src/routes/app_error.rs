@@ -8,7 +8,7 @@ use serde::Serialize;
 use serde_json::Value;
 use std::collections::HashMap;
 use thiserror::Error;
-use validator::{ValidationErrors, ValidationErrorsKind};
+use validator::{ValidationError, ValidationErrors, ValidationErrorsKind};
 
 use crate::{
    repos::in_mem::InMemError,
@@ -155,12 +155,26 @@ impl From<sqlx::Error> for AppError {
    }
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 pub struct FieldError {
    pub field: String,
    pub message: String,
    #[serde(skip_serializing_if = "Option::is_none")]
    pub params: Option<HashMap<String, Value>>,
+}
+
+impl FieldError {
+   pub fn get_field_error(field: &str, error: &ValidationError) -> Self {
+      let code = error.code.as_ref();
+      let message = error.message.as_deref().unwrap_or(code).to_string();
+      let params = error.params.iter().map(|(k, v)| (k.to_string(), v.clone())).collect();
+
+      Self {
+         field: field.to_string(),
+         message,
+         params: Some(params),
+      }
+   }
 }
 
 fn format_validation_errors(errors: &ValidationErrors) -> Vec<FieldError> {
@@ -169,15 +183,7 @@ fn format_validation_errors(errors: &ValidationErrors) -> Vec<FieldError> {
    for (field, error_kind) in errors.errors() {
       if let ValidationErrorsKind::Field(field_error_list) = error_kind {
          for error in field_error_list {
-            let code = error.code.as_ref();
-            let message = error.message.as_deref().unwrap_or(code).to_string();
-            let params = error.params.iter().map(|(k, v)| (k.to_string(), v.clone())).collect();
-
-            field_errors.push(FieldError {
-               field: field.to_string(),
-               message,
-               params: Some(params),
-            });
+            field_errors.push(FieldError::get_field_error(field, error));
          }
       }
    }

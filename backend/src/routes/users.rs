@@ -11,7 +11,6 @@ use uuid::Uuid;
 use validator::Validate;
 
 use crate::{
-   models::users::Role,
    routes::{JsonResult, app_error::AppError, middleware::auth_cookie_admin},
    schemas::user::{RegisterUser, User},
    services::password_hashing::PasswordService,
@@ -46,8 +45,7 @@ async fn register_user(
    let password_hash = PasswordService::hash(&payload.password)?;
 
    // 4. Save to database
-   // state.in_mem.user_repo.add_user(payload.email, password_hash, Role::User)?;
-   state.postgres.user_repo.add_user(payload.email, password_hash, Role::User).await?;
+   state.postgres.user_repo.add_user(payload.email, password_hash).await?;
 
    // 5. Response
    Ok((
