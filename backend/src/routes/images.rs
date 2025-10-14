@@ -42,8 +42,7 @@ async fn upload_image(
    let field_name = field.name().unwrap_or("");
    if field_name != FIELD_NAME_IMAGE {
       return Err(AppError::UploadFile(format!(
-         "Expected field name {}",
-         FIELD_NAME_IMAGE
+         "Expected field name {FIELD_NAME_IMAGE}"
       )));
    }
 

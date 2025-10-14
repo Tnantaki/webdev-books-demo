@@ -52,25 +52,21 @@ impl BookRepo {
    }
 
    pub async fn add_book(&self, new_book: AddBook) -> Result<Book, AppError> {
-      let book = BookModel::add(new_book);
-
       let book_model = sqlx::query_as::<_, BookModel>(
          r#"
             INSERT INTO books
-               (id, title, genre, description, price_in_pound, available, img_path, created_at, updated_at)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+               (title, genre, description, price_in_pound, available, img_path)
+            VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING
                id, title, genre, description, price_in_pound, available, img_path, created_at, updated_at
          "#,
       )
-      .bind(&book.title)
-      .bind(&book.genre)
-      .bind(&book.description)
-      .bind(&book.price_in_pound)
-      .bind(&book.available)
-      .bind(&book.img_path)
-      .bind(&book.created_at)
-      .bind(&book.updated_at)
+      .bind(&new_book.title)
+      .bind(&new_book.genre)
+      .bind(&new_book.description)
+      .bind(&new_book.price_in_pound)
+      .bind(new_book.available.unwrap_or(0)) // not reference because i32 is copy type
+      .bind(&new_book.img_path)
       .fetch_one(&self.pool)
       .await?;
 

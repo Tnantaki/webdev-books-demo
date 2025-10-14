@@ -21,6 +21,9 @@ pub enum AppError {
    #[error("Validation error")]
    Validation(ValidationErrors),
 
+   #[error("Bad Request: {0}")]
+   BadRequest(String),
+
    #[error("Permission denied")]
    PermissionDenied,
 
@@ -56,7 +59,9 @@ impl AppError {
    pub fn status_code(&self) -> StatusCode {
       match self {
          // Validation errors -> 400
-         AppError::Validation(_) | AppError::UploadFile(_) => StatusCode::BAD_REQUEST,
+         AppError::Validation(_) | AppError::BadRequest(_) | AppError::UploadFile(_) => {
+            StatusCode::BAD_REQUEST
+         }
 
          // Unauthorized errors -> 401
          AppError::Unauthorized(_) => StatusCode::UNAUTHORIZED,
