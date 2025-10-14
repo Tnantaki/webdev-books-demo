@@ -12,6 +12,7 @@ use validator::{ValidationError, ValidationErrors, ValidationErrorsKind};
 
 use crate::{
    repos::in_mem::InMemError,
+   routes::images::IMAGE_LIMIT_TEXT,
    services::{jwt_token::JwtTokenError, password_hashing::PasswordHashError},
 };
 
@@ -27,7 +28,10 @@ pub enum AppError {
    Conflict(String),
 
    #[error("Upload file error: {0}")]
-   Multipart(String),
+   UploadFile(String),
+
+   #[error("File too large: {0}")]
+   FileTooLarge(String),
 
    #[error("Not found: {0}")]
    NotFound(String),
@@ -43,13 +47,16 @@ pub enum AppError {
 
    #[error("Intenal server error: {0}")]
    InternalError(String),
+
+   #[error("Multipart error: {0}")]
+   Multipart(MultipartError),
 }
 
 impl AppError {
    pub fn status_code(&self) -> StatusCode {
       match self {
          // Validation errors -> 400
-         AppError::Validation(_) | AppError::Multipart(_) => StatusCode::BAD_REQUEST,
+         AppError::Validation(_) | AppError::UploadFile(_) => StatusCode::BAD_REQUEST,
 
          // Unauthorized errors -> 401
          AppError::Unauthorized(_) => StatusCode::UNAUTHORIZED,
@@ -63,10 +70,15 @@ impl AppError {
          // Conflict errors -> 409
          AppError::Conflict(_) => StatusCode::CONFLICT,
 
+         // Payload too large errors -> 413
+         AppError::FileTooLarge(_) => StatusCode::PAYLOAD_TOO_LARGE,
+
          // Database errors -> 500
          AppError::InMemError(_) | AppError::DatabaseError(_) | AppError::InternalError(_) => {
             StatusCode::INTERNAL_SERVER_ERROR
          }
+
+         AppError::Multipart(error) => error.status(),
       }
    }
 
@@ -113,12 +125,6 @@ impl From<ValidationErrors> for AppError {
    }
 }
 
-impl From<MultipartError> for AppError {
-   fn from(error: MultipartError) -> Self {
-      AppError::Multipart(error.to_string())
-   }
-}
-
 impl From<PasswordHashError> for AppError {
    fn from(error: PasswordHashError) -> Self {
       match error {
@@ -155,6 +161,17 @@ impl From<sqlx::Error> for AppError {
    }
 }
 
+impl From<MultipartError> for AppError {
+   fn from(error: MultipartError) -> Self {
+      match error.status() {
+         StatusCode::PAYLOAD_TOO_LARGE => {
+            AppError::FileTooLarge(format!("limit image file size {}", IMAGE_LIMIT_TEXT))
+         }
+         _ => AppError::UploadFile(error.body_text()),
+      }
+   }
+}
+
 #[derive(Serialize, Debug)]
 pub struct FieldError {
    pub field: String,
@@ -164,7 +181,7 @@ pub struct FieldError {
 }
 
 impl FieldError {
-   pub fn get_field_error(field: &str, error: &ValidationError) -> Self {
+   pub fn new(field: &str, error: &ValidationError) -> Self {
       let code = error.code.as_ref();
       let message = error.message.as_deref().unwrap_or(code).to_string();
       let params = error.params.iter().map(|(k, v)| (k.to_string(), v.clone())).collect();
@@ -183,7 +200,7 @@ fn format_validation_errors(errors: &ValidationErrors) -> Vec<FieldError> {
    for (field, error_kind) in errors.errors() {
       if let ValidationErrorsKind::Field(field_error_list) = error_kind {
          for error in field_error_list {
-            field_errors.push(FieldError::get_field_error(field, error));
+            field_errors.push(FieldError::new(field, error));
          }
       }
    }

@@ -18,6 +18,7 @@ pub struct BookModel {
    pub updated_at: DateTime<Utc>,
 }
 
+// for in-memory
 impl BookModel {
    pub fn add(new_book: AddBook) -> Self {
       let now: DateTime<Utc> = Utc::now();

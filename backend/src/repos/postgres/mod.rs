@@ -1,9 +1,10 @@
 pub mod books;
+pub mod images;
 pub mod users;
 
 use crate::{
    ServerError,
-   repos::postgres::{books::BookRepo, users::UserRepo},
+   repos::postgres::{books::BookRepo, images::ImageRepo, users::UserRepo},
 };
 use sqlx::{Pool, Postgres};
 use std::time::Duration;
@@ -12,13 +13,15 @@ use std::time::Duration;
 pub struct PostgresRepos {
    pub book_repo: BookRepo,
    pub user_repo: UserRepo,
+   pub image_repo: ImageRepo,
 }
 
 impl PostgresRepos {
    pub fn new(pool: Pool<Postgres>) -> Self {
       Self {
          book_repo: BookRepo::new(pool.clone()),
-         user_repo: UserRepo::new(pool),
+         user_repo: UserRepo::new(pool.clone()),
+         image_repo: ImageRepo::new(pool),
       }
    }
 }

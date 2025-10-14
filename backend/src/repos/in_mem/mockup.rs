@@ -1,5 +1,8 @@
 use crate::{
-   models::users::Role, repos::in_mem::{books::BookRepo, images::ImageRepo, users::UserRepo}, schemas::{book::AddBook, image::AddImage}, services::password_hashing::PasswordService
+   models::users::Role,
+   repos::in_mem::{books::BookRepo, images::ImageRepo, users::UserRepo},
+   schemas::{book::AddBook, image::AddImage},
+   services::password_hashing::PasswordService,
 };
 use rust_decimal::dec;
 use std::{fs, path::PathBuf};
@@ -17,7 +20,7 @@ pub fn mockup_image(image_repo: &ImageRepo) -> String {
    let mock_image = AddImage {
       filename: "Yuki".to_string(),
       content_type: "image/jpeg".to_string(),
-      data: data.into(),
+      data,
    };
    let id = image_repo.save_image(mock_image).unwrap();
    let img_path = format!("/images/{}", id);
