@@ -1,10 +1,14 @@
 use axum::{Router, response::IntoResponse, routing::get};
+use chrono::Utc;
+use console::style;
 use sqlx::{Pool, Postgres};
 use tokio::signal;
+use tokio_cron_scheduler::{Job, JobScheduler};
 use tower_cookies::CookieManagerLayer;
 
 use crate::{
    ServerError,
+   repos::postgres::images::ImageRepo,
    routes::{auth, books, images, users},
    startup::{app_state::AppState, config::Config},
 };
@@ -15,7 +19,15 @@ async fn health_check_handler() -> impl IntoResponse {
 
 pub async fn run(config: Config, pool: Pool<Postgres>) -> Result<(), ServerError<'static>> {
    // Share app state in multiple route, use arc
-   let app_state = AppState::new(&config, pool);
+   let app_state = AppState::new(&config, pool.clone());
+
+   // This spawns the scheduler in a background task ⬇️
+   tokio::spawn(async move {
+      println!("Starting cleanup scheduler in background...");
+      if let Err(e) = run_cleanup_scheduler(pool).await {
+         eprintln!("Scheduler error: {}", e);
+      }
+   });
 
    let app = Router::new()
       .route("/health", get(health_check_handler))
@@ -60,4 +72,33 @@ async fn shutdown_signal() {
        _ = interrupt => println!("Received SIGINT signal: Shutting down server"),
        _ = terminate => println!("Received SIGTERM signal: Shutting down server"),
    }
+}
+
+async fn run_cleanup_scheduler(pool: Pool<Postgres>) -> Result<(), Box<dyn std::error::Error>> {
+   let sched = JobScheduler::new().await?;
+
+   // Add basic cron job
+   sched
+      .add(
+         // run every hours
+         Job::new_async("0 0 * * * *", move |_uuid, _l| {
+            let image_repo = ImageRepo::new(pool.clone());
+
+            Box::pin(async move {
+               let now = format!("[{}]", Utc::now());
+               println!("{} Running scheduled cleanup...", style(now).green());
+               // clean up the image that orphan more than 24 hours
+               if let Err(e) = image_repo.cleanup_orphan_images(24).await {
+                  eprintln!("Cleanup failed: {}", e);
+               }
+            })
+         })?,
+      )
+      .await?;
+
+   // Start the scheduler
+   sched.start().await?;
+
+   tokio::signal::ctrl_c().await?;
+   Ok(())
 }

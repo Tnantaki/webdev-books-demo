@@ -65,14 +65,42 @@ impl ImageRepo {
          Ok(())
       }
    }
-}
 
-// async fn find_orphan_images(pool: &PgPool) -> Result<Vec<Uuid>, sqlx::Error> {
-//    let image_ids = sqlx::query_scalar::<Uuid>(
-//       r#"
-//          SELECT i.id
-//          FROM images i
-//          JOIN books b ON b.image_id = i.id
-//       "#
-//    )
-// }
+   pub async fn cleanup_orphan_images(&self, min_age_hours: i32) -> Result<(), sqlx::Error> {
+      let orphan_image_ids = self.find_orphan_image_ids(min_age_hours).await?;
+
+      println!("Found {} orphan images", orphan_image_ids.len());
+
+      for id in orphan_image_ids {
+         match self.delete_image(id).await {
+            Ok(_) => println!("Deleted orphan image id: {} ", id),
+            Err(e) => eprintln!("Failed to delete {}: {}", id, e),
+         }
+      }
+
+      Ok(())
+   }
+
+   async fn find_orphan_image_ids(&self, min_age_hours: i32) -> Result<Vec<Uuid>, sqlx::Error> {
+      let image_ids: Vec<Uuid> = sqlx::query_scalar(
+         r#"
+            SELECT i.id
+            FROM images i
+            WHERE NOT EXISTS (
+               SELECT 1 FROM books b WHERE b.image_id = i.id
+            )
+            AND i.created_at < NOW() - make_interval(hours => $1)
+            ORDER BY i.created_at ASC
+            LIMIT 100
+         "#,
+      )
+      .bind(min_age_hours)
+      .fetch_all(&self.pool)
+      .await?;
+
+      if image_ids.is_empty() {
+         return Ok(vec![]);
+      }
+      Ok(image_ids)
+   }
+}
