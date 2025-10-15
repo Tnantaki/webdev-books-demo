@@ -17,3 +17,10 @@
   ```bash
     sqlx migrate run --database-url postgres://postgres:123456@localhost:5432/book_store_db
   ```
+  
+  psql -h localhost -p 5432 -U postgres -d book_store_db
+
+- Run the SQL directly in psql for inspect error sql script (sqlx migrate run didn't show error detail) 
+  ```bash
+    psql -h localhost -p 5432 -U postgres -d book_store_db -f migrations/20251015101213_add_order_and_rating_table.sql
+  ```

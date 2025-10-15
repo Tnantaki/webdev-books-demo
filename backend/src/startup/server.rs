@@ -21,11 +21,11 @@ pub async fn run(config: Config, pool: Pool<Postgres>) -> Result<(), ServerError
    // Share app state in multiple route, use arc
    let app_state = AppState::new(&config, pool.clone());
 
-   // This spawns the scheduler in a background task ⬇️
+   // This spawns a new asynchronous scheduler in a background task ⬇️
    tokio::spawn(async move {
       println!("Starting cleanup scheduler in background...");
       if let Err(e) = run_cleanup_scheduler(pool).await {
-         eprintln!("Scheduler error: {}", e);
+         eprintln!("{} {}", style("Scheduler error:").red().bold(), e);
       }
    });
 
