@@ -9,7 +9,7 @@ CREATE TABLE orders (
     id UUID PRIMARY KEY DEFAULT uuidv7(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE SET NULL,
     total_price NUMERIC(10, 2) NOT NULL,
-    order_status VARCHAR(50) NOT NULL DEFAULT 'pending', -- pending, completed, cancelled
+    order_status VARCHAR(50) NOT NULL DEFAULT 'pending', -- pending, paid, completed, cancelled
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

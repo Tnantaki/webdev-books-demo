@@ -12,12 +12,12 @@
       Usage
     </a>
     <span> | </span>
-    <a href="api">
+    <a href="#api">
       API
     </a>
     <span> | </span>
-    <a href="stack">
-      API
+    <a href="#stack">
+      Stack
     </a>
   </h4>
 </div>
@@ -36,6 +36,22 @@ cargo run -- create-admin
 cargo run
 ```
 
+## Purchase Flow
+1. User click "Add To Cart"
+    └─> add book item to cart_items table
+2. User clicks "Checkout"
+    └─> Read items from cart_items table
+3. Create Order
+    └─> INSERT into orders table, (Mark order as 'pending')
+    └─> INSERT into order_items table (copy cart items with price snapshot)
+    └─> CLEAR cart_items for those purchased items
+4. User click "Pay"
+    └─> Mark order as 'paid'
+   User click "Cancel"
+    └─> Mark order as 'cancelled'
+5. User can continue shopping
+    └─> Cart is empty, ready for new items
+
 ## API
 
 ### Authentication
@@ -51,7 +67,7 @@ cargo run
 ### Admin User Management
 - [x] GET /users # List all users (admin only)
 - [x] GET /users/:id # Get user details (admin only)
-- [] PUT /users/:id # Update user (admin only)
+- [ ] PUT /users/:id # Update user (admin only)
 - [x] DELETE /users/:id # Delete user (admin only)
 
 ### Book
@@ -89,31 +105,31 @@ Admin Order Management
 
 ### Cart (Optional - can be client-side only)
 
-- [] GET /cart # Get user's cart
-- [] POST /cart/items # Add item to cart
-- [] PUT /cart/items/:id # Update cart item quantity
-- [] DELETE /cart/items/:id # Remove item from cart
-- [] DELETE /cart # Clear cart
+- [ ] GET /cart # Get user's cart
+- [ ] POST /cart/items # Add item to cart
+- [ ] PUT /cart/items/:id # Update cart item quantity
+- [ ] DELETE /cart/items/:id # Remove item from cart
+- [ ] DELETE /cart # Clear cart
 
 ### Ratings & Reviews
 
-- [] GET /books/:id/ratings # Get all ratings for a book
-- [] POST /books/:id/ratings # Add/update rating for a book
-- [] DELETE /books/:id/ratings # Delete user's rating
-- [] GET /users/me/ratings # Get current user's ratings
+- [ ] GET /books/:id/ratings # Get all ratings for a book
+- [ ] POST /books/:id/ratings # Add/update rating for a book
+- [ ] DELETE /books/:id/ratings # Delete user's rating
+- [ ] GET /users/me/ratings # Get current user's ratings
 
 ### Users (Profile Management)
 
-- [] GET /users/me # Get current user profile
-- [] PUT /users/me # Update profile
-- [] PUT /users/me/password # Change password
-- [] DELETE /users/me # Delete account
+- [ ] GET /users/me # Get current user profile
+- [ ] PUT /users/me # Update profile
+- [ ] PUT /users/me/password # Change password
+- [ ] DELETE /users/me # Delete account
 
 ### Statistics (Optional)
 
-- [] GET /admin/stats/sales # Sales statistics (admin only)
-- [] GET /admin/stats/books # Book statistics (admin only)
-- [] GET /books/:id/stats # Individual book statistics
+- [ ] GET /admin/stats/sales # Sales statistics (admin only)
+- [ ] GET /admin/stats/books # Book statistics (admin only)
+- [ ] GET /books/:id/stats # Individual book statistics
 
 <h4 align="center">Stack</h4>
 

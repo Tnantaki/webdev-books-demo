@@ -24,3 +24,15 @@
   ```bash
     psql -h localhost -p 5432 -U postgres -d book_store_db -f migrations/20251015101213_add_order_and_rating_table.sql
   ```
+  
+- Reset Migration in database
+  ```sql
+    -- Connect to your database
+    psql -h localhost -p 5432 -U postgres -d book_store_db
+    
+    -- Check the migrations table
+    SELECT * FROM _sqlx_migrations;
+    
+    -- Delete the failed migration record
+    DELETE FROM _sqlx_migrations WHERE version = 20251015101213;
+  ```
