@@ -37,7 +37,6 @@ pub async fn run(cli: Cli) -> Result<(), ServerError<'static>> {
          server::run(config, pool).await?;
       }
       Some(Commands::CreateAdmin) => {
-         // println!("Create Admin as user input..."); // TODO: implement add admin account logic
          create_admin(pool).await?;
       }
       None => {

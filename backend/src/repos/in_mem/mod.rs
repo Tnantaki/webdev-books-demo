@@ -35,8 +35,8 @@ impl InMemRepos {
       let user_repo = UserRepo::new();
 
       mockup_admin(&user_repo);
-      let img_path = mockup_image(&image_repo);
-      mockup_books(&book_repo, &img_path);
+      let image_id = mockup_image(&image_repo);
+      mockup_books(&book_repo, image_id);
 
       Self {
          book_repo,

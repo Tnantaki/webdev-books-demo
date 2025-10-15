@@ -6,6 +6,7 @@ use crate::{
 };
 use rust_decimal::dec;
 use std::{fs, path::PathBuf};
+use uuid::Uuid;
 
 pub fn mockup_admin(user_repo: &UserRepo) {
    let email = "admin@email.com".to_string();
@@ -13,7 +14,7 @@ pub fn mockup_admin(user_repo: &UserRepo) {
    user_repo.add_user(email, password_hash, Role::Admin).unwrap();
 }
 
-pub fn mockup_image(image_repo: &ImageRepo) -> String {
+pub fn mockup_image(image_repo: &ImageRepo) -> Uuid {
    let file_path = PathBuf::from("images").join("Yuki.jpg");
    let data = fs::read(&file_path).expect("read test file from images directory.");
 
@@ -23,11 +24,10 @@ pub fn mockup_image(image_repo: &ImageRepo) -> String {
       data,
    };
    let id = image_repo.save_image(mock_image).unwrap();
-   let img_path = format!("/images/{}", id);
-   img_path
+   id
 }
 
-pub fn mockup_books(book_repo: &BookRepo, img_path: &str) {
+pub fn mockup_books(book_repo: &BookRepo, image_id: Uuid) {
    let mock_books = vec![
       AddBook {
          title: "C++".to_string(),
@@ -35,7 +35,7 @@ pub fn mockup_books(book_repo: &BookRepo, img_path: &str) {
          description: "OOP programming language".to_string(),
          price_in_pound: dec!(1_000.35),
          available: Some(0),
-         img_path: img_path.to_string(),
+         image_id,
       },
       AddBook {
          title: "Rust".to_string(),
@@ -43,7 +43,7 @@ pub fn mockup_books(book_repo: &BookRepo, img_path: &str) {
          description: "Secure programming language".to_string(),
          price_in_pound: dec!(1_300),
          available: Some(0),
-         img_path: img_path.to_string(),
+         image_id,
       },
    ];
 

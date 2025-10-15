@@ -40,16 +40,19 @@ impl AddImage {
    }
 }
 
+pub fn get_img_path_by_id(image_id: Uuid) -> String {
+   format!("/images/{}", image_id)
+}
+
 impl From<ImageMetadata> for ImageResponse {
    fn from(img: ImageMetadata) -> Self {
       // let extension = ImageExtension::from_content_type(&img.content_type);
       // let img_path = format!("/images/{}.{}", img.id, extension);
-      let img_path = format!("/images/{}", img.id);
 
       Self {
          id: img.id,
          filename: img.filename,
-         img_path,
+         img_path: get_img_path_by_id(img.id),
          created_at: img.created_at,
       }
    }

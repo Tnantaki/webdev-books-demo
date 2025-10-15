@@ -2,8 +2,6 @@ use chrono::{DateTime, Utc};
 use sqlx::prelude::FromRow;
 use uuid::Uuid;
 
-use crate::schemas::image::AddImage;
-
 #[derive(Clone, FromRow)]
 pub struct ImageModel {
    pub id: Uuid,
@@ -21,20 +19,4 @@ pub struct ImageMetadata {
    pub content_type: String,
    pub file_size: i32,
    pub created_at: DateTime<Utc>,
-}
-
-// for in-memory
-impl ImageModel {
-   pub fn add(image: AddImage) -> Self {
-      let file_size = image.data.len() as i32;
-
-      Self {
-         id: Uuid::now_v7(),
-         filename: image.filename,
-         content_type: image.content_type,
-         data: image.data,
-         file_size,
-         created_at: Utc::now(),
-      }
-   }
 }

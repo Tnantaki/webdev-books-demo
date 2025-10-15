@@ -2,10 +2,26 @@ use crate::{
    models::users::{Role, UserModel},
    repos::in_mem::InMemError,
 };
+use chrono::{DateTime, Utc};
 use std::sync::{Arc, Mutex};
 use uuid::Uuid;
 
+impl UserModel {
+   pub fn add_user(email: String, password_hash: String, role: Role) -> Self {
+      let now: DateTime<Utc> = Utc::now();
+
+      Self {
+         id: Uuid::now_v7(),
+         email,
+         password_hash,
+         role,
+         created_at: now,
+         updated_at: now,
+      }
+   }
+}
 #[derive(Clone)]
+
 pub struct UserRepo {
    users: Arc<Mutex<Vec<UserModel>>>,
 }

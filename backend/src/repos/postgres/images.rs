@@ -66,3 +66,13 @@ impl ImageRepo {
       }
    }
 }
+
+// async fn find_orphan_images(pool: &PgPool) -> Result<Vec<Uuid>, sqlx::Error> {
+//    let image_ids = sqlx::query_scalar::<Uuid>(
+//       r#"
+//          SELECT i.id
+//          FROM images i
+//          JOIN books b ON b.image_id = i.id
+//       "#
+//    )
+// }

@@ -1,6 +1,23 @@
 use crate::{models::images::ImageModel, repos::in_mem::InMemError, schemas::image::AddImage};
+use chrono::Utc;
 use std::sync::{Arc, Mutex};
 use uuid::Uuid;
+
+// for in-memory
+impl ImageModel {
+   pub fn add(image: AddImage) -> Self {
+      let file_size = image.data.len() as i32;
+
+      Self {
+         id: Uuid::now_v7(),
+         filename: image.filename,
+         content_type: image.content_type,
+         data: image.data,
+         file_size,
+         created_at: Utc::now(),
+      }
+   }
+}
 
 #[derive(Clone)]
 pub struct ImageRepo {

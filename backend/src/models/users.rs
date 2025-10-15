@@ -20,18 +20,3 @@ pub struct UserModel {
    pub created_at: DateTime<Utc>,
    pub updated_at: DateTime<Utc>,
 }
-
-impl UserModel {
-   pub fn add_user(email: String, password_hash: String, role: Role) -> Self {
-      let now: DateTime<Utc> = Utc::now();
-
-      Self {
-         id: Uuid::now_v7(),
-         email,
-         password_hash,
-         role,
-         created_at: now,
-         updated_at: now,
-      }
-   }
-}

@@ -20,7 +20,7 @@ impl BookRepo {
       let book_models = sqlx::query_as::<_, BookModel>(
          r#"
             SELECT
-               id, title, genre, description, price_in_pound, available, img_path, created_at, updated_at
+               id, title, genre, description, price_in_pound, available, image_id, created_at, updated_at
             FROM books
          "#,
       )
@@ -39,7 +39,7 @@ impl BookRepo {
       let book_model = sqlx::query_as::<_, BookModel>(
          r#"
             SELECT
-               id, title, genre, description, price_in_pound, available, img_path, created_at, updated_at
+               id, title, genre, description, price_in_pound, available, image_id, created_at, updated_at
             FROM books WHERE id = $1
          "#,
       )
@@ -55,10 +55,10 @@ impl BookRepo {
       let book_model = sqlx::query_as::<_, BookModel>(
          r#"
             INSERT INTO books
-               (title, genre, description, price_in_pound, available, img_path)
+               (title, genre, description, price_in_pound, available, image_id)
             VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING
-               id, title, genre, description, price_in_pound, available, img_path, created_at, updated_at
+               id, title, genre, description, price_in_pound, available, image_id, created_at, updated_at
          "#,
       )
       .bind(&new_book.title)
@@ -66,7 +66,7 @@ impl BookRepo {
       .bind(&new_book.description)
       .bind(&new_book.price_in_pound)
       .bind(new_book.available.unwrap_or(0)) // not reference because i32 is copy type
-      .bind(&new_book.img_path)
+      .bind(&new_book.image_id)
       .fetch_one(&self.pool)
       .await?;
 
@@ -82,10 +82,10 @@ impl BookRepo {
                description = COALESCE($3, description),
                price_in_pound = COALESCE($4, price_in_pound),
                available = COALESCE($5, available),
-               img_path = COALESCE($6, img_path)
+               image_id = COALESCE($6, image_id)
             WHERE id = $7
             RETURNING
-               id, title, genre, description, price_in_pound, available, img_path, created_at, updated_at
+               id, title, genre, description, price_in_pound, available, image_id, created_at, updated_at
          "#,
       )
       .bind(edit_book.title.as_ref())
@@ -93,7 +93,7 @@ impl BookRepo {
       .bind(edit_book.description.as_ref())
       .bind(edit_book.price_in_pound.as_ref())
       .bind(edit_book.available.as_ref())
-      .bind(edit_book.img_path.as_ref())
+      .bind(edit_book.image_id.as_ref())
       .bind(id)
       .fetch_optional(&self.pool)
       .await?

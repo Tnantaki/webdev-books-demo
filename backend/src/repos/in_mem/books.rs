@@ -3,8 +3,50 @@ use crate::{
    repos::in_mem::InMemError,
    schemas::book::{AddBook, Book, EditBook},
 };
+use chrono::{DateTime, Utc};
 use std::sync::{Arc, Mutex};
 use uuid::Uuid;
+
+// for in-memory
+impl BookModel {
+   pub fn add(new_book: AddBook) -> Self {
+      let now: DateTime<Utc> = Utc::now();
+
+      Self {
+         id: Uuid::now_v7(),
+         title: new_book.title,
+         genre: new_book.genre,
+         description: new_book.description,
+         price_in_pound: new_book.price_in_pound,
+         available: new_book.available.unwrap_or(0),
+         image_id: new_book.image_id,
+         created_at: now,
+         updated_at: now,
+      }
+   }
+
+   pub fn edit(&mut self, edit_book: EditBook) {
+      if let Some(title) = edit_book.title {
+         self.title = title;
+      }
+      if let Some(genre) = edit_book.genre {
+         self.genre = genre;
+      }
+      if let Some(description) = edit_book.description {
+         self.description = description;
+      }
+      if let Some(price_in_pound) = edit_book.price_in_pound {
+         self.price_in_pound = price_in_pound;
+      }
+      if let Some(available) = edit_book.available {
+         self.available = available;
+      }
+      if let Some(image_id) = edit_book.image_id {
+         self.image_id = image_id;
+      }
+      self.updated_at = Utc::now();
+   }
+}
 
 // cloning Arc doesn't clone the underlying data—it just creates another reference to the same data.
 #[derive(Clone)]

@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::{Validate, ValidationError};
 
-use crate::models::books::BookModel;
+use crate::{models::books::BookModel, schemas::image::get_img_path_by_id};
 
 #[derive(Serialize)]
 pub struct Book {
@@ -34,8 +34,7 @@ pub struct AddBook {
    pub price_in_pound: Decimal,
    #[validate(range(min = 0, max = 999_999_999))]
    pub available: Option<i32>,
-   #[validate(length(min = 0, max = 255))]
-   pub img_path: String,
+   pub image_id: Uuid,
 }
 
 #[derive(Deserialize, Validate)]
@@ -49,8 +48,7 @@ pub struct EditBook {
    pub price_in_pound: Option<Decimal>,
    #[validate(range(min = 0, max = 999_999_999))]
    pub available: Option<i32>,
-   #[validate(length(min = 0, max = 255))]
-   pub img_path: Option<String>,
+   pub image_id: Option<Uuid>,
 }
 
 impl From<BookModel> for Book {
@@ -62,7 +60,7 @@ impl From<BookModel> for Book {
          description: book.description,
          price_in_pound: book.price_in_pound,
          available: book.available,
-         img_path: book.img_path,
+         img_path: get_img_path_by_id(book.image_id),
          created_at: book.created_at,
          updated_at: book.updated_at,
       }
