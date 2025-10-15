@@ -12,7 +12,11 @@
       Usage
     </a>
     <span> | </span>
-    <a href="API">
+    <a href="api">
+      API
+    </a>
+    <span> | </span>
+    <a href="stack">
       API
     </a>
   </h4>
@@ -36,29 +40,29 @@ cargo run
 
 ### Authentication
 
-[x] POST /auth/login # Login (returns JWT token in cookies)
-[x] POST /auth/logout # Logout
-[x] POST /auth/refresh # Refresh access token
-[ ] GET /auth/me # Get current user info
+- [x] POST /auth/login # Login (returns JWT token in cookies)
+- [x] POST /auth/logout # Logout
+- [x] POST /auth/refresh # Refresh access token
+- [ ] GET /auth/me # Get current user info
 
 ### User
-[x] POST /user/register # Register new user
+- [x] POST /user/register # Register new user
 
 ### Admin User Management
-[x] GET /users # List all users (admin only)
-[x] GET /users/:id # Get user details (admin only)
-[] PUT /users/:id # Update user (admin only)
-[x] DELETE /users/:id # Delete user (admin only)
+- [x] GET /users # List all users (admin only)
+- [x] GET /users/:id # Get user details (admin only)
+- [] PUT /users/:id # Update user (admin only)
+- [x] DELETE /users/:id # Delete user (admin only)
 
 ### Book
-[x] GET /books # List all books (with pagination, filters)
-[x] GET /books/:id # Get book details
-[x] POST /books # Create book (admin only)
-[x] PUT /books/:id # Update book (admin only)
-[x] DELETE /books/:id # Delete book (admin only)
-[ ] GET /books/search # Search books by title, author, etc.
-[ ] GET /books/categories # Get all categories
-[ ] GET /books/category/:name # Get books by category
+- [x] GET /books # List all books (with pagination, filters)
+- [x] GET /books/:id # Get book details
+- [x] POST /books # Create book (admin only)
+- [x] PUT /books/:id # Update book (admin only)
+- [x] DELETE /books/:id # Delete book (admin only)
+- [ ] GET /books/search # Search books by title, author, etc.
+- [ ] GET /books/categories # Get all categories
+- [ ] GET /books/category/:name # Get books by category
 
 ### Query Parameters for GET /books
 
@@ -73,45 +77,45 @@ cargo run
 
 ### Orders
 
-[ ] GET /orders # Get user's order history
-[ ] GET /orders/:id # Get specific order details
-[ ] POST /orders # Create new order (checkout)
-[ ] PUT /orders/:id/cancel # Cancel order
-[ ] GET /orders/:id/items # Get order items
+- [ ] GET /orders # Get user's order history
+- [ ] GET /orders/:id # Get specific order details
+- [ ] POST /orders # Create new order (checkout)
+- [ ] PUT /orders/:id/cancel # Cancel order
+- [ ] GET /orders/:id/items # Get order items
 
 Admin Order Management
-[ ] GET /admin/orders # Get all orders (admin only)
-[ ] PUT /admin/orders/:id/status # Update order status (admin only)
+- [ ] GET /admin/orders # Get all orders (admin only)
+- [ ] PUT /admin/orders/:id/status # Update order status (admin only)
 
 ### Cart (Optional - can be client-side only)
 
-[] GET /cart # Get user's cart
-[] POST /cart/items # Add item to cart
-[] PUT /cart/items/:id # Update cart item quantity
-[] DELETE /cart/items/:id # Remove item from cart
-[] DELETE /cart # Clear cart
+- [] GET /cart # Get user's cart
+- [] POST /cart/items # Add item to cart
+- [] PUT /cart/items/:id # Update cart item quantity
+- [] DELETE /cart/items/:id # Remove item from cart
+- [] DELETE /cart # Clear cart
 
 ### Ratings & Reviews
 
-[] GET /books/:id/ratings # Get all ratings for a book
-[] POST /books/:id/ratings # Add/update rating for a book
-[] DELETE /books/:id/ratings # Delete user's rating
-[] GET /users/me/ratings # Get current user's ratings
+- [] GET /books/:id/ratings # Get all ratings for a book
+- [] POST /books/:id/ratings # Add/update rating for a book
+- [] DELETE /books/:id/ratings # Delete user's rating
+- [] GET /users/me/ratings # Get current user's ratings
 
 ### Users (Profile Management)
 
-[] GET /users/me # Get current user profile
-[] PUT /users/me # Update profile
-[] PUT /users/me/password # Change password
-[] DELETE /users/me # Delete account
+- [] GET /users/me # Get current user profile
+- [] PUT /users/me # Update profile
+- [] PUT /users/me/password # Change password
+- [] DELETE /users/me # Delete account
 
 ### Statistics (Optional)
 
-[] GET /admin/stats/sales # Sales statistics (admin only)
-[] GET /admin/stats/books # Book statistics (admin only)
-[] GET /books/:id/stats # Individual book statistics
+- [] GET /admin/stats/sales # Sales statistics (admin only)
+- [] GET /admin/stats/books # Book statistics (admin only)
+- [] GET /books/:id/stats # Individual book statistics
 
-## Stack
+<h4 align="center">Stack</h4>
 
 <p align="center">
   <a href="https://skillicons.dev">
