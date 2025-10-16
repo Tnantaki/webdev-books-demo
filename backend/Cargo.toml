@@ -6,7 +6,7 @@ edition = "2024"
 
 [dependencies]
 argon2 = { version = "0.5.3", features = ["std"] }
-axum = { version = "0.8.6", features = ["multipart"] }
+axum = { version = "0.8.6", features = ["macros", "multipart"] }
 chrono = { version = "0.4.42", features = ["serde"] }
 clap = { version = "4.5.48", features = ["derive"] }
 console = "0.16.1"

@@ -7,10 +7,7 @@ use tokio_cron_scheduler::{Job, JobScheduler};
 use tower_cookies::CookieManagerLayer;
 
 use crate::{
-   ServerError,
-   repos::postgres::images::ImageRepo,
-   routes::{auth, books, images, users},
-   startup::{app_state::AppState, config::Config},
+   repos::postgres::images::ImageRepo, routes::{auth, books, cart_items, images, users}, startup::{app_state::AppState, config::Config}, ServerError
 };
 
 async fn health_check_handler() -> impl IntoResponse {
@@ -35,6 +32,7 @@ pub async fn run(config: Config, pool: Pool<Postgres>) -> Result<(), ServerError
       .nest("/users", users::router(&app_state))
       .nest("/books", books::router(&app_state))
       .nest("/images", images::router(&app_state))
+      .nest("/cart", cart_items::router(&app_state))
       .with_state(app_state)
       .layer(CookieManagerLayer::new());
 

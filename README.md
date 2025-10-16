@@ -55,11 +55,10 @@ cargo run
 ## API
 
 ### Authentication
-
-- [x] POST /auth/login # Login (returns JWT token in cookies)
-- [x] POST /auth/logout # Logout
+- [x] POST /auth/login   # Login (returns JWT token in cookies)
+- [x] POST /auth/logout  # Logout
 - [x] POST /auth/refresh # Refresh access token
-- [ ] GET /auth/me # Get current user info
+- [ ] GET  /auth/me      # Get current user info
 
 ### User
 - [x] POST /user/register # Register new user
@@ -90,6 +89,14 @@ cargo run
 - max_price - Maximum price
 - sort - Sort by (price, title, created_at, rating)
 - order - asc or desc
+
+### Cart Items
+- [x] POST   /api/cart/item               # Add to cart (DB)
+- [x] GET    /api/cart                    # Get cart items
+- [x] PUT    /api/cart/items/:id          # Update quantity
+- [x] DELETE /api/cart/items/:id          # Remove from cart
+- [ ] POST   /api/cart/checkout           # Create order from cart
+- [ ] POST   /api/cart/save-for-later/:id # Move to saved items
 
 ### Orders
 
