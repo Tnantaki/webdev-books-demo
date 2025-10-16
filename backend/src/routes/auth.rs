@@ -12,7 +12,7 @@ use crate::{
    startup::app_state::AppState,
 };
 
-const ACCESS_TOKEN_TIME: TimeDelta = Duration::minutes(30);
+const ACCESS_TOKEN_TIME: TimeDelta = Duration::hours(2);
 const RREFRESH_TOKEN_TIME: TimeDelta = Duration::days(14);
 const COOKIE_MAX_AGE: time::Duration = time::Duration::days(14);
 

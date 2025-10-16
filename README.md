@@ -95,7 +95,7 @@ cargo run
 - [x] GET    /api/cart                    # Get cart items
 - [x] PUT    /api/cart/items/:id          # Update quantity
 - [x] DELETE /api/cart/items/:id          # Remove from cart
-- [ ] POST   /api/cart/checkout           # Create order from cart
+- [x] POST   /api/cart/checkout           # Create order from cart
 - [ ] POST   /api/cart/save-for-later/:id # Move to saved items
 
 ### Orders
@@ -138,7 +138,8 @@ Admin Order Management
 - [ ] GET /admin/stats/books # Book statistics (admin only)
 - [ ] GET /books/:id/stats # Individual book statistics
 
-<h4 align="center">Stack</h4>
+<h2 align="center">Stack</h2>
+---
 
 <p align="center">
   <a href="https://skillicons.dev">

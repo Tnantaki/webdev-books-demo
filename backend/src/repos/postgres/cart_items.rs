@@ -1,8 +1,9 @@
+use rust_decimal::Decimal;
 use sqlx::PgPool;
 use uuid::Uuid;
 
 use crate::{
-   models::cart_items::CartItemModel,
+   models::{cart_items::CartItemModel, orders::OrderModel},
    routes::app_error::AppError,
    schemas::cart::{AddCartItem, EditCartItem},
 };
@@ -105,5 +106,95 @@ impl CartItemRepo {
       } else {
          Ok(())
       }
+   }
+
+   pub async fn create_order_from_cart(&self, user_id: Uuid) -> Result<OrderModel, AppError> {
+      // Create transaction
+      let mut tx = self.pool.begin().await?;
+      // Will be rollback automatically when transaction goes out of scope
+
+      // 1. check if cart is empty
+      let cart_item_quantity: i64 =
+         sqlx::query_scalar("SELECT COUNT(*) FROM cart_items WHERE user_id = $1")
+            .bind(user_id)
+            .fetch_one(&mut *tx)
+            .await?;
+
+      if cart_item_quantity == 0 {
+         return Err(AppError::Conflict("the cart is empty".to_string()));
+      }
+
+      // 2. Validate stock: item quantity < item avaiable
+      let insuf_item_ids: Vec<Uuid> = sqlx::query_scalar(
+         r#"
+            SELECT ci.id
+            FROM cart_items ci
+            JOIN books b ON b.id = ci.book_id
+            WHERE ci.user_id = $1 AND ci.quantity > b.available
+         "#,
+      )
+      .bind(user_id)
+      .fetch_all(&mut *tx)
+      .await?;
+
+      if insuf_item_ids.len() > 0 {
+         return Err(AppError::Conflict(
+            "Insufficient stock for some items in cart".to_string(),
+         ));
+      }
+
+      // 3. calculate total price
+      let total_price: Decimal = sqlx::query_scalar(
+         r#"
+            SELECT SUM(ci.quantity * b.price_in_pound)
+            FROM cart_items ci
+            JOIN books b ON b.id = ci.book_id
+            WHERE ci.user_id = $1
+         "#,
+      )
+      .bind(user_id)
+      .fetch_one(&mut *tx)
+      .await?;
+
+      // 4. create orders
+      let order = sqlx::query_as::<_, OrderModel>(
+         r#"
+            INSERT INTO orders
+               (user_id, total_price)
+            VALUES ($1, $2)
+            RETURNING
+               id, user_id, total_price, order_status, created_at, updated_at
+         "#,
+      )
+      .bind(user_id)
+      .bind(total_price)
+      .fetch_one(&mut *tx)
+      .await?;
+
+      // 5. copy cart items to order items
+      sqlx::query(
+         r#"
+            INSERT INTO order_items
+               (order_id, book_id, quantity, price_at_purchase)
+            SELECT $1, ci.book_id, ci.quantity, b.price_in_pound
+            FROM cart_items ci
+            JOIN books b ON b.id = ci.book_id
+            WHERE ci.user_id = $2
+         "#,
+      )
+      .bind(order.id)
+      .bind(user_id)
+      .execute(&mut *tx)
+      .await?;
+
+      // 6. clear cart items
+      sqlx::query("DELETE FROM cart_items WHERE user_id = $1")
+         .bind(user_id)
+         .execute(&mut *tx)
+         .await?;
+
+      tx.commit().await?;
+
+      Ok(order)
    }
 }

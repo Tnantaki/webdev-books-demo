@@ -9,7 +9,7 @@ use uuid::Uuid;
 use validator::Validate;
 
 use crate::{
-   models::cart_items::CartItemModel,
+   models::{cart_items::CartItemModel, orders::OrderModel},
    routes::{JsonResult, app_error::AppError, middleware::auth_cookie},
    schemas::cart::{AddCartItem, EditCartItem},
    startup::app_state::AppState,
@@ -21,6 +21,7 @@ pub fn router(state: &AppState) -> Router<AppState> {
       .route("/item", post(add_to_cart))
       .route("/item/{id}", put(edit_cart_item))
       .route("/item/{id}", delete(remove_from_cart))
+      .route("/checkout", post(checkout))
       .route_layer(middleware::from_fn_with_state(
          state.jwt_service.clone(),
          auth_cookie,
@@ -73,4 +74,13 @@ async fn remove_from_cart(
    state.postgres.cart_item_repo.remove_from_cart(user_id, id).await?;
 
    Ok(StatusCode::NO_CONTENT)
+}
+
+async fn checkout(
+   State(state): State<AppState>,
+   Extension(user_id): Extension<Uuid>,
+) -> JsonResult<OrderModel> {
+   let order = state.postgres.cart_item_repo.create_order_from_cart(user_id).await?;
+
+   Ok((StatusCode::CREATED, Json(order)))
 }
