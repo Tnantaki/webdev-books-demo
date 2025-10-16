@@ -10,4 +10,5 @@ pub mod users;
 pub mod auth;
 pub mod middleware;
 pub mod cart_items;
+pub mod orders;
 

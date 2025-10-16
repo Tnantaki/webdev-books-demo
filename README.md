@@ -42,10 +42,13 @@ cargo run
 2. User clicks "Checkout"
     └─> Read items from cart_items table
 3. Create Order
+    └─> Validate book stock
     └─> INSERT into orders table, (Mark order as 'pending')
     └─> INSERT into order_items table (copy cart items with price snapshot)
     └─> CLEAR cart_items for those purchased items
 4. User click "Pay"
+    └─> Validate book stock
+    └─> Update book stock
     └─> Mark order as 'paid'
    User click "Cancel"
     └─> Mark order as 'cancelled'
@@ -62,25 +65,25 @@ cargo run
 
 ### User
 - [x] POST /user/register # Register new user
-
-### Admin User Management
-- [x] GET /users # List all users (admin only)
-- [x] GET /users/:id # Get user details (admin only)
-- [ ] PUT /users/:id # Update user (admin only)
+#### Admin User Management
+- [x] GET    /users     # List all users (admin only)
+- [x] GET    /users/:id # Get user details (admin only)
+- [ ] PUT    /users/:id # Update user (admin only)
 - [x] DELETE /users/:id # Delete user (admin only)
 
 ### Book
-- [x] GET /books # List all books (with pagination, filters)
-- [x] GET /books/:id # Get book details
-- [x] POST /books # Create book (admin only)
-- [x] PUT /books/:id # Update book (admin only)
+- [x] GET    /books # List all books (with pagination, filters)
+- [x] GET    /books/:id # Get book details
+- [ ] GET    /books/search # Search books by title, author, etc.
+- [ ] GET    /books/categories # Get all categories
+- [ ] GET    /books/category/:name # Get books by category
+#### Admin Book Management
+- [x] POST   /books     # Create book (admin only)
+- [x] PUT    /books/:id # Update book (admin only)
 - [x] DELETE /books/:id # Delete book (admin only)
-- [ ] GET /books/search # Search books by title, author, etc.
-- [ ] GET /books/categories # Get all categories
-- [ ] GET /books/category/:name # Get books by category
+
 
 ### Query Parameters for GET /books
-
 - page - Page number (default: 1)
 - limit - Items per page (default: 20)
 - category - Filter by category
@@ -91,20 +94,20 @@ cargo run
 - order - asc or desc
 
 ### Cart Items
-- [x] POST   /api/cart/item               # Add to cart (DB)
-- [x] GET    /api/cart                    # Get cart items
-- [x] PUT    /api/cart/items/:id          # Update quantity
-- [x] DELETE /api/cart/items/:id          # Remove from cart
-- [x] POST   /api/cart/checkout           # Create order from cart
-- [ ] POST   /api/cart/save-for-later/:id # Move to saved items
+- [x] GET    /cart                    # Get cart items
+- [ ] DELETE /cart                    # Clear cart
+- [x] POST   /cart/item               # Add to cart (DB)
+- [x] PUT    /cart/items/:id          # Update quantity
+- [x] DELETE /cart/items/:id          # Remove from cart
+- [x] POST   /cart/checkout           # Create order from cart
+- [ ] POST   /cart/save-for-later/:id # Move to saved items
 
 ### Orders
-
-- [ ] GET /orders # Get user's order history
-- [ ] GET /orders/:id # Get specific order details
-- [ ] POST /orders # Create new order (checkout)
-- [ ] PUT /orders/:id/cancel # Cancel order
-- [ ] GET /orders/:id/items # Get order items
+- [x] GET  /orders            # Get user's order history
+- [x] GET  /orders/:id        # Get specific order details
+- [x] PUT  /orders/:id/pay    # Pay order
+- [x] PUT  /orders/:id/cancel # Cancel order
+- [x] GET  /orders/item/:id   # Get order item detail
 
 Admin Order Management
 - [ ] GET /admin/orders # Get all orders (admin only)
@@ -116,7 +119,6 @@ Admin Order Management
 - [ ] POST /cart/items # Add item to cart
 - [ ] PUT /cart/items/:id # Update cart item quantity
 - [ ] DELETE /cart/items/:id # Remove item from cart
-- [ ] DELETE /cart # Clear cart
 
 ### Ratings & Reviews
 
