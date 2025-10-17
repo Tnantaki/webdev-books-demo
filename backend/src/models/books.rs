@@ -13,6 +13,8 @@ pub struct BookModel {
    pub price_in_pound: Decimal,
    pub available: i32,
    pub image_id: Uuid,
+   pub average_rating: f64,
+   pub total_ratings: i32,
    pub created_at: DateTime<Utc>,
    pub updated_at: DateTime<Utc>,
 }

@@ -17,10 +17,10 @@ pub struct Book {
    pub price_in_pound: Decimal,
    pub available: i32,
    pub img_path: String,
+   pub average_rating: f64,
+   pub total_ratings: i32,
    pub created_at: DateTime<Utc>,
    pub updated_at: DateTime<Utc>,
-   // pub averate_rating: f32,
-   // pub total_ratings: i32,
 }
 
 #[derive(Deserialize, Validate)]
@@ -61,6 +61,8 @@ impl From<BookModel> for Book {
          price_in_pound: book.price_in_pound,
          available: book.available,
          img_path: get_img_path_by_id(book.image_id),
+         average_rating: book.average_rating,
+         total_ratings: book.total_ratings,
          created_at: book.created_at,
          updated_at: book.updated_at,
       }

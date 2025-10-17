@@ -20,7 +20,8 @@ impl BookRepo {
       let book_models = sqlx::query_as::<_, BookModel>(
          r#"
             SELECT
-               id, title, genre, description, price_in_pound, available, image_id, created_at, updated_at
+               id, title, genre, description, price_in_pound, available, image_id,
+               average_rating, total_ratings, created_at, updated_at
             FROM books
          "#,
       )
@@ -39,7 +40,8 @@ impl BookRepo {
       let book_model = sqlx::query_as::<_, BookModel>(
          r#"
             SELECT
-               id, title, genre, description, price_in_pound, available, image_id, created_at, updated_at
+               id, title, genre, description, price_in_pound, available, image_id,
+               average_rating, total_ratings, created_at, updated_at
             FROM books WHERE id = $1
          "#,
       )
@@ -58,7 +60,8 @@ impl BookRepo {
                (title, genre, description, price_in_pound, available, image_id)
             VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING
-               id, title, genre, description, price_in_pound, available, image_id, created_at, updated_at
+               id, title, genre, description, price_in_pound, available, image_id,
+               average_rating, total_ratings, created_at, updated_at
          "#,
       )
       .bind(&new_book.title)
@@ -85,7 +88,8 @@ impl BookRepo {
                image_id = COALESCE($6, image_id)
             WHERE id = $7
             RETURNING
-               id, title, genre, description, price_in_pound, available, image_id, created_at, updated_at
+               id, title, genre, description, price_in_pound, available, image_id,
+               average_rating, total_ratings, created_at, updated_at
          "#,
       )
       .bind(edit_book.title.as_ref())

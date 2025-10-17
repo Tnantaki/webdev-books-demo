@@ -20,6 +20,8 @@ impl BookModel {
          price_in_pound: new_book.price_in_pound,
          available: new_book.available.unwrap_or(0),
          image_id: new_book.image_id,
+         average_rating: 0f64,
+         total_ratings: 0,
          created_at: now,
          updated_at: now,
       }

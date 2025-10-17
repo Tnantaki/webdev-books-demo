@@ -65,7 +65,7 @@ cargo run
 
 ### User
 - [x] POST /user/register # Register new user
-#### Admin User Management
+- **Admin User Management**
 - [x] GET    /users     # List all users (admin only)
 - [x] GET    /users/:id # Get user details (admin only)
 - [ ] PUT    /users/:id # Update user (admin only)
@@ -77,7 +77,7 @@ cargo run
 - [ ] GET    /books/search # Search books by title, author, etc.
 - [ ] GET    /books/categories # Get all categories
 - [ ] GET    /books/category/:name # Get books by category
-#### Admin Book Management
+- **Admin Book Management**
 - [x] POST   /books     # Create book (admin only)
 - [x] PUT    /books/:id # Update book (admin only)
 - [x] DELETE /books/:id # Delete book (admin only)
@@ -108,24 +108,16 @@ cargo run
 - [x] PUT  /orders/:id/pay    # Pay order
 - [x] PUT  /orders/:id/cancel # Cancel order
 - [x] GET  /orders/item/:id   # Get order item detail
-
-Admin Order Management
+- **Admin Order Management**
 - [ ] GET /admin/orders # Get all orders (admin only)
 - [ ] PUT /admin/orders/:id/status # Update order status (admin only)
 
-### Cart (Optional - can be client-side only)
-
-- [ ] GET /cart # Get user's cart
-- [ ] POST /cart/items # Add item to cart
-- [ ] PUT /cart/items/:id # Update cart item quantity
-- [ ] DELETE /cart/items/:id # Remove item from cart
 
 ### Ratings & Reviews
-
-- [ ] GET /books/:id/ratings # Get all ratings for a book
-- [ ] POST /books/:id/ratings # Add/update rating for a book
+- [x] GET    /books/:id/ratings # Get all ratings for a book
+- [x] POST   /books/:id/ratings # Add/update rating for a book
 - [ ] DELETE /books/:id/ratings # Delete user's rating
-- [ ] GET /users/me/ratings # Get current user's ratings
+- [ ] GET    /users/me/ratings  # Get current user's ratings
 
 ### Users (Profile Management)
 
@@ -141,7 +133,6 @@ Admin Order Management
 - [ ] GET /books/:id/stats # Individual book statistics
 
 <h2 align="center">Stack</h2>
----
 
 <p align="center">
   <a href="https://skillicons.dev">
