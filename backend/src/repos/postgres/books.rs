@@ -1,8 +1,9 @@
 use crate::{
-   models::books::BookModel,
+   models::books::{BookFilter, BookModel},
    routes::app_error::AppError,
    schemas::book::{AddBook, Book, EditBook},
 };
+use rust_decimal::prelude::Zero;
 use sqlx::PgPool;
 use uuid::Uuid;
 
@@ -118,5 +119,55 @@ impl BookRepo {
       } else {
          Ok(())
       }
+   }
+
+   pub async fn get_all_book_filter(
+      &self,
+      filter: BookFilter,
+   ) -> Result<(i64, Vec<Book>), AppError> {
+      let mut query = sqlx::QueryBuilder::new(
+         r#"
+            SELECT
+               id, title, genre, description, price_in_pound, available, image_id,
+               average_rating, total_ratings, created_at, updated_at
+            FROM books
+      "#,
+      );
+
+      let mut query_count = sqlx::QueryBuilder::new("SELECT COUNT(*) FROM books");
+
+      // Filter Genre
+      if let Some(genre) = filter.genre {
+         query.push(" WHERE genre = ").push_bind(genre.to_string());
+         query_count.push(" WHERE genre = ").push_bind(genre);
+      }
+
+      // Count total item by filter, The rest filter didn't effect number of item.
+      let total_items: i64 = query_count.build_query_scalar().fetch_one(&self.pool).await?;
+
+      if total_items.is_zero() {
+         return Ok((0, vec![]));
+      }
+
+      // Filter Order and Sorting order
+      query.push(format!(
+         " ORDER BY {} {}",
+         filter.sort_by, filter.sort_order
+      ));
+
+      // Filter Limit (limit item per page)
+      if let Some(limit) = filter.limit {
+         query.push(" LIMIT ").push_bind(limit);
+      }
+
+      // Filter Offset (offset page)
+      if let Some(offset) = filter.offset {
+         query.push(" OFFSET ").push_bind(offset);
+      }
+
+      let book_models = query.build_query_as::<BookModel>().fetch_all(&self.pool).await?;
+
+      let books = book_models.into_iter().map(|book| Book::from(book)).collect();
+      Ok((total_items, books))
    }
 }

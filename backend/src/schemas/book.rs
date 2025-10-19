@@ -6,7 +6,10 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::{Validate, ValidationError};
 
-use crate::{models::books::BookModel, schemas::image::get_img_path_by_id};
+use crate::{
+   models::books::{BookModel, SortBy, SortOrder},
+   schemas::image::get_img_path_by_id,
+};
 
 #[derive(Serialize)]
 pub struct Book {
@@ -103,3 +106,42 @@ fn validate_price(price: &Decimal) -> Result<(), ValidationError> {
 //    }
 //    Ok(())
 // }
+
+// Pagination query parameters
+#[derive(Debug, Deserialize)]
+pub struct PaginationParams {
+   #[serde(default = "default_page")]
+   pub page: i64,
+   #[serde(default = "default_per_page")]
+   pub per_page: i64,
+   #[serde(default)]
+   pub sort_by: SortBy,
+   #[serde(default)]
+   pub order: SortOrder,
+   #[serde(default)]
+   pub genre: Option<String>,
+}
+
+fn default_page() -> i64 {
+   1
+}
+fn default_per_page() -> i64 {
+   12
+}
+
+// Pagination response
+#[derive(Debug, Serialize)]
+pub struct PaginationResponse<T> {
+   pub data: Vec<T>,
+   pub pagination: PaginationMeta,
+}
+
+#[derive(Debug, Serialize)]
+pub struct PaginationMeta {
+   pub current_page: i64,
+   pub per_page: i64,
+   pub total_items: i64,
+   pub total_pages: i64,
+   pub has_next: bool,
+   pub has_previous: bool,
+}

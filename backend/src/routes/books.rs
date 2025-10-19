@@ -1,6 +1,6 @@
 use axum::{
    Json, Router,
-   extract::{Path, State},
+   extract::{Path, Query, State},
    http::StatusCode,
    middleware,
    routing::{delete, get, patch, post},
@@ -9,8 +9,9 @@ use uuid::Uuid;
 use validator::Validate;
 
 use crate::{
+   models::books::BookFilter,
    routes::{JsonResult, app_error::AppError, middleware::auth_cookie_admin},
-   schemas::book::{AddBook, Book, EditBook},
+   schemas::book::{AddBook, Book, EditBook, PaginationMeta, PaginationParams, PaginationResponse},
    startup::app_state::AppState,
 };
 
@@ -24,6 +25,7 @@ pub fn router(state: &AppState) -> Router<AppState> {
          auth_cookie_admin,
       ))
       .route("/", get(view_books))
+      .route("/page", get(get_book_pages))
       .route("/{id}", get(view_book_by_id))
 }
 
@@ -86,4 +88,40 @@ async fn validate_exist_image(img_path: &str, state: &AppState) -> Result<(), Ap
    state.postgres.image_repo.get_image_by_id(image_id).await?;
 
    Ok(())
+}
+
+async fn get_book_pages(
+   State(state): State<AppState>,
+   Query(params): Query<PaginationParams>,
+) -> JsonResult<PaginationResponse<Book>> {
+   println!("debug books params: {:?}", params); // DEBUG
+
+   let page = params.page;
+   let per_page = params.per_page;
+   let offset = (page - 1) * per_page;
+   let sort_by = params.sort_by;
+   let order = params.order;
+   let genre = params.genre;
+
+   let book_filter = BookFilter::new(Some(per_page), sort_by, order, genre, Some(offset));
+   let (total_items, books) = state.postgres.book_repo.get_all_book_filter(book_filter).await?;
+
+   // Calculate pagination metadata
+   let total_pages = (total_items as f64 / per_page as f64).ceil() as i64;
+   let has_next = page < total_pages;
+   let has_previous = page > 1;
+
+   let response = PaginationResponse {
+      data: books,
+      pagination: PaginationMeta {
+         current_page: page,
+         per_page,
+         total_items,
+         total_pages,
+         has_next,
+         has_previous,
+      },
+   };
+
+   Ok((StatusCode::OK, Json(response)))
 }
