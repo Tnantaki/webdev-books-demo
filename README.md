@@ -136,6 +136,6 @@ cargo run
 
 <p align="center">
   <a href="https://skillicons.dev">
-    <img src="https://skillicons.dev/icons?i=postgres,rust" />
+    <img src="https://skillicons.dev/icons?i=postgres,rust,svelte,bun" />
   </a>
 </p>
