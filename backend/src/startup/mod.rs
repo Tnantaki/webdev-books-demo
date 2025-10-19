@@ -1,5 +1,6 @@
 pub mod config;
 pub mod server;
 pub mod app_state;
-pub mod cli;
+pub mod command;
+
 

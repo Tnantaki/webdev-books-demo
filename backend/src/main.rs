@@ -1,4 +1,4 @@
-use book_store::startup::cli::Cli;
+use book_store::startup::command::Cli;
 use clap::Parser;
 use console::style;
 use std::process;

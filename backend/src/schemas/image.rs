@@ -6,7 +6,7 @@ use uuid::Uuid;
 
 // Supported image extensions
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum ImageExtension {
+pub enum ImgType {
    Jpg,
    Jpeg,
    Png,
@@ -31,10 +31,10 @@ pub struct ImageResponse {
 }
 
 impl AddImage {
-   pub fn new(filename: String, content_type: String, data: Vec<u8>) -> Self {
+   pub fn new(filename: String, img_type: ImgType, data: Vec<u8>) -> Self {
       Self {
          filename,
-         content_type,
+         content_type: img_type.content_type().to_string(),
          data,
       }
    }
@@ -58,28 +58,15 @@ impl From<ImageMetadata> for ImageResponse {
    }
 }
 
-impl fmt::Display for ImageExtension {
+impl fmt::Display for ImgType {
    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-      write!(f, "{}", self.as_str())
+      write!(f, "{}", self.extension())
    }
 }
 
-impl ImageExtension {
-   pub fn from_content_type(ext: &str) -> String {
-      let extension = match ext.to_lowercase().as_str() {
-         "image/jpeg" => Self::Jpeg,
-         "image/png" => Self::Png,
-         "image/gif" => Self::Gif,
-         "image/webp" => Self::Webp,
-         "image/bmp" => Self::Bmp,
-         "image/svg+xml" => Self::Svg,
-         _ => Self::Jpg,
-      };
-      extension.as_str().to_string()
-   }
-
-   /// Convert to string representation
-   pub fn as_str(&self) -> &'static str {
+impl ImgType {
+   /// Get extension file type
+   pub fn extension(&self) -> &'static str {
       match self {
          Self::Jpg => "jpg",
          Self::Jpeg => "jpeg",
@@ -104,17 +91,35 @@ impl ImageExtension {
    }
 
    /// Parse from content type
-   pub fn is_allow_content_type(content_type: &str) -> Result<Self, AppError> {
-      match content_type.to_lowercase().as_str() {
-         "image/jpeg" => Ok(Self::Jpeg),
-         "image/png" => Ok(Self::Png),
-         "image/gif" => Ok(Self::Gif),
-         "image/webp" => Ok(Self::Webp),
-         "image/bmp" => Ok(Self::Bmp),
-         "image/svg+xml" => Ok(Self::Svg),
-         _ => Err(AppError::UploadFile(format!(
-            "Unsupported content type {content_type}"
-         ))),
-      }
+   pub fn from_content_type(content_type: &str) -> Result<Self, AppError> {
+      let img_type = match content_type.to_lowercase().as_str() {
+         "image/jpeg" => Self::Jpeg,
+         "image/png" => Self::Png,
+         "image/gif" => Self::Gif,
+         "image/webp" => Self::Webp,
+         "image/bmp" => Self::Bmp,
+         "image/svg+xml" => Self::Svg,
+         _ => {
+            return Err(AppError::UploadFile(format!(
+               "Unsupported content type {content_type}"
+            )));
+         }
+      };
+      Ok(img_type)
+   }
+
+   /// Parse extension from string
+   pub fn from_extension(ext: &str) -> Result<Self, AppError> {
+      let img_type = match ext.to_lowercase().as_str() {
+         "jpg" => Self::Jpg,
+         "jpeg" => Self::Jpeg,
+         "png" => Self::Png,
+         "gif" => Self::Gif,
+         "webp" => Self::Webp,
+         "bmp" => Self::Bmp,
+         "svg" => Self::Svg,
+         _ => return Err(AppError::UploadFile(format!("Unsupported extension {ext}"))),
+      };
+      Ok(img_type)
    }
 }

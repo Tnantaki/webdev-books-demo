@@ -6,7 +6,7 @@ pub mod services;
 pub mod startup;
 
 use crate::startup::{
-   cli::{Cli, Commands, create_admin},
+   command::{Cli, Commands, create_admin, mockup_data},
    config, server,
 };
 use thiserror::Error;
@@ -24,6 +24,9 @@ pub enum ServerError<'a> {
 
    #[error("Fail to create admin: {0}")]
    CreateAdminError(String),
+
+   #[error("Fail to mockup data: {0}")]
+   SeedDataError(String),
 }
 
 pub async fn run(cli: Cli) -> Result<(), ServerError<'static>> {
@@ -37,7 +40,10 @@ pub async fn run(cli: Cli) -> Result<(), ServerError<'static>> {
          server::run(config, pool).await?;
       }
       Some(Commands::CreateAdmin) => {
-         create_admin(pool).await?;
+         create_admin::run(pool).await?;
+      }
+      Some(Commands::Seed) => {
+         mockup_data::propagate_books(pool).await?;
       }
       None => {
          server::run(config, pool).await?;

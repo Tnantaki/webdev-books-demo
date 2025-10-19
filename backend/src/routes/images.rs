@@ -10,7 +10,7 @@ use uuid::Uuid;
 
 use crate::{
    routes::{JsonResult, app_error::AppError, middleware::auth_cookie_admin},
-   schemas::image::{AddImage, ImageExtension, ImageResponse},
+   schemas::image::{AddImage, ImageResponse, ImgType},
    startup::app_state::AppState,
 };
 
@@ -46,15 +46,16 @@ async fn upload_image(
       )));
    }
 
+   // Validate is content type support
    let content_type = field.content_type().unwrap_or("").to_string();
-   ImageExtension::is_allow_content_type(&content_type)?;
+   let img_type = ImgType::from_content_type(&content_type)?;
 
    let filename = field.file_name().unwrap_or("unknown").to_string();
 
    // Validate file size (max 5MB)
    let data = field.bytes().await?.to_vec();
 
-   let add_image = AddImage::new(filename, content_type, data);
+   let add_image = AddImage::new(filename, img_type, data);
    let image_metadata = state.postgres.image_repo.save_image(add_image).await?;
 
    Ok((StatusCode::OK, Json(ImageResponse::from(image_metadata))))
