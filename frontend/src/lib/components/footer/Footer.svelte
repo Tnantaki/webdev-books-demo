@@ -1,21 +1,12 @@
 <script>
+   import FooterIcon from "./FooterIcon.svelte";
+   import FooterLink from "./FooterLink.svelte";
+
    let links = [
-      {
-         title: "About Us",
-         href: "/about",
-      },
-      {
-         title: "Contact",
-         href: "/contact",
-      },
-      {
-         title: "Terms of Service",
-         href: "/tos",
-      },
-      {
-         title: "Privacy Policy",
-         href: "/policy",
-      },
+      { title: "About Us", href: "/about" },
+      { title: "Contact", href: "/contact" },
+      { title: "Terms of Service", href: "/tos" },
+      { title: "Privacy Policy", href: "/policy" },
    ];
 
    let icons = [
@@ -42,20 +33,12 @@
       <div class="flex flex-col items-center">
          <div class="flex space-x-6">
             {#each links as link}
-               <a class="text-muted-light dark:text-muted-dark hover:text-primary" href={link.href}
-                  >{link.title}</a
-               >
+               <FooterLink href={link.href} title={link.title} />
             {/each}
          </div>
          <div class="flex space-x-6 mt-6">
             {#each icons as icon}
-               <a
-                  class="text-muted-light dark:text-muted-dark hover:text-primary"
-                  href={icon.href}
-                  aria-label="link to {icon.title}"
-               >
-                  <span class="size-6 {icon.icon_class}"></span>
-               </a>
+               <FooterIcon {...icon} />
             {/each}
          </div>
          <p class="mt-8 text-center text-sm text-muted-light dark:text-muted-dark">

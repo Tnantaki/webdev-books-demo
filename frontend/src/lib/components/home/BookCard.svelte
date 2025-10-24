@@ -1,5 +1,5 @@
 <script lang="ts">
-   import Star from "./Star.svelte";
+   import { Star } from "$lib/components/icons";
 
    interface Props {
       id: string;

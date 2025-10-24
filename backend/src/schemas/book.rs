@@ -138,10 +138,10 @@ pub struct PaginationResponse<T> {
 
 #[derive(Debug, Serialize)]
 pub struct PaginationMeta {
-   pub current_page: i64,
-   pub per_page: i64,
-   pub total_items: i64,
-   pub total_pages: i64,
+   pub current_page: i64,  // the current page number which data response
+   pub per_page: i64,      // number of items per a page
+   pub total_items: i64,   // number of items in database
+   pub total_pages: i64,   // total pages ((total_items / per_page) and ceiling)
    pub has_next: bool,
    pub has_previous: bool,
 }

@@ -1,8 +1,8 @@
 <script lang="ts">
    import "../app.css";
    import favicon from "$lib/assets/favicon.svg";
-   import Nav from "../components/Nav.svelte";
-   import Footer from "../components/Footer.svelte";
+   import { Header } from "$lib/components/header";
+   import { Footer } from "$lib/components/footer";
 
    let { children } = $props();
 </script>
@@ -19,7 +19,7 @@
       class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden"
    >
       <div class="layout-container flex h-full grow flex-col">
-         <Nav />
+         <Header />
 
          {@render children?.()}
 
