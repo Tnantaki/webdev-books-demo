@@ -1,4 +1,4 @@
-export interface Pagination {
+export interface BookPagination {
   current_page: number;
   per_page: number;
   total_items: number;
@@ -22,6 +22,14 @@ export interface Book {
 }
 
 export interface BookPage {
-  pagination: Pagination;
+  pagination: BookPagination;
   data: Book[];
+}
+
+export interface BookFilterParams {
+  page: number;
+  per_page: number;
+  sort_by: "title" | "genre" | "price" | "rating";
+  order: "asc" | "desc";
+  genre?: string;
 }
