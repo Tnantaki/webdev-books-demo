@@ -1,11 +1,15 @@
 use crate::{
-   repos::postgres::users::UserRepo, schemas::admin::{Email, Password}, services::password_hashing::PasswordService, startup::command::display_error, ServerError
+   ServerError,
+   repos::postgres::users::UserRepo,
+   schemas::admin::{Email, Password},
+   services::password_hashing::PasswordService,
+   startup::command::display_error,
 };
 use console::style;
 use dialoguer::{Input, Password as PasswordInput};
 use sqlx::{Pool, Postgres};
 
-pub async fn run(pool: Pool<Postgres>) -> Result<(), ServerError<'static>> {
+pub async fn run(pool: Pool<Postgres>) -> Result<(), ServerError> {
    let user_repo = UserRepo::new(pool);
 
    println!("\n🔧 Create Admin User");

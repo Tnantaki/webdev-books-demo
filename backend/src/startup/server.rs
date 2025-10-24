@@ -1,10 +1,16 @@
-use axum::{Router, response::IntoResponse, routing::get};
+use axum::{
+   Router,
+   http::{HeaderValue, Method},
+   response::IntoResponse,
+   routing::get,
+};
 use chrono::Utc;
 use console::style;
 use sqlx::{Pool, Postgres};
 use tokio::signal;
 use tokio_cron_scheduler::{Job, JobScheduler};
 use tower_cookies::CookieManagerLayer;
+use tower_http::cors::CorsLayer;
 
 use crate::{
    ServerError,
@@ -17,7 +23,7 @@ async fn health_check_handler() -> impl IntoResponse {
    "Welcome to book store"
 }
 
-pub async fn run(config: Config, pool: Pool<Postgres>) -> Result<(), ServerError<'static>> {
+pub async fn run(config: Config, pool: Pool<Postgres>) -> Result<(), ServerError> {
    // Share app state in multiple route, use arc
    let app_state = AppState::new(&config, pool.clone());
 
@@ -29,19 +35,43 @@ pub async fn run(config: Config, pool: Pool<Postgres>) -> Result<(), ServerError
       }
    });
 
-   let app = Router::new()
-      .route("/health", get(health_check_handler))
-      .nest("/auth", auth::router())
-      .nest("/users", users::router(&app_state))
-      .nest(
-         "/books",
-         Router::new().merge(books::router(&app_state)).merge(ratings::router(&app_state)),
-      )
-      .nest("/images", images::router(&app_state))
-      .nest("/cart", cart_items::router(&app_state))
-      .nest("/orders", orders::router(&app_state))
-      .with_state(app_state)
-      .layer(CookieManagerLayer::new());
+   // CORS
+   let origins = config
+      .server
+      .allow_origins
+      .iter()
+      .map(|origin| {
+         origin.parse::<HeaderValue>().map_err(|e| ServerError::RunServerError(e.to_string()))
+      })
+      .collect::<Result<Vec<HeaderValue>, ServerError>>()?;
+
+   let cors = CorsLayer::new()
+      .allow_methods([
+         Method::GET,
+         Method::POST,
+         Method::PUT,
+         Method::PATCH,
+         Method::DELETE,
+      ])
+      .allow_origin(origins);
+
+   let app = Router::new().nest(
+      "/api",
+      Router::new()
+         .route("/health", get(health_check_handler))
+         .nest("/auth", auth::router())
+         .nest("/users", users::router(&app_state))
+         .nest(
+            "/books",
+            Router::new().merge(books::router(&app_state)).merge(ratings::router(&app_state)),
+         )
+         .nest("/images", images::router(&app_state))
+         .nest("/cart", cart_items::router(&app_state))
+         .nest("/orders", orders::router(&app_state))
+         .with_state(app_state)
+         .layer(CookieManagerLayer::new())
+         .layer(cors),
+   );
 
    let listener = tokio::net::TcpListener::bind(("0.0.0.0", config.server.port))
       .await

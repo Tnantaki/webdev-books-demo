@@ -36,7 +36,7 @@ struct MockupBook {
 
 // !warning, This function read data in all file to memory before push to database
 // If total files size is large. modify it to read file by file.
-pub async fn propagate_books(pool: Pool<Postgres>) -> Result<(), ServerError<'static>> {
+pub async fn propagate_books(pool: Pool<Postgres>) -> Result<(), ServerError> {
    let mut img_ids: Vec<Uuid> = vec![];
 
    // Read JSON file

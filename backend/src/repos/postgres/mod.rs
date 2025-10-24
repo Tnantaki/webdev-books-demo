@@ -1,12 +1,16 @@
 pub mod books;
-pub mod images;
-pub mod users;
 pub mod cart_items;
+pub mod images;
 pub mod orders;
 pub mod ratings;
+pub mod users;
 
 use crate::{
-   repos::postgres::{books::BookRepo, cart_items::CartItemRepo, images::ImageRepo, orders::OrderRepo, ratings::RatingRepo, users::UserRepo}, ServerError
+   ServerError,
+   repos::postgres::{
+      books::BookRepo, cart_items::CartItemRepo, images::ImageRepo, orders::OrderRepo,
+      ratings::RatingRepo, users::UserRepo,
+   },
 };
 use sqlx::{Pool, Postgres};
 use std::time::Duration;
@@ -18,7 +22,7 @@ pub struct PostgresRepos {
    pub image_repo: ImageRepo,
    pub cart_item_repo: CartItemRepo,
    pub order_repo: OrderRepo,
-   pub rating_repo: RatingRepo
+   pub rating_repo: RatingRepo,
 }
 
 impl PostgresRepos {
@@ -29,12 +33,12 @@ impl PostgresRepos {
          image_repo: ImageRepo::new(pool.clone()),
          cart_item_repo: CartItemRepo::new(pool.clone()),
          order_repo: OrderRepo::new(pool.clone()),
-         rating_repo: RatingRepo::new(pool)
+         rating_repo: RatingRepo::new(pool),
       }
    }
 }
 
-pub async fn connect(db_url: &str) -> Result<Pool<Postgres>, ServerError<'static>> {
+pub async fn connect(db_url: &str) -> Result<Pool<Postgres>, ServerError> {
    let pool = sqlx::postgres::PgPoolOptions::new()
       .acquire_timeout(Duration::from_secs(3))
       .connect(db_url)

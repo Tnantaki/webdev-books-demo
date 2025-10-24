@@ -7,14 +7,15 @@ pub mod startup;
 
 use crate::startup::{
    command::{Cli, Commands, create_admin, mockup_data},
-   config, server,
+   config::{self, ConfigError},
+   server,
 };
 use thiserror::Error;
 
 #[derive(Error, Debug)]
-pub enum ServerError<'a> {
+pub enum ServerError {
    #[error("Fail to get env: {0}")]
-   EnvError(&'a str),
+   EnvError(String),
 
    #[error("Fail to run server: {0}")]
    RunServerError(String),
@@ -29,7 +30,13 @@ pub enum ServerError<'a> {
    SeedDataError(String),
 }
 
-pub async fn run(cli: Cli) -> Result<(), ServerError<'static>> {
+impl From<ConfigError> for ServerError {
+   fn from(error: ConfigError) -> Self {
+      ServerError::EnvError(error.to_string())
+   }
+}
+
+pub async fn run(cli: Cli) -> Result<(), ServerError> {
    let config = config::Config::build()?;
 
    let pool = repos::postgres::connect(&config.db_url).await?;
