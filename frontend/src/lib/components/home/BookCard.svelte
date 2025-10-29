@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { PUBLIC_API_BASE } from '$env/static/public';
 	import { Star } from '$lib/components/icons';
 
 	interface Props {
@@ -23,7 +24,7 @@
 		class="aspect-[3/4] w-full rounded-t-xl bg-cover bg-center bg-no-repeat"
 		data-alt="{book.title} book cover"
 		style="
-         background-image: url(&quot;{book.img_path}&quot;);
+         background-image: url(&quot;{PUBLIC_API_BASE}{book.img_path}&quot;);
       "
 	></div>
 	<div class="flex flex-grow flex-col p-4">

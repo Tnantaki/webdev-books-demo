@@ -10,9 +10,9 @@
 	let { pagination, onPageChange }: Props = $props();
 </script>
 
-<div class="flex mt-8 items-center justify-center p-4 gap-1">
-	<Pagination.Root count={pagination.total_pages} {onPageChange}>
-		{#snippet child({ pages, range })}
+<Pagination.Root count={pagination.total_pages} page={pagination.current_page} {onPageChange}>
+	{#snippet child({ pages, range })}
+		<div class="flex items-center gap-1">
 			<Pagination.PrevButton
 				class="text-muted-light dark:text-muted-dark hover:text-primary dark:hover:text-primary flex size-10 items-center justify-center cursor-pointer"
 			>
@@ -20,7 +20,9 @@
 			</Pagination.PrevButton>
 			{#each pages as page (page.key)}
 				{#if page.type === 'ellipsis'}
-					<div class="flex items-center justify-center text-sm leading-normal font-normal px-1">...</div>
+					<div class="flex items-center justify-center text-sm leading-normal font-normal px-1">
+						...
+					</div>
 				{:else}
 					<Pagination.Page
 						{page}
@@ -35,6 +37,6 @@
 			>
 				<span class="icon-[material-symbols--chevron-right] size-6"></span>
 			</Pagination.NextButton>
-		{/snippet}
-	</Pagination.Root>
-</div>
+		</div>
+	{/snippet}
+</Pagination.Root>

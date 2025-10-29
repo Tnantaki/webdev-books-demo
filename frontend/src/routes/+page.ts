@@ -1,32 +1,19 @@
-import { getBooksPage } from "$lib/api";
-import type { PageLoad } from "./$types";
+import { PUBLIC_API_BASE } from '$env/static/public';
+import type { BookPage } from '$lib/types';
+import type { PageLoad } from './$types';
 
 // Fetch books from API
-export const load: PageLoad = async ({ url }) => {
-  const bookPage = await getBooksPage();
-  console.log(bookPage)
+export const load: PageLoad = async ({ url, fetch }) => {
+	const response = await fetch(`${PUBLIC_API_BASE}/books/page?${url.searchParams.toString()}`);
 
-  return { bookPage };
+	if (!response.ok) {
+		throw new Error(`Failed to fetch books: ${response.statusText}`);
+	}
+
+	const bookPage: BookPage = await response.json();
+	if (!bookPage) {
+		throw new Error('Failed to deserialize json');
+	}
+	const { pagination, books } = bookPage;
+	return { pagination, books };
 };
-
-// async function fetch_books_page(page: number = 1): Promise<void> {
-//    loading = true;
-//    error = null;
-
-//    try {
-//       const response = await fetch(`http://localhost:3000/api/books?page=${page}`);
-
-//       const result: BookPage = await response.json();
-//       if (!result) {
-//          throw new Error("Failed to deserialize json");
-//       }
-//       const { pagination, data } = result;
-
-//       current_page = pagination.current_page;
-//    } catch (err) {
-//       error = err instanceof Error ? err.message : "An error occurred";
-//       books = [];
-//    } finally {
-//       loading = false;
-//    }
-// }

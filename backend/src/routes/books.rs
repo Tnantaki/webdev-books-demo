@@ -112,7 +112,7 @@ async fn get_book_pages(
    let has_previous = page > 1;
 
    let response = PaginationResponse {
-      data: books,
+      books,
       pagination: PaginationMeta {
          current_page: page,
          per_page,

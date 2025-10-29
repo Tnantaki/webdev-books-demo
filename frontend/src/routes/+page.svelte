@@ -5,32 +5,36 @@
 	import type { Book, BookFilterParams } from '$lib/types';
 	import { goto } from '$app/navigation';
 
-	let books: Book[] = [];
-	let current_page: number = 1;
 	let loading: boolean = false;
 	let error: string | null = null;
 
 	let { data }: PageProps = $props();
 
-	let pagination = {
-		current_page: 1,
-		has_next: true,
-		has_previous: false,
-		total_pages: 9,
-		per_page: 12,
-		total_items: 108
-	};
-
 	let filter: BookFilterParams = $state({
 		page: 1,
 		per_page: 12,
 		order: 'asc',
-		sort_by: 'title'
+		sort_by: 'title',
+		genre: undefined
 	});
+
+	const nevigatePage = () => {
+		const { page, per_page, order, sort_by, genre } = filter;
+		const params = new URLSearchParams();
+
+		params.append('page', page.toString());
+		params.append('per_page', per_page.toString());
+		params.append('order', order);
+		params.append('sort_by', sort_by);
+		genre && params.append('genre', genre);
+
+		const queryString = params.toString();
+		goto(`?${queryString}`);
+	};
 
 	const changePage = (page: number) => {
 		filter.page = page;
-		goto(`?page=${page}`);
+		nevigatePage();
 	};
 </script>
 
@@ -41,10 +45,27 @@
 			<BookFilter genres={mockup_genres} />
 		</div>
 		<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-			{#each mockup_books as book}
+			{#each data.books as book}
 				<BookCard {...book} />
 			{/each}
 		</div>
-		<Pagination {pagination} onPageChange={changePage} />
+		<div class="mt-8 w-full flex flex-col items-center">
+			{#if data.pagination}
+				{#snippet page(items: number, total_items: number)}
+					<p class="text-muted-light dark:text-muted-dark">
+						Showing {items}
+						{items > 1 ? 'items' : 'item'} of {total_items} items
+						{total_items > 1 ? 'items' : 'item'}
+					</p>
+				{/snippet}
+
+				{@render page(data.books.length, data.pagination.total_items)}
+				<div class="w-full flex justify-center items-center mt-2">
+					<Pagination pagination={data.pagination} onPageChange={changePage} />
+				</div>
+			{:else}
+				<p>Pagination Not Found</p>
+			{/if}
+		</div>
 	</div>
 </main>

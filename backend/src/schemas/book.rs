@@ -132,7 +132,7 @@ fn default_per_page() -> i64 {
 // Pagination response
 #[derive(Debug, Serialize)]
 pub struct PaginationResponse<T> {
-   pub data: Vec<T>,
+   pub books: Vec<T>,
    pub pagination: PaginationMeta,
 }
 

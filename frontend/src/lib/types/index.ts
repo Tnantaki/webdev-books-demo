@@ -23,7 +23,7 @@ export interface Book {
 
 export interface BookPage {
   pagination: BookPagination;
-  data: Book[];
+  books: Book[];
 }
 
 export interface BookFilterParams {
