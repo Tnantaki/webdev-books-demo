@@ -12,5 +12,5 @@
 		href="/books?genre={genre}">{genre}</a
 	>
 	<span class="text-gray-500 dark:text-gray-400 text-sm font-medium">/</span>
-	<span class="text-text-dark dark:text-white text-sm font-medium">{title}</span>
+	<span class="text-text-light dark:text-text-dark text-sm font-medium">{title}</span>
 </div>

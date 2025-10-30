@@ -38,12 +38,12 @@
 	];
 </script>
 
-<h2 class="text-2xl font-bold text-text-dark dark:text-white mb-6">Customer Reviews</h2>
+<h2 class="text-2xl font-bold text-text-light dark:text-text-dark mb-6">Customer Reviews</h2>
 <div class="flex flex-col md:flex-row gap-8 mb-8">
 	<div
-		class="flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800 p-6 rounded-lg md:w-1/3"
+		class="flex flex-col items-center justify-center bg-gray-200 dark:bg-gray-800 p-6 rounded-lg md:w-1/3"
 	>
-		<p class="text-5xl font-bold text-text-dark dark:text-white">{average_rating}</p>
+		<p class="text-5xl font-bold text-text-light dark:text-text-dark">{average_rating}</p>
 		<Star rating={average_rating} />
 		<p class="text-sm text-gray-500 dark:text-gray-400">Based on {total_rating} reviews</p>
 	</div>
@@ -52,12 +52,13 @@
 			{#each ratings.reverse() as rate}
 				{@const percent = (rate.rating / total_rating) * 100}
 				<div class="flex items-center gap-2">
-					<span class="text-sm font-medium text-text-dark dark:text-gray-300">{rate.star} star</span
+					<span class="text-sm font-medium text-text-light dark:text-gray-300"
+						>{rate.star} star</span
 					>
 					<div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
 						<div class="bg-accent h-2.5 rounded-full" style="width: {percent}%"></div>
 					</div>
-					<span class="text-sm font-medium text-text-dark dark:text-gray-300">{percent}%</span>
+					<span class="text-sm font-medium text-text-light dark:text-gray-300">{percent}%</span>
 				</div>
 			{/each}
 		</div>
@@ -74,7 +75,7 @@
 				</div>
 				<div class="flex-1">
 					<div class="flex justify-between items-center mb-1">
-						<p class="font-semibold text-text-dark dark:text-white">{review.email}</p>
+						<p class="font-semibold text-text-light dark:text-text-dark">{review.email}</p>
 						<p class="text-xs text-gray-500 dark:text-gray-400">{review.date}</p>
 					</div>
 					<Star class="mb-2" rating={review.rating} />
