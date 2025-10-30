@@ -1,26 +1,33 @@
-@import "tailwindcss";
-@plugin "@iconify/tailwind4";
+@import 'tailwindcss';
+@plugin '@iconify/tailwind4';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-   --color-primary: #1193d4;
-   --color-secondary: #F5F5F5;
-   --color-accent: #FFA500;
-   --color-background-light: #f6f7f8;
-   --color-background-dark: #101c22;
-   --color-card-light: #ffffff;
-   --color-card-dark: #1a2a33;
+	--color-primary: #1193d4;
+	--color-secondary-light: #f5f5f5;
+	--color-secondary-dark: #1a2a33;
+	--color-accent: #ffa500;
+	--color-background-light: #f6f7f8;
+	--color-background-dark: #101c22;
+	--color-card-light: #ffffff;
+	--color-card-dark: #1a2a33;
 
-   --color-text-light: #101c22;
-   --color-text-dark: #f6f7f8;
-   --color-muted-light: #6b7280;
-   --color-muted-dark: #9ca3af;
+	--color-text-light: #101c22;
+	--color-text-dark: #f6f7f8;
+	--color-muted-light: #6b7280;
+	--color-muted-dark: #9ca3af;
 
-   --font-display: "Work Sans", sans-serif;
+	--font-display: 'Work Sans', sans-serif;
 
-   --radius-default: 0.5rem;
-   --radius-lg: 0.75rem;
-   --radius-xl: 1rem;
-   --radius-full: 9999px;
+	--radius-default: 0.5rem;
+	--radius-lg: 0.75rem;
+	--radius-xl: 1rem;
+	--radius-full: 9999px;
+}
+
+@layer components {
+	.input-contact {
+		@apply focus:ring-primary bg-background-light dark:bg-background-dark dark:text-text-dark text-text-light flex w-full min-w-0 flex-1 overflow-hidden rounded-lg border border-gray-300 p-4 text-base leading-normal font-normal placeholder:text-gray-500 focus:ring-2 focus:outline-0 dark:border-gray-600 dark:placeholder:text-gray-400;
+	}
 }
