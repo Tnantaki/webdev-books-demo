@@ -11,7 +11,7 @@ use validator::Validate;
 use crate::{
    models::{cart_items::CartItemModel, orders::OrderModel},
    routes::{JsonResult, app_error::AppError, middleware::auth_cookie},
-   schemas::cart::{AddCartItem, EditCartItem},
+   schemas::cart::{AddCartItem, Cart, EditCartItem},
    startup::app_state::AppState,
 };
 
@@ -45,10 +45,10 @@ async fn add_to_cart(
 async fn get_cart_items(
    State(state): State<AppState>,
    Extension(user_id): Extension<Uuid>,
-) -> JsonResult<Vec<CartItemModel>> {
+) -> JsonResult<Cart> {
    let cart = state.postgres.cart_item_repo.get_cart_items(user_id).await?;
 
-   Ok((StatusCode::CREATED, Json(cart)))
+   Ok((StatusCode::OK, Json(cart)))
 }
 
 async fn edit_cart_item(

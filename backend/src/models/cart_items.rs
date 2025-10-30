@@ -12,3 +12,13 @@ pub struct CartItemModel {
    pub created_at: DateTime<Utc>,
    pub updated_at: DateTime<Utc>,
 }
+
+#[derive(Clone, FromRow)]
+pub struct CartItemDetailModel {
+   // pub id: Uuid,
+   // pub user_id: Uuid,
+   // pub book_id: Uuid,
+   // pub quantity: i32,
+   // pub created_at: DateTime<Utc>,
+   // pub updated_at: DateTime<Utc>,
+}

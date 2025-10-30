@@ -1,11 +1,15 @@
-use rust_decimal::Decimal;
+use std::collections::HashMap;
+
+use rust_decimal::{Decimal, dec};
 use sqlx::PgPool;
 use uuid::Uuid;
 
+const MIN_FREE_SHIPPING: Decimal = dec!(50); // TODO: must store in database (site_settings)
+
 use crate::{
-   models::{cart_items::CartItemModel, orders::OrderModel},
+   models::{books::BookModel, cart_items::CartItemModel, orders::OrderModel},
    routes::app_error::AppError,
-   schemas::cart::{AddCartItem, EditCartItem},
+   schemas::cart::{AddCartItem, Cart, CartItem, EditCartItem},
 };
 
 #[derive(Clone)]
@@ -41,8 +45,8 @@ impl CartItemRepo {
       Ok(cart_item)
    }
 
-   pub async fn get_cart_items(&self, user_id: Uuid) -> Result<Vec<CartItemModel>, AppError> {
-      let cart = sqlx::query_as::<_, CartItemModel>(
+   pub async fn get_cart_items(&self, user_id: Uuid) -> Result<Cart, AppError> {
+      let cart_item = sqlx::query_as::<_, CartItemModel>(
          r#"
             SELECT id, user_id, book_id, quantity, created_at, updated_at
             FROM cart_items
@@ -53,10 +57,57 @@ impl CartItemRepo {
       .fetch_all(&self.pool)
       .await?;
 
-      if cart.is_empty() {
-         return Ok(vec![]);
+      if cart_item.is_empty() {
+         return Err(AppError::NotFound("Cart is empty".to_string()));
       }
-      Ok(cart)
+
+      // Get all book detail
+      let book_ids: Vec<Uuid> = cart_item.iter().map(|item| item.book_id).collect();
+      let books = sqlx::query_as::<_, BookModel>(
+         r#"
+	         SELECT
+	            id, title, genre, description, price_in_pound, available, image_id,
+	            average_rating, total_ratings, created_at, updated_at
+	         FROM books
+				WHERE id IN ($1)
+         "#,
+      )
+      .bind(book_ids)
+      .fetch_all(&self.pool)
+      .await?;
+
+      // Create a map for quick lookup
+      let book_map: HashMap<Uuid, BookModel> =
+         books.into_iter().map(|book| (book.id, book)).collect();
+
+      // Combine cart items with book details
+      let items: Vec<CartItem> = cart_item
+         .into_iter()
+         .filter_map(|item| {
+            book_map.get(&item.book_id).map(|book| CartItem {
+               id: item.id,
+               quantity: item.quantity,
+               updated_at: item.updated_at,
+               book_item: book.clone().into(),
+            })
+         })
+         .collect();
+
+      let total_price: Decimal = items
+         .iter()
+         .map(|item| item.book_item.price_in_pound * Decimal::new(item.quantity as i64, 0))
+         .sum();
+
+      let shipping_price = match total_price > MIN_FREE_SHIPPING {
+         true => dec!(0),
+         false => dec!(50),
+      };
+
+      Ok(Cart {
+         items,
+         total_price,
+         shipping_price,
+      })
    }
 
    pub async fn edit_cart_item(
