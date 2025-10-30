@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { BookCard, BookFilter, Pagination } from '$lib/components/home';
-	import { mockup_books, mockup_genres } from '$lib/data/mockup_books';
+	import { mockup_genres } from '$lib/data/mockup_books';
 	import type { PageProps } from './$types';
 	import type { Book, BookFilterParams } from '$lib/types';
 	import { goto } from '$app/navigation';

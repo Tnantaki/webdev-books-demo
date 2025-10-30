@@ -33,3 +33,11 @@ export interface BookFilterParams {
   order: "asc" | "desc";
   genre?: string;
 }
+
+export interface BookRating {
+	id: string
+	user_id: string
+	rating: number
+	review?: string
+	created_at: Date;
+}

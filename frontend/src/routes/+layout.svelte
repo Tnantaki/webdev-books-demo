@@ -16,9 +16,9 @@
    class="bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark font-display"
 >
    <div
-      class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden"
+      class="relative flex min-h-screen w-full flex-col group/design-root overflow-x-hidden"
    >
-      <div class="layout-container flex h-full grow flex-col">
+      <div class="layout-container flex h-full grow flex-col justify-between">
          <Header />
 
          {@render children?.()}
