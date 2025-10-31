@@ -12,7 +12,7 @@
 </script>
 
 <label
-	class="block text-sm sm:text-base font-medium text-muted-light dark:text-muted-dark"
+	class="block text-sm sm:text-base font-medium text-text-light dark:text-text-dark"
 	for={name}>{label}</label
 >
 <input
