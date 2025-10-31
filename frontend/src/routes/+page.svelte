@@ -38,34 +38,30 @@
 	};
 </script>
 
-<main class="flex-1">
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-		<div class="flex items-center justify-between mb-8">
-			<h2 class="text-2xl font-bold">List Books</h2>
-			<BookFilter genres={mockup_genres} />
-		</div>
-		<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-			{#each data.books as book}
-				<BookCard {...book} />
-			{/each}
-		</div>
-		<div class="mt-8 w-full flex flex-col items-center">
-			{#if data.pagination}
-				{#snippet page(items: number, total_items: number)}
-					<p class="text-muted-light dark:text-muted-dark">
-						Showing {items}
-						{items > 1 ? 'items' : 'item'} of {total_items} items
-						{total_items > 1 ? 'items' : 'item'}
-					</p>
-				{/snippet}
+<div class="flex items-center justify-between mb-8">
+	<h2 class="text-2xl font-bold">List Books</h2>
+	<BookFilter genres={mockup_genres} />
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+	{#each data.books as book}
+		<BookCard {...book} />
+	{/each}
+</div>
+<div class="mt-8 w-full flex flex-col items-center">
+	{#if data.pagination}
+		{#snippet page(items: number, total_items: number)}
+			<p class="text-muted-light dark:text-muted-dark">
+				Showing {items}
+				{items > 1 ? 'items' : 'item'} of {total_items} items
+				{total_items > 1 ? 'items' : 'item'}
+			</p>
+		{/snippet}
 
-				{@render page(data.books.length, data.pagination.total_items)}
-				<div class="w-full flex justify-center items-center mt-2">
-					<Pagination pagination={data.pagination} onPageChange={changePage} />
-				</div>
-			{:else}
-				<p>Pagination Not Found</p>
-			{/if}
+		{@render page(data.books.length, data.pagination.total_items)}
+		<div class="w-full flex justify-center items-center mt-2">
+			<Pagination pagination={data.pagination} onPageChange={changePage} />
 		</div>
-	</div>
-</main>
+	{:else}
+		<p>Pagination Not Found</p>
+	{/if}
+</div>

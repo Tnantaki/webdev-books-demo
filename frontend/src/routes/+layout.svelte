@@ -24,13 +24,15 @@
 <ModeWatcher />
 
 <div
-	class="bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark font-display"
+	class="bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark font-display flex flex-1 flex-col"
 >
 	<div class="relative flex min-h-screen w-full flex-col group/design-root overflow-x-hidden">
 		<div class="layout-container flex h-full grow flex-col justify-between">
 			<Header />
 
-			{@render children?.()}
+			<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+				{@render children?.()}
+			</main>
 
 			<Footer />
 		</div>

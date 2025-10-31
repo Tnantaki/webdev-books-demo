@@ -8,14 +8,12 @@
 	const book = data.book;
 </script>
 
-<main class="flex-1 px-4 sm:px-6 lg:px-8 py-8">
-	<div class="max-w-6xl mx-auto">
-		<BreadCrumb genre={book.genre} title={book.title} />
-		<div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-			<BookDetail {book} />
-		</div>
-		<div class="mt-16 border-t border-gray-200 dark:border-gray-700 pt-10">
-			<Review />
-		</div>
+<div class="max-w-6xl mx-auto">
+	<BreadCrumb genre={book.genre} title={book.title} />
+	<div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+		<BookDetail {book} />
 	</div>
-</main>
+	<div class="mt-16 border-t border-gray-200 dark:border-gray-700 pt-10">
+		<Review />
+	</div>
+</div>

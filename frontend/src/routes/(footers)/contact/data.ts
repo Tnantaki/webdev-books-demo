@@ -10,7 +10,7 @@ export const contacts = [
 	{ title: 'phone', value: '+1 (234) 567-890', icon: Phone },
 	{
 		title: 'location_on',
-		value: '123 Bookworm Lane, Readington, BK 12345',
+		value: '123 Bookstore Lane, Readington, BK 12345',
 		icon: MapPin
 	}
 ];
