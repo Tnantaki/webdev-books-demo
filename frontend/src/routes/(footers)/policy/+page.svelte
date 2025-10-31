@@ -2,7 +2,7 @@
 	import { policies } from './data';
 </script>
 
-<div class="flex flex-col gap-8">
+<div class="flex flex-col gap-8 max-w-5xl mx-auto">
 	<div class="flex flex-wrap justify-between gap-3 p-4">
 		<div class="flex min-w-72 flex-col gap-3">
 			<p

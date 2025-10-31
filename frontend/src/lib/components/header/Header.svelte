@@ -26,6 +26,11 @@
 						<span class="material-symbols-outlined">notifications</span>
 					</button>
 					<Profile />
+					<div class="flex items-center text-nowrap">
+						<a class="px-2 text-base font-medium hover:text-primary" href="/signup">Sign Up</a>
+						<div class="w-px bg-text-light dark:bg-text-dark h-[20px]"></div>
+						<a class="px-2 text-base font-medium hover:text-primary" href="/login">Login</a>
+					</div>
 				</div>
 			</div>
 		</div>

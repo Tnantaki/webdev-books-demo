@@ -30,8 +30,10 @@
 		<div class="layout-container flex h-full grow flex-col justify-between">
 			<Header />
 
-			<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-				{@render children?.()}
+			<main class="flex-1">
+				<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+					{@render children?.()}
+				</div>
 			</main>
 
 			<Footer />

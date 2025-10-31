@@ -29,7 +29,7 @@
 </script>
 
 <footer class="bg-card-light dark:bg-card-dark">
-   <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+   <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
       <div class="flex flex-col items-center">
          <div class="flex space-x-6">
             {#each links as link}
