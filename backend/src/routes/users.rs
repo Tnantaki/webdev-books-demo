@@ -3,17 +3,13 @@ use axum::{
    extract::{Path, State},
    http::StatusCode,
    middleware,
-   response::IntoResponse,
-   routing::{delete, get, post},
+   routing::{delete, get},
 };
-use serde_json::json;
 use uuid::Uuid;
-use validator::Validate;
 
 use crate::{
    routes::{JsonResult, app_error::AppError, middleware::auth_cookie_admin},
-   schemas::user::{RegisterUser, User},
-   services::password_hashing::PasswordService,
+   schemas::user::User,
    startup::app_state::AppState,
 };
 
@@ -26,32 +22,6 @@ pub fn router(state: &AppState) -> Router<AppState> {
          state.jwt_service.clone(),
          auth_cookie_admin,
       ))
-      .route("/register", post(register_user))
-}
-
-async fn register_user(
-   State(state): State<AppState>,
-   Json(payload): Json<RegisterUser>,
-) -> Result<impl IntoResponse, AppError> {
-   // 1. Validate input
-   payload.validate()?;
-
-   // 2. Check unique email
-   if state.postgres.user_repo.get_user_by_email(&payload.email).await.is_ok() {
-      return Err(AppError::Conflict("Email already exists.".to_string()));
-   }
-
-   // 3. Hashing password
-   let password_hash = PasswordService::hash(&payload.password)?;
-
-   // 4. Save to database
-   state.postgres.user_repo.add_user(payload.email, password_hash).await?;
-
-   // 5. Response
-   Ok((
-      StatusCode::CREATED,
-      Json(json!({"message": "register user successfully."})),
-   ))
 }
 
 async fn get_users(State(state): State<AppState>) -> JsonResult<Vec<User>> {

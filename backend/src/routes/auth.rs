@@ -6,10 +6,11 @@ use tower_cookies::{
    Cookie, Cookies,
    cookie::{self, time},
 };
+use validator::Validate;
 
 use crate::{
-   routes::app_error::AppError, services::password_hashing::PasswordService,
-   startup::app_state::AppState,
+   routes::app_error::AppError, schemas::user::RegisterUser,
+   services::password_hashing::PasswordService, startup::app_state::AppState,
 };
 
 const ACCESS_TOKEN_TIME: TimeDelta = Duration::hours(2);
@@ -24,9 +25,35 @@ pub struct Login {
 
 pub fn router() -> Router<AppState> {
    Router::new()
+      .route("/signup", post(signup))
       .route("/login", post(login))
       .route("/logout", post(logout))
       .route("/refresh", post(refresh_token))
+}
+
+async fn signup(
+   State(state): State<AppState>,
+   Json(payload): Json<RegisterUser>,
+) -> Result<impl IntoResponse, AppError> {
+   // 1. Validate input
+   payload.validate()?;
+
+   // 2. Check unique email
+   if state.postgres.user_repo.get_user_by_email(&payload.email).await.is_ok() {
+      return Err(AppError::Conflict("Email already exists.".to_string()));
+   }
+
+   // 3. Hashing password
+   let password_hash = PasswordService::hash(&payload.password)?;
+
+   // 4. Save to database
+   state.postgres.user_repo.add_user(payload.email, password_hash).await?;
+
+   // 5. Response
+   Ok((
+      StatusCode::CREATED,
+      Json(json!({"message": "register user successfully."})),
+   ))
 }
 
 async fn login(

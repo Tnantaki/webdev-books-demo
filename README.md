@@ -62,14 +62,14 @@ cargo run
 
 ### Authentication
 
-- [x] POST /api/auth/login # Login (returns JWT token in cookies)
-- [x] POST /api/auth/logout # Logout
+- [x] POST /api/auth/signup  # Register new user
+- [x] POST /api/auth/login   # Login (returns JWT token in cookies)
+- [x] POST /api/auth/logout  # Logout
 - [x] POST /api/auth/refresh # Refresh access token
-- [ ] GET /api/auth/me # Get current user info
+- [ ] GET  /api/auth/me      # Get current user info
 
 ### User
 
-- [x] POST /api/user/register # Register new user
 - **Admin User Management**
 - [x] GET /api/users # List all users (admin only)
 - [x] GET /api/users/:id # Get user details (admin only)
@@ -141,12 +141,14 @@ cargo run
 - [ ] GET /api/books/:id/stats # Individual book statistics
 
 ## Front end Hybrid rendering
+
 🟢 SSR (Server Load Functions)
+
 - GET `/api/books/*` SEO, initial load
 - GET `/api/auth/me` Check login status
-🔵 Client-Side (Direct to Axum)
+  🔵 Client-Side (Direct to Axum)
 - POST `/api/auth/login, logout, refresh` Form submission (mutation)
-- GET, POST, PUT, DELETE `/api/user/*`  for admin
+- GET, POST, PUT, DELETE `/api/user/*` for admin
 - POST, PUT, DELETE `/api/books` for admin to mutation data
 
 <h2 align="center">Stack</h2>
