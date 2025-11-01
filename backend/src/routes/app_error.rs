@@ -94,9 +94,9 @@ impl AppError {
 
 #[derive(Serialize)]
 pub struct ErrorResponse {
-   pub error: String,
+   pub message: String,
    #[serde(skip_serializing_if = "Option::is_none")]
-   pub fields: Option<Vec<FieldError>>,
+   pub errors: Option<Vec<FieldError>>,
 }
 
 impl IntoResponse for AppError {
@@ -116,8 +116,8 @@ impl IntoResponse for AppError {
       }
 
       let body = Json(ErrorResponse {
-         error: error_message,
-         fields,
+         message: error_message,
+         errors: fields,
       });
 
       (status_code, body).into_response()

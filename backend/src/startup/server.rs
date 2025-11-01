@@ -1,6 +1,9 @@
 use axum::{
    Router,
-   http::{HeaderValue, Method},
+   http::{
+      HeaderValue, Method,
+      header::{AUTHORIZATION, CONTENT_TYPE},
+   },
    response::IntoResponse,
    routing::get,
 };
@@ -53,7 +56,9 @@ pub async fn run(config: Config, pool: Pool<Postgres>) -> Result<(), ServerError
          Method::PATCH,
          Method::DELETE,
       ])
-      .allow_origin(origins);
+      .allow_origin(origins)
+      .allow_headers([CONTENT_TYPE, AUTHORIZATION])
+      .allow_credentials(true);
 
    let app = Router::new().nest(
       "/api",
