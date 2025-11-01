@@ -1,4 +1,5 @@
 import { PUBLIC_API_BASE } from '$env/static/public';
+import { AppError } from '$lib/types';
 import type { AuthResponse, SignupCredentials } from '$lib/types/auth';
 
 interface RequestSignup {
@@ -14,6 +15,7 @@ export const authAPI = {
 			headers: {
 				'Content-Type': 'application/json'
 			},
+			// credentials: 'include', // CRITICAL: This sends/receives cookies
 			body: JSON.stringify({
 				email: credentials.email,
 				password: credentials.password,
@@ -23,7 +25,8 @@ export const authAPI = {
 
 		const data = await res.json();
 		if (!res.ok) {
-			throw new Error(data.error || 'Login failed');
+			console.log("throw app error")
+			throw new AppError(data);
 		}
 
 		return data;

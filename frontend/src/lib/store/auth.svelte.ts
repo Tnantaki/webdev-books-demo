@@ -1,4 +1,5 @@
 import { authAPI } from '$lib/api/auth';
+import { AppError } from '$lib/types';
 import type { AuthResult, SignupCredentials } from '$lib/types/auth';
 
 class AuthStore {
@@ -6,20 +7,22 @@ class AuthStore {
 
 	async signup(credencials: SignupCredentials): Promise<AuthResult> {
 		this.isLoading = true;
-		
+
 		try {
 			// For test UI
 			console.log(credencials);
 			await new Promise((resolve) => setTimeout(resolve, 2000));
-			
+
 			// const data = await authAPI.signup(credencials);
-			// console.log(data);
-			
+
 			return { success: true };
-		} catch (error: any) {
-			console.log(error);
-			const message = error instanceof Error ? error.message : 'An error occurred';
-			return { success: false, error: message };
+		} catch (error: unknown) {
+			if (error instanceof AppError) {
+				console.log("This is app erorr");
+				const { message, errors } = error;
+				return { success: false, message, errors };
+			}
+			return { success: false, message: 'An error occurred' };
 		} finally {
 			this.isLoading = false;
 		}

@@ -1,3 +1,5 @@
+import type { FieldError } from ".";
+
 export interface SignupCredentials {
 	email: string;
 	password: string;
@@ -22,5 +24,6 @@ export interface AuthResponse {
 
 export interface AuthResult {
 	success: boolean;
-	error?: string;
+	message?: string
+	errors?: FieldError[];
 }
