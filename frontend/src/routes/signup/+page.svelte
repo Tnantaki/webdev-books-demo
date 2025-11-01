@@ -1,7 +1,28 @@
-<script>
+<script lang="ts">
+	import { goto } from '$app/navigation';
 	import { Input } from '$lib/components';
+	import { authStore } from '$lib/store/auth.svelte';
+	import type { SignupCredentials } from '$lib/types/auth';
 
-	let login = $state({ email: '', name: '', password: '', confirm_password: '' });
+	let formInput = $state({ email: '', name: '', password: '', confirmPassword: '' });
+	let error = $state('');
+
+	async function handleSubmit(event: SubmitEvent) {
+		event.preventDefault();
+		error = '';
+		const credencials = {
+			email: formInput.email,
+			password: formInput.password,
+			confirmPassword: formInput.confirmPassword
+		} satisfies SignupCredentials;
+
+		const result = await authStore.signup(credencials);
+		if (result.success) {
+			goto('/login');
+		} else {
+			error = result.error || 'An error occured';
+		}
+	}
 </script>
 
 <div class="w-full max-w-md space-y-8 mx-auto py-8">
@@ -11,7 +32,7 @@
 			<h2 class="text-center text-3xl font-bold tracking-tight">Create your account</h2>
 		</div>
 	</div>
-	<form action="#" class="mt-8 space-y-6" method="POST">
+	<form onsubmit={handleSubmit} class="mt-8 space-y-6">
 		<div class="rounded-xl bg-card-light dark:bg-card-dark p-8 shadow-lg">
 			<div class="space-y-6">
 				<div>
@@ -19,7 +40,7 @@
 						label="Name"
 						id="name"
 						name="name"
-						bind:value={login.name}
+						bind:value={formInput.name}
 						autocomplete="name"
 						placeholder="e.g. Jane Doe"
 						type="text"
@@ -31,7 +52,7 @@
 						label="Email address"
 						id="email"
 						name="email"
-						bind:value={login.email}
+						bind:value={formInput.email}
 						autocomplete="email"
 						placeholder="you@example.com"
 						type="email"
@@ -43,7 +64,7 @@
 						label="Password"
 						id="password"
 						name="password"
-						bind:value={login.password}
+						bind:value={formInput.password}
 						autocomplete="new-password"
 						placeholder="Min. 8 characters"
 						type="password"
@@ -55,7 +76,7 @@
 						label="Confirm Password"
 						id="confirm-password"
 						name="confirm-password"
-						bind:value={login.confirm_password}
+						bind:value={formInput.confirmPassword}
 						autocomplete="new-password"
 						placeholder="Re-enter your password"
 						type="password"
@@ -68,7 +89,11 @@
 					class="group relative flex w-full justify-center rounded-lg border border-transparent bg-primary py-2 px-4 text-sm font-medium text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-background-dark"
 					type="submit"
 				>
-					Create Account
+					{#if authStore.isLoading}
+						Loading...
+					{:else}
+						Create Account
+					{/if}
 				</button>
 			</div>
 		</div>
