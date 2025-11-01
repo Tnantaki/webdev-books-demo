@@ -1,7 +1,13 @@
-<script>
-	import { Input } from '$lib/components';
+<script lang="ts">
+	import { Button, Input } from '$lib/components';
 
 	let login = $state({ email: '', password: '' });
+	let error = $state('');
+
+	async function handleSubmit(event: SubmitEvent) {
+		event.preventDefault();
+		error = '';
+	}
 </script>
 
 <div class="max-w-md w-full mx-auto py-12">
@@ -36,12 +42,7 @@
 				/>
 			</div>
 			<div>
-				<button
-					class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm sm:text-base font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary cursor-pointer"
-					type="submit"
-				>
-					Login
-				</button>
+				<Button type="submit">Login</Button>
 			</div>
 		</form>
 		<div class="mt-6 relative">
@@ -56,7 +57,7 @@
 		</div>
 		<div class="mt-6">
 			<button
-				class="w-full flex items-center justify-center py-3 px-4 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm text-sm sm:text-base font-medium text-text-light dark:text-text-dark bg-card-light dark:bg-card-dark hover:bg-background-light dark:hover:bg-background-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary cursor-pointer"
+				class="w-full flex items-center justify-center py-2.5 px-4 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm text-sm sm:text-base font-medium text-text-light dark:text-text-dark bg-card-light dark:bg-card-dark hover:bg-background-light dark:hover:bg-background-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary cursor-pointer"
 			>
 				<svg
 					class="size-7 mr-3"
@@ -83,7 +84,9 @@
 		<div class="text-center mt-6">
 			<p class="text-sm sm:text-base text-muted-light dark:text-muted-dark">
 				Don’t have an account?
-				<a class="font-medium text-primary hover:text-primary/90 cursor-pointer" href="/signup"> Register </a>
+				<a class="font-medium text-primary hover:text-primary/90 cursor-pointer" href="/signup">
+					Register
+				</a>
 			</p>
 		</div>
 	</div>

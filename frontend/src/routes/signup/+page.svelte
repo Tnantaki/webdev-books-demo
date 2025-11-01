@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { Input } from '$lib/components';
+	import { Button, Input } from '$lib/components';
 	import Popup from '$lib/components/Popup.svelte';
 	import { authStore } from '$lib/store/auth.svelte';
 	import type { SignupCredentials } from '$lib/types/auth';
@@ -124,17 +124,13 @@
 						{error}
 					</div>
 				{/if}
-				<button
-					class="group relative flex w-full justify-center rounded-lg border border-transparent bg-primary py-2 px-4 text-sm font-medium text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-background-dark"
-					type="submit"
-					disabled={authStore.isLoading}
-				>
+				<Button type="submit" disabled={authStore.isLoading}>
 					{#if authStore.isLoading}
 						Loading...
 					{:else}
 						Create Account
 					{/if}
-				</button>
+				</Button>
 			</div>
 		</div>
 		<div class="text-center text-sm sm:text-base">
