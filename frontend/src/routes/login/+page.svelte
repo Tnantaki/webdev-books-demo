@@ -1,12 +1,22 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { Button, Input } from '$lib/components';
+	import { authStore } from '$lib/store/auth.svelte';
 
-	let login = $state({ email: '', password: '' });
+	let form = $state({ email: '', password: '' });
 	let error = $state('');
 
 	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
 		error = '';
+
+		const result = await authStore.login(form.email, form.password);
+		console.log(result);
+		if (result.success) {
+			goto('/');
+		} else {
+			error = result.message || 'An error occured';
+		}
 	}
 </script>
 
@@ -16,13 +26,13 @@
 			<h2 class="text-3xl font-bold text-primary">Welcome Back!</h2>
 			<p class="text-muted-light dark:text-muted-dark mt-2">Sign in to continue to Bookstore.</p>
 		</div>
-		<form class="space-y-6">
+		<form onsubmit={handleSubmit} class="space-y-6">
 			<div>
 				<Input
 					label="Email address"
 					id="email"
 					name="email"
-					bind:value={login.email}
+					bind:value={form.email}
 					autocomplete="email"
 					placeholder="you@example.com"
 					type="email"
@@ -34,15 +44,26 @@
 					label="Password"
 					id="password"
 					name="password"
-					bind:value={login.password}
+					bind:value={form.password}
 					autocomplete="current-password"
 					placeholder="••••••••"
 					type="password"
 					required
 				/>
 			</div>
+			{#if error}
+				<div class="text-sm font-medium text-error pl-1 mb-2">
+					{error}
+				</div>
+			{/if}
 			<div>
-				<Button type="submit">Login</Button>
+				<Button type="submit">
+					{#if authStore.isLoading}
+						Loading...
+					{:else}
+						Login
+					{/if}
+				</Button>
 			</div>
 		</form>
 		<div class="mt-6 relative">

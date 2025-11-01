@@ -1,6 +1,6 @@
 import { PUBLIC_API_BASE } from '$env/static/public';
 import { AppError } from '$lib/types';
-import type { AuthResponse, SignupCredentials } from '$lib/types/auth';
+import type { AuthResponse, LoginCredentials, SignupCredentials } from '$lib/types/auth';
 
 interface RequestSignup {
 	email: string;
@@ -15,7 +15,6 @@ export const authAPI = {
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			// credentials: 'include', // CRITICAL: This sends/receives cookies
 			body: JSON.stringify({
 				email: credentials.email,
 				password: credentials.password,
@@ -25,10 +24,48 @@ export const authAPI = {
 
 		const data = await res.json();
 		if (!res.ok) {
-			console.log("throw app error")
 			throw new AppError(data);
 		}
-
 		return data;
+	},
+
+	async login(email: string, password: string): Promise<AuthResponse> {
+		const res = await fetch(`${PUBLIC_API_BASE}/auth/login`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			credentials: 'include', // CRITICAL: This sends/receives cookies
+			body: JSON.stringify({ email, password } as LoginCredentials)
+		});
+
+		// Browser will stores cookie automatically
+		const data = await res.json();
+		if (!res.ok) {
+			throw new AppError(data);
+		}
+		return data;
+	},
+
+	async logout(): Promise<void> {
+		const res = await fetch(`${PUBLIC_API_BASE}/auth/logout`, {
+			method: 'POST',
+			credentials: 'include' // CRITICAL: This sends/receives cookies
+		});
+
+		if (!res.ok) {
+			throw new AppError({ message: 'Logout failed' });
+		}
+	},
+
+	async refreshToken(): Promise<void> {
+		const res = await fetch(`${PUBLIC_API_BASE}/auth/refresh`, {
+			method: 'POST',
+			credentials: 'include' // CRITICAL: This sends/receives cookies
+		});
+
+		if (!res.ok) {
+			throw new AppError({ message: 'Token refresh failed' });
+		}
 	}
 };

@@ -10,15 +10,50 @@ class AuthStore {
 
 		try {
 			// For test UI
-			console.log(credencials);
-			await new Promise((resolve) => setTimeout(resolve, 2000));
+			// console.log(credencials);
+			// await new Promise((resolve) => setTimeout(resolve, 2000));
 
-			// const data = await authAPI.signup(credencials);
+			await authAPI.signup(credencials);
 
 			return { success: true };
 		} catch (error: unknown) {
 			if (error instanceof AppError) {
-				console.log("This is app erorr");
+				const { message, errors } = error;
+				return { success: false, message, errors };
+			}
+			return { success: false, message: 'An error occurred' };
+		} finally {
+			this.isLoading = false;
+		}
+	}
+	
+	async login(email: string, password: string): Promise<AuthResult> {
+		this.isLoading = true;
+
+		try {
+			await authAPI.login(email, password);
+
+			return { success: true };
+		} catch (error: unknown) {
+			if (error instanceof AppError) {
+				const { message, errors } = error;
+				return { success: false, message, errors };
+			}
+			return { success: false, message: 'An error occurred' };
+		} finally {
+			this.isLoading = false;
+		}
+	}
+	
+	async refreshToken(): Promise<AuthResult> {
+		this.isLoading = true;
+
+		try {
+			await authAPI.refreshToken();
+
+			return { success: true };
+		} catch (error: unknown) {
+			if (error instanceof AppError) {
 				const { message, errors } = error;
 				return { success: false, message, errors };
 			}
