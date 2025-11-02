@@ -1,5 +1,5 @@
 import { PUBLIC_API_BASE } from '$env/static/public';
-import type { BookFilterParams, BookPage } from '$lib/types';
+import type { BookPage } from '$lib/types/book';
 
 export const getBooksPage = async (): Promise<BookPage> => {
 	const response = await fetch(`${PUBLIC_API_BASE}/books/page`);

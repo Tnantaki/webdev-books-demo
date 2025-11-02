@@ -7,7 +7,7 @@
 		}
 	};
 	const increase = () => {
-		if (value <= available) {
+		if (value < available) {
 			value++;
 		}
 	};

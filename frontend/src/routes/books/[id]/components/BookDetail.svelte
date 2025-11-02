@@ -1,13 +1,28 @@
 <script lang="ts">
 	import { PUBLIC_API_BASE } from '$env/static/public';
 	import { Quantity, StockStatus } from '$lib/components';
+	import { cartStore } from '$lib/store/cart.svelte';
 	import type { Book } from '$lib/types/book';
 
 	let { book }: { book: Book } = $props();
+	let isAvailable = book.available > 0;
+	let isOpenPopup = $state(false);
+	let error = $state('');
 
 	const TEXT_LIMIT = 250;
 	let isExpand = $state(false);
-	let amountBook = $state(1);
+	let bookQuantity = $state(isAvailable ? 1 : 0);
+
+	async function handleAddToCart() {
+		error = '';
+
+		const result = await cartStore.addToCart(book.id, bookQuantity);
+		if (result.success) {
+			isOpenPopup = true;
+		} else {
+			error = result.message || 'An error occured';
+		}
+	}
 </script>
 
 <div class="flex flex-col items-center">
@@ -41,10 +56,17 @@
 		<p class="text-3xl font-bold dark:text-text-dark">${book.price_in_pound}</p>
 		<StockStatus bookAvailable={book.available} />
 	</div>
+	{#if error}
+		<div class="font-medium text-error pl-1 mb-2">
+			{error}
+		</div>
+	{/if}
 	<div class="flex flex-col sm:flex-row gap-4 mb-6 items-center">
-		<Quantity bind:value={amountBook} available={book.available} />
+		<Quantity bind:value={bookQuantity} available={book.available} />
 		<button
-			class="flex-1 bg-accent hover:bg-accent/90 text-text-dark font-bold py-2 px-6 rounded-lg shadow-md transition-transform transform hover:scale-105"
+			onclick={handleAddToCart}
+			disabled={!isAvailable}
+			class="flex-1 bg-accent hover:bg-accent/90 text-text-dark font-bold py-2.5 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 cursor-pointer disabled:pointer-events-none disabled:opacity-50 disabled:bg-muted-light disabled:dark:bg-muted-dark aria-disabled:pointer-events-none"
 		>
 			Add to Cart
 		</button>

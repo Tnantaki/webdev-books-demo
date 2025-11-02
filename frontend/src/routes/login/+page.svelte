@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
 	import { Button, Input } from '$lib/components';
 	import { authStore } from '$lib/store/auth.svelte';
 
@@ -11,9 +12,9 @@
 		error = '';
 
 		const result = await authStore.login(form.email, form.password);
-		console.log(result);
 		if (result.success) {
-			goto('/');
+			const redirectTo = page.url.searchParams.get('redirectTo') ?? '/';
+			await goto(redirectTo, { replaceState: true });
 		} else {
 			error = result.message || 'An error occured';
 		}

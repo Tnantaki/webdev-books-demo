@@ -1,4 +1,4 @@
-import { authAPI } from '$lib/api/auth';
+import { authAPI } from '$lib/api';
 import { AppError } from '$lib/types';
 import type { AuthResult, SignupCredentials, User } from '$lib/types/auth';
 

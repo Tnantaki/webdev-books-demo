@@ -2,15 +2,16 @@
 	import type { PageProps } from './$types';
 	import BookDetail from './components/BookDetail.svelte';
 	import OrderSummary from './components/OrderSummary.svelte';
-	import { mockCart } from './mockCart';
 
 	let { data }: PageProps = $props();
+	let cart = data.cart;
 
-	let total_price = mockCart.items.reduce((a, c) => a + c.book.price_in_pound * c.quantity, 0);
+	let total_price =
+		cart?.items.reduce((a, c) => a + c.book_item.price_in_pound * c.quantity, 0) || 0;
 </script>
 
 <div class="max-w-7xl mx-auto">
-	{#if data.cart}
+	{#if cart}
 		<div class="flex flex-wrap justify-between gap-6 p-4">
 			<div class="flex min-w-72 flex-col gap-3">
 				<p
@@ -30,9 +31,9 @@
 			<div class="lg:col-span-2">
 				<div class="flow-root">
 					<ul class="-my-6 divide-y divide-gray-200 dark:divide-gray-700" role="list">
-						{#each mockCart.items as { book, quantity }}
+						{#each cart.items as { book_item, quantity }}
 							<li class="flex py-6">
-								<BookDetail {book} {quantity} />
+								<BookDetail book={book_item} {quantity} />
 							</li>
 						{/each}
 					</ul>
@@ -40,7 +41,7 @@
 			</div>
 			<div class="lg:col-span-1">
 				<div class="rounded-xl bg-white dark:bg-card-dark/50 shadow-md p-6 dark:shadow-md">
-					<OrderSummary {total_price} shipping_price={mockCart.shipping_price} />
+					<OrderSummary {total_price} shipping_price={cart.shipping_price} />
 					<div class="mt-6">
 						<button
 							class="w-full flex items-center justify-center rounded-lg border border-transparent bg-primary px-6 py-3 text-base font-bold text-white shadow-sm hover:bg-primary/90"

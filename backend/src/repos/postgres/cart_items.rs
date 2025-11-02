@@ -69,7 +69,7 @@ impl CartItemRepo {
 	            id, title, genre, description, price_in_pound, available, image_id,
 	            average_rating, total_ratings, created_at, updated_at
 	         FROM books
-				WHERE id IN ($1)
+				WHERE id = ANY($1)
          "#,
       )
       .bind(book_ids)

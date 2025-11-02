@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { PUBLIC_API_BASE } from '$env/static/public';
 	import { Quantity, StockStatus } from '$lib/components';
-	import type { Book } from '$lib/types';
+	import type { Book } from '$lib/types/book';
 	interface Props {
 		book: Book;
 		quantity: number;
@@ -19,7 +19,7 @@
 	<img
 		class="h-full w-full object-cover object-center"
 		alt="{book.title} book cover"
-		src={book.img_path}
+		src={PUBLIC_API_BASE + book.img_path}
 	/>
 </div>
 <div class="ml-4 flex flex-1 flex-col">

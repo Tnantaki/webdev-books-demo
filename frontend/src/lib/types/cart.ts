@@ -1,3 +1,4 @@
+import type { FieldError } from '.';
 import type { Book } from './book';
 
 export interface CartItem {
@@ -11,4 +12,15 @@ export interface Cart {
 	items: CartItem[];
 	total_price: number;
 	shipping_price: number;
+}
+
+export interface AddCartItem {
+	book_id: string;
+	quantity: number;
+}
+
+export interface CartResult {
+	success: boolean;
+	message?: string
+	errors?: FieldError[];
 }

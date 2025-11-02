@@ -8,7 +8,7 @@
 
 	let form = $state({ email: '', name: '', password: '', confirmPassword: '' });
 	let isOpenPopup = $state(false);
-	let error = $state();
+	let error = $state('');
 	let fieldErrors = $state<Record<string, string>>({});
 
 	async function handleSubmit(event: SubmitEvent) {
