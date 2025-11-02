@@ -5,7 +5,7 @@
 
 <button
 	aria-label="Toggle dark mode"
-	class="flex items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-muted-light dark:text-muted-dark hover:text-primary dark:hover:text-primary transition-colors"
+	class="flex items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-muted-light dark:text-muted-dark hover:text-primary dark:hover:text-primary transition-colors size-10"
 	onclick={toggleMode}
 	type="button"
 >

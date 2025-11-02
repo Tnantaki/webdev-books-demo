@@ -27,7 +27,7 @@ class AuthStore {
 					this.user = null;
 				}
 			} else {
-				console.log(error)
+				console.log(error);
 				// User is not authenticated
 				this.user = null;
 			}
@@ -72,6 +72,18 @@ class AuthStore {
 				return { success: false, message, errors };
 			}
 			return { success: false, message: 'An error occurred' };
+		} finally {
+			this.isLoading = false;
+		}
+	}
+
+	async logout(): Promise<void> {
+		this.isLoading = true;
+		try {
+			await authAPI.logout();
+			this.user = null;
+		} catch (error) {
+			console.error('Logout error:', error);
 		} finally {
 			this.isLoading = false;
 		}

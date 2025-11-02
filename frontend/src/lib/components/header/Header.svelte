@@ -1,5 +1,6 @@
 <script>
 	import { authStore } from '$lib/store/auth.svelte';
+	import { Bell } from '@lucide/svelte';
 	import BookSearch from './BookSearch.svelte';
 	import Logo from './Logo.svelte';
 	import Profile from './Profile.svelte';
@@ -19,11 +20,10 @@
 						Cart
 					</a>
 					<button
-						class="flex-shrink-0 bg-white dark:bg-background-dark p-1 rounded-full text-muted-light dark:text-muted-dark hover:text-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+						class="flex items-center justify-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full text-muted-light dark:text-muted-dark hover:text-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary size-10"
 						type="button"
 					>
-						<span class="sr-only">View notifications</span>
-						<span class="material-symbols-outlined">notifications</span>
+						<Bell size={22} />
 					</button>
 					{#if authStore.user}
 						<Profile />

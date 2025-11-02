@@ -1,10 +1,17 @@
 <script>
-	import { LogOut } from '@lucide/svelte';
+	import { goto } from '$app/navigation';
+	import { authStore } from '$lib/store/auth.svelte';
+	import { CircleUserRound, LogOut, Settings } from '@lucide/svelte';
+
+	async function handleLogout() {
+		await authStore.logout();
+		goto('/login');
+	}
 </script>
 
 <div class="relative group">
 	<button
-		class="flex-shrink-0 bg-white dark:bg-background-dark rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary flex items-center"
+		class="flex-shrink-0 bg-white dark:bg-background-dark rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary flex items-center cursor-pointer"
 		type="button"
 		aria-label="Open user menu"
 	>
@@ -23,14 +30,21 @@
 			class=" mt-2 w-48 rounded-lg shadow-xl inset-shadow-sm bg-card-light dark:bg-card-dark focus:outline-none overflow-hidden"
 		>
 			<a
-				class="block font-medium px-4 py-2 text-sm text-text-light dark:text-text-dark hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-				href="/profile">My Profile</a
+				class="flex items-center gap-1 w-full font-medium px-4 py-2 text-sm text-text-light dark:text-text-dark hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+				href="/profile"
 			>
+				<CircleUserRound size={16} />
+				<span>My Profile</span>
+			</a>
 			<a
-				class="block font-medium px-4 py-2 text-sm text-text-light dark:text-text-dark hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-				href="settings">Settings</a
+				class="flex items-center gap-1 w-full font-medium px-4 py-2 text-sm text-text-light dark:text-text-dark hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+				href="settings"
 			>
+				<Settings size={16} />
+				<span>Settings</span>
+			</a>
 			<button
+				onclick={handleLogout}
 				class="flex items-center gap-1 w-full font-medium px-4 py-2 text-sm text-text-light dark:text-text-dark hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
 			>
 				<LogOut size={16} /><span>Logout</span>
