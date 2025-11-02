@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use uuid::Uuid;
 
-#[derive(Clone)]
+#[derive(Clone, Serialize)]
 pub struct Token {
    pub user_id: Uuid,
    pub role: Role,

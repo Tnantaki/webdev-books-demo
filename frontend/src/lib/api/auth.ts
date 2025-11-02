@@ -1,6 +1,6 @@
 import { PUBLIC_API_BASE } from '$env/static/public';
 import { AppError } from '$lib/types';
-import type { AuthResponse, LoginCredentials, SignupCredentials } from '$lib/types/auth';
+import type { AuthResponse, LoginCredentials, SignupCredentials, User } from '$lib/types/auth';
 
 interface RequestSignup {
 	email: string;
@@ -65,7 +65,22 @@ export const authAPI = {
 		});
 
 		if (!res.ok) {
-			throw new AppError({ message: 'Token refresh failed' });
+			const error = await res.json();
+			throw new AppError(error);
 		}
+	},
+
+	// Get current user info (validates JWT cookie)
+	async getCurrentUser(): Promise<User> {
+		const res = await fetch(`${PUBLIC_API_BASE}/auth/me`, {
+			method: 'GET',
+			credentials: 'include' // Sends JWT cookie for validation
+		});
+
+		const data = await res.json();
+		if (!res.ok) {
+			throw new AppError(data);
+		}
+		return data;
 	}
 };

@@ -1,28 +1,40 @@
 import { authAPI } from '$lib/api/auth';
 import { AppError } from '$lib/types';
-import type { AuthResult, SignupCredentials } from '$lib/types/auth';
-import { jwtDecode } from 'jwt-decode';
+import type { AuthResult, SignupCredentials, User } from '$lib/types/auth';
 
 class AuthStore {
+	user = $state<User | null>(null);
 	isLoading = $state(false);
-	// isInitialized = $state<boolean>(false);
+	isInitialized = $state<boolean>(false);
 
-	// // Initialize auth state on app load (check if user is logged in)
-	// async initialize(): Promise<void> {
-	//   if (this.isInitialized) return;
+	// Initialize auth state on app load (check if user is logged in)
+	async initialize(): Promise<void> {
+		if (this.isInitialized) return;
 
-	//   try {
-	//     const data = jwtDecode();
-	//     this.user = data.user;
-	//     this.isAuthenticated = true;
-	//   } catch (error) {
-	//     // User is not authenticated
-	//     this.user = null;
-	//     this.isAuthenticated = false;
-	//   } finally {
-	//     this.isInitialized = true;
-	//   }
-	// }
+		try {
+			this.user = await authAPI.getCurrentUser();
+		} catch (error: unknown) {
+			if (error instanceof AppError && error.message.includes('ExpiredSignature')) {
+				try {
+					await authAPI.refreshToken();
+					this.user = await authAPI.getCurrentUser();
+				} catch {
+					if (error instanceof AppError) {
+						console.log(error.message);
+					} else {
+						console.log('Token refresh failed');
+					}
+					this.user = null;
+				}
+			} else {
+				console.log(error)
+				// User is not authenticated
+				this.user = null;
+			}
+		} finally {
+			this.isInitialized = true;
+		}
+	}
 
 	async signup(credencials: SignupCredentials): Promise<AuthResult> {
 		this.isLoading = true;
@@ -51,6 +63,7 @@ class AuthStore {
 
 		try {
 			await authAPI.login(email, password);
+			this.user = await authAPI.getCurrentUser();
 
 			return { success: true };
 		} catch (error: unknown) {

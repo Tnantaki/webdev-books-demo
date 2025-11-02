@@ -42,7 +42,7 @@ pub async fn auth_cookie_admin(
    Ok(next.run(req).await)
 }
 
-fn unwrap_cookie(cookies: &Cookies, name: &str) -> Result<String, AppError> {
+pub fn unwrap_cookie(cookies: &Cookies, name: &str) -> Result<String, AppError> {
    let access_token = cookies
       .get(name)
       .ok_or(AppError::Unauthorized("Access token not found".to_string()))?

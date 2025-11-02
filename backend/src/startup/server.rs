@@ -65,7 +65,7 @@ pub async fn run(config: Config, pool: Pool<Postgres>) -> Result<(), ServerError
       "/api",
       Router::new()
          .route("/health", get(health_check_handler))
-         .nest("/auth", auth::router())
+         .nest("/auth", auth::router(&app_state))
          .nest("/users", users::router(&app_state))
          .nest(
             "/books",

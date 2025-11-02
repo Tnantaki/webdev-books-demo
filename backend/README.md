@@ -6,7 +6,7 @@
 - [x] POST /api/auth/login   # Login (returns JWT token in cookies)
 - [x] POST /api/auth/logout  # Logout
 - [x] POST /api/auth/refresh # Refresh access token
-- [ ] GET  /api/auth/me      # Get current user info
+- [x] GET  /api/auth/me      # Get current user info
 
 ### User
 - **Admin User Management**

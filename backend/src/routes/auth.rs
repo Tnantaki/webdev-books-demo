@@ -1,4 +1,11 @@
-use axum::{Json, Router, extract::State, http::StatusCode, response::IntoResponse, routing::post};
+use axum::{
+   Json, Router,
+   extract::State,
+   http::StatusCode,
+   middleware,
+   response::IntoResponse,
+   routing::{get, post},
+};
 use chrono::{Duration, TimeDelta};
 use serde::Deserialize;
 use serde_json::json;
@@ -9,8 +16,14 @@ use tower_cookies::{
 use validator::Validate;
 
 use crate::{
-   routes::app_error::AppError, schemas::user::RegisterUser,
-   services::password_hashing::PasswordService, startup::app_state::AppState,
+   routes::{
+      JsonResult,
+      app_error::AppError,
+      middleware::{auth_cookie, unwrap_cookie},
+   },
+   schemas::user::RegisterUser,
+   services::{jwt_token::Token, password_hashing::PasswordService},
+   startup::app_state::AppState,
 };
 
 const ACCESS_TOKEN_TIME: TimeDelta = Duration::hours(2);
@@ -23,8 +36,13 @@ pub struct Login {
    password: String,
 }
 
-pub fn router() -> Router<AppState> {
+pub fn router(state: &AppState) -> Router<AppState> {
    Router::new()
+      .route("/me", get(get_user_info))
+      .route_layer(middleware::from_fn_with_state(
+         state.jwt_service.clone(),
+         auth_cookie,
+      ))
       .route("/signup", post(signup))
       .route("/login", post(login))
       .route("/logout", post(logout))
@@ -91,6 +109,13 @@ async fn login(
          "message": "Login successfully."
       })),
    ))
+}
+
+async fn get_user_info(State(state): State<AppState>, cookies: Cookies) -> JsonResult<Token> {
+   let access_token = unwrap_cookie(&cookies, "act")?;
+   let auth_token = state.jwt_service.verify(&access_token)?;
+
+   Ok((StatusCode::OK, Json(auth_token)))
 }
 
 async fn logout(cookies: Cookies) -> impl IntoResponse {

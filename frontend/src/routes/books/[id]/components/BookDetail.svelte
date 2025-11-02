@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { PUBLIC_API_BASE } from '$env/static/public';
 	import { Quantity, StockStatus } from '$lib/components';
-	import type { Book } from '$lib/types';
+	import type { Book } from '$lib/types/book';
 
 	let { book }: { book: Book } = $props();
 
