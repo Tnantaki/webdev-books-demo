@@ -12,9 +12,8 @@
 			<Logo />
 			<div class="flex">
 				<BookSearch />
-				<div class="hidden lg:ml-4 lg:flex lg:items-center gap-4">
+				<div class="hidden lg:ml-4 lg:flex lg:items-center *:px-2 *:py-1">
 					<ThemeModeSwitch />
-					<!-- <a class="text-sm font-medium hover:text-primary" href="#">My Account</a> -->
 					<a class="flex items-center text-sm font-medium hover:text-primary" href="/cart">
 						<span class="icon-[mdi--cart-outline] mr-1 size-6"></span>
 						Cart
