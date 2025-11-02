@@ -35,7 +35,7 @@ cargo run
 ```
 
 ## Purchase Flow
-
+```
 1. User click "Add To Cart"
    └─> add book item to cart_items table
 2. User clicks "Checkout"
@@ -53,17 +53,41 @@ cargo run
    └─> Mark order as 'cancelled'
 5. User can continue shopping
    └─> Cart is empty, ready for new items
-
-## Front end Hybrid rendering
-
-🟢 SSR (Server Load Functions)
-
-- GET `/api/books/*` SEO, initial load
-- GET `/api/auth/me` Check login status
-  🔵 Client-Side (Direct to Axum)
-- POST `/api/auth/login, logout, refresh` Form submission (mutation)
-- GET, POST, PUT, DELETE `/api/user/*` for admin
-- POST, PUT, DELETE `/api/books` for admin to mutation data
+```   
+## Visual Flow
+```
+┌─────────┐         ┌─────────────┐          ┌──────────────┐
+│ Browser │         │  SvelteKit  │          │ Rust Backend │
+└────┬────┘         └──────┬──────┘          └──────┬───────┘
+     │                     │                        │
+     │ GET /cart           │                        │
+     ├────────────────────>│                        │
+     │  (with cookie)      │                        │
+     │            ┌────────▼────────┐               │
+     │            │Check token exist│               │
+     │            └────────┬────────┘               │
+     │                     │                        │
+     │                  No token?                   │
+     │              redirect to /login              │
+     │                     │                        │
+     │                  Has token?                  │
+     │                     │ GET /api/cart          │
+     │                     │ + Authorization header │
+     │                     ├───────────────────────>│
+     │                     │                ┌───────▼───────┐
+     │                     │                │ VERIFY Token  │
+     │                     │                │(REAL SECURITY)│
+     │                     │                └───────┬───────┘
+     │                     │      Valid: cart data  │
+     │                     │<───────────────────────┤
+     │               ┌─────▼─────┐                  │
+     │               │ Combine   │                  │
+     │               │ with HTML │                  │
+     │               └─────┬─────┘                  │
+     │   Rendered page     │                        │
+     │<────────────────────┤                        │
+     │                     │                        │
+```
 
 <h2 align="center">Stack</h2>
 

@@ -2,7 +2,7 @@
 	import { BookCard, BookFilter, Pagination } from '$lib/components/home';
 	import { mockup_genres } from '$lib/data/mockup_books';
 	import type { PageProps } from './$types';
-	import type { Book, BookFilterParams } from '$lib/types';
+	import type { Book, BookFilterParams } from '$lib/types/book';
 	import { goto } from '$app/navigation';
 
 	let loading: boolean = false;

@@ -55,6 +55,7 @@ pub async fn run(config: Config, pool: Pool<Postgres>) -> Result<(), ServerError
          Method::PUT,
          Method::PATCH,
          Method::DELETE,
+         Method::OPTIONS,
       ])
       .allow_origin(origins)
       .allow_headers([CONTENT_TYPE, AUTHORIZATION])

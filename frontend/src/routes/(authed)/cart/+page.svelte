@@ -1,13 +1,16 @@
 <script lang="ts">
+	import type { PageProps } from './$types';
 	import BookDetail from './components/BookDetail.svelte';
 	import OrderSummary from './components/OrderSummary.svelte';
 	import { mockCart } from './mockCart';
-	
+
+	let { data }: PageProps = $props();
+
 	let total_price = mockCart.items.reduce((a, c) => a + c.book.price_in_pound * c.quantity, 0);
 </script>
 
-<main class="flex-1 px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-	<div class="max-w-7xl mx-auto">
+<div class="max-w-7xl mx-auto">
+	{#if data.cart}
 		<div class="flex flex-wrap justify-between gap-6 p-4">
 			<div class="flex min-w-72 flex-col gap-3">
 				<p
@@ -48,18 +51,25 @@
 				</div>
 			</div>
 		</div>
+	{:else}
 		<!-- Empty Cart State -->
-		<!--
-          <div class="text-center py-20">
-            <span class="material-symbols-outlined text-6xl text-gray-400 dark:text-gray-500">shopping_cart</span>
-            <h3 class="mt-4 text-xl font-semibold text-gray-900 dark:text-white">Your cart is currently empty</h3>
-            <p class="mt-2 text-base text-gray-500 dark:text-gray-400">Looks like you haven't added any books yet.</p>
-            <div class="mt-6">
-              <button type="button" class="inline-flex items-center rounded-md border border-transparent bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
-                Start Shopping
-              </button>
-            </div>
-          </div>
-          -->
-	</div>
-</main>
+		<div class="text-center py-20">
+			<span class="icon-[mdi--cart-outline] mr-1 size-8"></span>
+			<h3 class="mt-4 text-xl font-semibold text-gray-900 dark:text-white">
+				Your cart is currently empty
+			</h3>
+			<p class="mt-2 text-base text-gray-500 dark:text-gray-400">
+				Looks like you haven't added any books yet.
+			</p>
+			<div class="mt-6">
+				<a
+					type="button"
+					class="inline-flex items-center rounded-md border border-transparent bg-primary px-4 py-2 text-sm sm:text-base font-medium text-white shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 cursor-pointer"
+					href="/"
+				>
+					Start Shopping
+				</a>
+			</div>
+		</div>
+	{/if}
+</div>

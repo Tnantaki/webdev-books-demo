@@ -1,7 +1,7 @@
 import { PUBLIC_API_BASE } from '$env/static/public';
-import type { BookPage } from '$lib/types';
 import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
+import type { BookPage } from '$lib/types/book';
 
 // Fetch books from API
 export const load: PageLoad = async ({ url, fetch }) => {
