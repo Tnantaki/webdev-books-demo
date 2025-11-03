@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { PUBLIC_API_BASE } from '$env/static/public';
-	import { Quantity, StockStatus } from '$lib/components';
 	import type { CartItem } from '$lib/types/cart';
+	import QuantityItem from './QuantityItem.svelte';
 
 	interface Props {
 		item: CartItem;
@@ -11,13 +11,11 @@
 
 	let { item, handleRemoveItem, handleEditQuantityItem }: Props = $props();
 
-	let quantity = $state(item.quantity);
-	let price = $derived(quantity * item.book.price_in_pound);
-	
-	$effect(() => {
-		handleEditQuantityItem(item.id, quantity);
-	})
-	
+	let price = $derived(item.quantity * item.book.price_in_pound);
+
+	function handleQuantity(value: number) {
+		handleEditQuantityItem(item.id, value);
+	}
 </script>
 
 <div
@@ -40,10 +38,7 @@
 		<!-- <p class="mt-1 text-sm text-[#4c809a] dark:text-slate-400">by Matt Haig</p> -->
 	</div>
 	<div class="flex flex-1 items-end justify-between text-sm">
-		<Quantity
-			bind:value={quantity}
-			available={item.book.available}
-		/>
+		<QuantityItem quantity={item.quantity} maxAvailable={item.book.available} {handleQuantity} />
 		<div class="flex">
 			<button
 				onclick={() => handleRemoveItem(item.id)}

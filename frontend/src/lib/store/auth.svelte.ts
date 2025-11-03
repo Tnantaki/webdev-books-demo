@@ -16,6 +16,7 @@ class AuthStore {
 		} catch (error: unknown) {
 			if (error instanceof AppError && error.message.includes('ExpiredSignature')) {
 				try {
+					console.log('refresh token');
 					await authAPI.refreshToken();
 					this.user = await authAPI.getCurrentUser();
 				} catch {

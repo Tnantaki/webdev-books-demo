@@ -29,9 +29,11 @@ impl CartItemRepo {
    ) -> Result<CartItemModel, AppError> {
       let cart_item = sqlx::query_as::<_, CartItemModel>(
          r#"
-            INSERT INTO cart_items
-               (user_id, book_id, quantity)
+            INSERT INTO cart_items (user_id, book_id, quantity)
             VALUES ($1, $2, $3)
+            ON CONFLICT (user_id, book_id)
+            DO UPDATE SET
+            	quantity = cart_items.quantity + EXCLUDED.quantity
             RETURNING
                id, user_id, book_id, quantity, created_at, updated_at
          "#,
@@ -51,6 +53,7 @@ impl CartItemRepo {
             SELECT id, user_id, book_id, quantity, created_at, updated_at
             FROM cart_items
             WHERE user_id = $1
+            ORDER BY created_at
          "#,
       )
       .bind(user_id)

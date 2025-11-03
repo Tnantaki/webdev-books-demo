@@ -1,26 +1,30 @@
 <script lang="ts">
 	import { PUBLIC_API_BASE } from '$env/static/public';
-	import { Quantity, StockStatus } from '$lib/components';
+	import { StockStatus } from '$lib/components';
+	import Alert from '$lib/components/Alert.svelte';
 	import { cartStore } from '$lib/store/cart.svelte';
 	import type { Book } from '$lib/types/book';
+	import { Check, X } from '@lucide/svelte';
+	import BookDescription from './BookDescription.svelte';
+	import QuantityBook from './QuantityBook.svelte';
 
 	let { book }: { book: Book } = $props();
-	let isAvailable = book.available > 0;
-	let isOpenPopup = $state(false);
-	let error = $state('');
+	let maxAvailable = book.available - cartStore.getBookQuantity(book.id);
 
-	const TEXT_LIMIT = 250;
-	let isExpand = $state(false);
-	let bookQuantity = $state(isAvailable ? 1 : 0);
+	let isPopupAddItem = $state(false);
+	let isPopupError = $state(false);
+	let reachMaxQuantity = $state(false);
+	let quantity = $state<number>(maxAvailable > 0 ? 1 : 0);
 
 	async function handleAddToCart() {
-		error = '';
+		const result = await cartStore.addToCart(book.id, quantity);
 
-		const result = await cartStore.addToCart(book.id, bookQuantity);
 		if (result.success) {
-			isOpenPopup = true;
+			isPopupAddItem = true;
+			setTimeout(() => (isPopupAddItem = false), 3000);
 		} else {
-			error = result.message || 'An error occured';
+			isPopupError = true;
+			setTimeout(() => (isPopupError = false), 4000);
 		}
 	}
 </script>
@@ -45,31 +49,22 @@
 			>{book.genre}</span
 		>
 	</div>
-	<div class="prose prose-sm sm:prose dark:prose-invert text-gray-600 dark:text-gray-400 mb-6">
-		{#if book.description.length > TEXT_LIMIT}
-			<p>{isExpand ? book.description : book.description.substring(0, TEXT_LIMIT) + '...'}</p>
-			<button
-				class="cursor-pointer text-primary hover:underline"
-				onclick={() => (isExpand = !isExpand)}>{isExpand ? 'Read Less' : 'Read more'}</button
-			>
-		{:else}
-			<p>{book.description}</p>
-		{/if}
-	</div>
+	<BookDescription description={book.description} />
 	<div class="flex items-center justify-between mb-6">
 		<p class="text-3xl font-bold dark:text-text-dark">${book.price_in_pound}</p>
 		<StockStatus bookAvailable={book.available} />
 	</div>
-	{#if error}
-		<div class="font-medium text-error pl-1 mb-2">
-			{error}
-		</div>
-	{/if}
-	<div class="flex flex-col sm:flex-row gap-4 mb-6 items-center">
-		<Quantity bind:value={bookQuantity} available={book.available} />
+	<div>
+		<p class="p-1 text-gray-500 dark:text-gray-400">
+			{book.available}
+			{book.available > 1 ? 'books' : 'book'} available
+		</p>
+	</div>
+	<div class="flex flex-col sm:flex-row gap-4 mb-2 items-center">
+		<QuantityBook bind:quantity {maxAvailable} bind:reachMaxQuantity />
 		<button
 			onclick={handleAddToCart}
-			disabled={!isAvailable}
+			disabled={!quantity}
 			class="flex-1 bg-accent hover:bg-accent/90 text-text-dark font-bold py-2.5 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 cursor-pointer disabled:pointer-events-none disabled:opacity-50 disabled:bg-muted-light disabled:dark:bg-muted-dark aria-disabled:pointer-events-none"
 		>
 			Add to Cart
@@ -80,8 +75,43 @@
 			<span class="icon-[line-md--heart] size-6">favorite</span>
 		</button>
 	</div>
-	<div class="text-sm text-gray-500 dark:text-gray-400">
+	{#if reachMaxQuantity}
+		<div class="font-medium text-error pl-1">
+			You have reached the maximum quantity available for this item
+		</div>
+	{/if}
+	<div class="text-sm text-gray-500 dark:text-gray-400 mt-6">
 		<p>Free shipping on orders over $50.</p>
 		<p>Expected delivery: 3-5 business days.</p>
 	</div>
 </div>
+
+<Alert bind:open={isPopupAddItem}>
+	{#snippet title()}
+		<div
+			class="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/50"
+		>
+			<Check class="text-green-500 dark:text-green-400 size-7" />
+		</div>
+	{/snippet}
+
+	{#snippet description()}
+		<p class="mt-4 text-lg text-text-light dark:text-text-dark">Item has been added to your cart</p>
+	{/snippet}
+</Alert>
+
+<Alert bind:open={isPopupError}>
+	{#snippet title()}
+		<div
+			class="flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/50"
+		>
+			<X class="text-red-500 dark:text-red-400 size-7" />
+		</div>
+	{/snippet}
+
+	{#snippet description()}
+		<p class="mt-4 text-lg text-error">
+			{cartStore.error}
+		</p>
+	{/snippet}
+</Alert>

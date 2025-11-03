@@ -22,6 +22,8 @@
 	</div>
 	<div class="flex justify-between gap-x-6 py-4 border-t border-gray-200 dark:border-gray-700 mt-2">
 		<p class="text-base font-bold text-[#0d171b] dark:text-slate-50">Total</p>
-		<p class="text-base font-bold text-[#0d171b] dark:text-slate-50 text-right">$42.00</p>
+		<p class="text-base font-bold text-[#0d171b] dark:text-slate-50 text-right">
+			${total_price + shipping_price}
+		</p>
 	</div>
 </div>

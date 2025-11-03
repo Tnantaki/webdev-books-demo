@@ -1,33 +1,26 @@
 <script lang="ts">
+	import Alert from '$lib/components/Alert.svelte';
 	import { cartStore } from '$lib/store/cart.svelte';
-	import type { PageProps } from './$types';
+	import { X } from '@lucide/svelte';
 	import CartItem from './components/CartItem.svelte';
 	import OrderSummary from './components/OrderSummary.svelte';
 
-	let { data }: PageProps = $props();
-	let cart = data.cart;
-	let error = $state('');
-	let isOpenPopup = $state(false);
-
-	let total_price = cart?.items.reduce((a, c) => a + c.book.price_in_pound * c.quantity, 0) || 0;
+	let cart = $derived(cartStore.cart);
+	let isPopupError = $state(false);
 
 	async function handleEditQuantityItem(id: string, quantity: number) {
-		error = '';
-
 		const result = await cartStore.editCartItem(id, quantity);
 		if (!result.success) {
-			error = result.message || 'An error occured';
+			isPopupError = true;
+			setTimeout(() => (isPopupError = false), 3000);
 		}
 	}
 
 	async function handleRemoveItem(id: string) {
-		error = '';
-
 		const result = await cartStore.removeItemFromCart(id);
-		if (result.success) {
-			isOpenPopup = true;
-		} else {
-			error = result.message || 'An error occured';
+		if (!result.success) {
+			isPopupError = true;
+			setTimeout(() => (isPopupError = false), 3000);
 		}
 	}
 </script>
@@ -63,7 +56,7 @@
 			</div>
 			<div class="lg:col-span-1">
 				<div class="rounded-xl bg-white dark:bg-card-dark/50 shadow-md p-6 dark:shadow-md">
-					<OrderSummary {total_price} shipping_price={cart.shipping_price} />
+					<OrderSummary total_price={cart.total_price} shipping_price={cart.shipping_price} />
 					<div class="mt-6">
 						<button
 							class="w-full flex items-center justify-center rounded-lg border border-transparent bg-primary px-6 py-3 text-base font-bold text-white shadow-sm hover:bg-primary/90"
@@ -96,3 +89,19 @@
 		</div>
 	{/if}
 </div>
+
+<Alert bind:open={isPopupError}>
+	{#snippet title()}
+		<div
+			class="flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/50"
+		>
+			<X class="text-red-500 dark:text-red-400 size-7" />
+		</div>
+	{/snippet}
+
+	{#snippet description()}
+		<p class="mt-4 text-lg text-error">
+			{cartStore.error}
+		</p>
+	{/snippet}
+</Alert>
