@@ -3,7 +3,7 @@ import type { Book } from './book';
 
 export interface CartItem {
 	id: string;
-	book_item: Book;
+	book: Book;
 	quantity: number;
 	updated_at: Date;
 }
@@ -16,6 +16,10 @@ export interface Cart {
 
 export interface AddCartItem {
 	book_id: string;
+	quantity: number;
+}
+
+export interface EditCartItem {
 	quantity: number;
 }
 

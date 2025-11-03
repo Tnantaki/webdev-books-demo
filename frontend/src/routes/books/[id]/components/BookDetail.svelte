@@ -46,11 +46,15 @@
 		>
 	</div>
 	<div class="prose prose-sm sm:prose dark:prose-invert text-gray-600 dark:text-gray-400 mb-6">
-		<p>{isExpand ? book.description : book.description.substring(0, TEXT_LIMIT) + '...'}</p>
-		<button
-			class="cursor-pointer text-primary hover:underline"
-			onclick={() => (isExpand = !isExpand)}>{isExpand ? 'Read Less' : 'Read more'}</button
-		>
+		{#if book.description.length > TEXT_LIMIT}
+			<p>{isExpand ? book.description : book.description.substring(0, TEXT_LIMIT) + '...'}</p>
+			<button
+				class="cursor-pointer text-primary hover:underline"
+				onclick={() => (isExpand = !isExpand)}>{isExpand ? 'Read Less' : 'Read more'}</button
+			>
+		{:else}
+			<p>{book.description}</p>
+		{/if}
 	</div>
 	<div class="flex items-center justify-between mb-6">
 		<p class="text-3xl font-bold dark:text-text-dark">${book.price_in_pound}</p>

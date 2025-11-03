@@ -24,7 +24,7 @@ pub struct EditCartItem {
 #[derive(Serialize)]
 pub struct CartItem {
    pub id: Uuid,
-   pub book_item: Book,
+   pub book: Book,
    pub quantity: i32,
    pub updated_at: DateTime<Utc>,
 }

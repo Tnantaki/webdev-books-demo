@@ -21,6 +21,40 @@ class CartStore {
 			this.isLoading = false;
 		}
 	}
+
+	async removeItemFromCart(id: string): Promise<CartResult> {
+		this.isLoading = true;
+
+		try {
+			await cartAPI.removeItemFromCart(id);
+			return { success: true };
+		} catch (error: unknown) {
+			if (error instanceof AppError) {
+				const { message, errors } = error;
+				return { success: false, message, errors };
+			}
+			return { success: false, message: 'An error occurred' };
+		} finally {
+			this.isLoading = false;
+		}
+	}
+
+	async editCartItem(id: string, quantity: number): Promise<CartResult> {
+		this.isLoading = true;
+
+		try {
+			await cartAPI.editCartItem(id, quantity);
+			return { success: true };
+		} catch (error: unknown) {
+			if (error instanceof AppError) {
+				const { message, errors } = error;
+				return { success: false, message, errors };
+			}
+			return { success: false, message: 'An error occurred' };
+		} finally {
+			this.isLoading = false;
+		}
+	}
 }
 
 export const cartStore = new CartStore();

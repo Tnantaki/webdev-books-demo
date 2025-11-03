@@ -1,5 +1,10 @@
 <script lang="ts">
-	let { value = $bindable(), available } = $props();
+	interface Props {
+		value: number;
+		available: number;
+	}
+
+	let { value = $bindable(), available }: Props = $props();
 
 	const decrease = () => {
 		if (value > 1) {

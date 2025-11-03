@@ -38,12 +38,11 @@
 - order - asc or desc
 
 ### Cart Items
-
 - [x] GET /api/cart # Get cart items
 - [ ] DELETE /api/cart # Clear cart
 - [x] POST /api/cart/item # Add to cart (DB)
-- [x] PUT /api/cart/items/:id # Update quantity
-- [x] DELETE /api/cart/items/:id # Remove from cart
+- [x] PUT /api/cart/item/:id # Update quantity
+- [x] DELETE /api/cart/item/:id # Remove from cart
 - [x] POST /api/cart/checkout # Create order from cart
 - [ ] POST /api/cart/save-for-later/:id # Move to saved items
 

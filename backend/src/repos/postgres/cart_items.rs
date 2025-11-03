@@ -88,14 +88,14 @@ impl CartItemRepo {
                id: item.id,
                quantity: item.quantity,
                updated_at: item.updated_at,
-               book_item: book.clone().into(),
+               book: book.clone().into(),
             })
          })
          .collect();
 
       let total_price: Decimal = items
          .iter()
-         .map(|item| item.book_item.price_in_pound * Decimal::new(item.quantity as i64, 0))
+         .map(|item| item.book.price_in_pound * Decimal::new(item.quantity as i64, 0))
          .sum();
 
       let shipping_price = match total_price > MIN_FREE_SHIPPING {

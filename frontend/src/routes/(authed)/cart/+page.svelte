@@ -1,13 +1,35 @@
 <script lang="ts">
+	import { cartStore } from '$lib/store/cart.svelte';
 	import type { PageProps } from './$types';
-	import BookDetail from './components/BookDetail.svelte';
+	import CartItem from './components/CartItem.svelte';
 	import OrderSummary from './components/OrderSummary.svelte';
 
 	let { data }: PageProps = $props();
 	let cart = data.cart;
+	let error = $state('');
+	let isOpenPopup = $state(false);
 
-	let total_price =
-		cart?.items.reduce((a, c) => a + c.book_item.price_in_pound * c.quantity, 0) || 0;
+	let total_price = cart?.items.reduce((a, c) => a + c.book.price_in_pound * c.quantity, 0) || 0;
+
+	async function handleEditQuantityItem(id: string, quantity: number) {
+		error = '';
+
+		const result = await cartStore.editCartItem(id, quantity);
+		if (!result.success) {
+			error = result.message || 'An error occured';
+		}
+	}
+
+	async function handleRemoveItem(id: string) {
+		error = '';
+
+		const result = await cartStore.removeItemFromCart(id);
+		if (result.success) {
+			isOpenPopup = true;
+		} else {
+			error = result.message || 'An error occured';
+		}
+	}
 </script>
 
 <div class="max-w-7xl mx-auto">
@@ -23,7 +45,7 @@
 					Review and manage the books you've selected.
 				</p>
 			</div>
-			<a class="text-primary text-sm font-medium leading-normal self-end pb-1" href="/"
+			<a class="text-primary hover:underline font-medium leading-normal self-end pb-1" href="/"
 				>Continue Shopping</a
 			>
 		</div>
@@ -31,9 +53,9 @@
 			<div class="lg:col-span-2">
 				<div class="flow-root">
 					<ul class="-my-6 divide-y divide-gray-200 dark:divide-gray-700" role="list">
-						{#each cart.items as { book_item, quantity }}
+						{#each cart.items as item (item.id)}
 							<li class="flex py-6">
-								<BookDetail book={book_item} {quantity} />
+								<CartItem {item} {handleRemoveItem} {handleEditQuantityItem} />
 							</li>
 						{/each}
 					</ul>
