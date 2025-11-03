@@ -1,6 +1,7 @@
 import { authAPI } from '$lib/api';
 import { AppError } from '$lib/types';
 import type { AuthResult, SignupCredentials, User } from '$lib/types/auth';
+import { cartStore } from './cart.svelte';
 
 class AuthStore {
 	user = $state<User | null>(null);
@@ -14,7 +15,7 @@ class AuthStore {
 		try {
 			this.user = await authAPI.getCurrentUser();
 		} catch (error: unknown) {
-			if (error instanceof AppError && error.message.includes('ExpiredSignature')) {
+			if (error instanceof AppError) {
 				try {
 					console.log('refresh token');
 					await authAPI.refreshToken();
@@ -65,6 +66,7 @@ class AuthStore {
 		try {
 			await authAPI.login(email, password);
 			this.user = await authAPI.getCurrentUser();
+			await cartStore.loadCart();
 
 			return { success: true };
 		} catch (error: unknown) {

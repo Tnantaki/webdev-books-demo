@@ -4,6 +4,8 @@
 	import { X } from '@lucide/svelte';
 	import CartItem from './components/CartItem.svelte';
 	import OrderSummary from './components/OrderSummary.svelte';
+	import { Button } from '$lib/components';
+	import { goto } from '$app/navigation';
 
 	let cart = $derived(cartStore.cart);
 	let isPopupError = $state(false);
@@ -23,6 +25,7 @@
 			setTimeout(() => (isPopupError = false), 3000);
 		}
 	}
+	
 </script>
 
 <div class="max-w-7xl mx-auto">
@@ -58,11 +61,7 @@
 				<div class="rounded-xl bg-white dark:bg-card-dark/50 shadow-md p-6 dark:shadow-md">
 					<OrderSummary total_price={cart.total_price} shipping_price={cart.shipping_price} />
 					<div class="mt-6">
-						<button
-							class="w-full flex items-center justify-center rounded-lg border border-transparent bg-primary px-6 py-3 text-base font-bold text-white shadow-sm hover:bg-primary/90"
-						>
-							Proceed to Checkout
-						</button>
+						<Button class="font-bold" onclick={() => goto("/checkout")}>Proceed to Checkout</Button>
 					</div>
 				</div>
 			</div>

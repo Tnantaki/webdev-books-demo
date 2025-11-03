@@ -70,8 +70,26 @@ class CartStore {
 
 		try {
 			await cartAPI.editCartItem(id, quantity);
-			console.log("edit item success")
 			await this.loadCart(); // Refresh cart after adding
+			return { success: true };
+		} catch (error: unknown) {
+			if (error instanceof AppError) {
+				this.error = error.message;
+			} else {
+				this.error = 'An error occurred';
+			}
+			return { success: false };
+		} finally {
+			this.isLoading = false;
+		}
+	}
+	
+	async checkout(): Promise<CartResult> {
+		this.isLoading = true;
+
+		try {
+			await cartAPI.checkout();
+			await this.loadCart();
 			return { success: true };
 		} catch (error: unknown) {
 			if (error instanceof AppError) {

@@ -1,7 +1,7 @@
 <script>
 	import { goto } from '$app/navigation';
 	import { authStore } from '$lib/store/auth.svelte';
-	import { CircleUserRound, LogOut, Settings } from '@lucide/svelte';
+	import { CircleUserRound, LogOut, Logs, Settings } from '@lucide/svelte';
 
 	async function handleLogout() {
 		await authStore.logout();
@@ -40,8 +40,8 @@
 				class="flex items-center gap-1 w-full font-medium px-4 py-2 text-sm text-text-light dark:text-text-dark hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
 				href="settings"
 			>
-				<Settings size={16} />
-				<span>Settings</span>
+				<Logs size={16} />
+				<span>My Orders</span>
 			</a>
 			<button
 				onclick={handleLogout}

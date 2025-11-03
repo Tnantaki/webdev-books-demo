@@ -58,5 +58,16 @@ export const cartAPI = {
 		if (!res.ok) {
 			throw new AppError(data);
 		}
+	},
+
+	async checkout(): Promise<void> {
+		const res = await fetch(`${PUBLIC_API_BASE}/cart/checkout`, {
+			method: 'POST',
+			credentials: 'include'
+		});
+		const data = await res.json();
+		if (!res.ok) {
+			throw new AppError(data);
+		}
 	}
 };

@@ -3,7 +3,6 @@ import { cartStore } from '$lib/store/cart.svelte';
 import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async () => {
-	console.log('load layout');
 	// Initialize auth state when app loads
 	await authStore.initialize();
 
