@@ -1,9 +1,14 @@
+use indexmap::IndexMap;
 use sqlx::PgPool;
 use uuid::Uuid;
 
 use crate::{
-   models::orders::{OrderItemDetail, OrderModel},
+   models::orders::{OrderDetailModel, OrderModel, OrderStatus},
    routes::app_error::AppError,
+   schemas::{
+      image::get_img_path_by_id,
+      order::{BookAtPurchase, Order, OrderDetail},
+   },
 };
 
 #[derive(Clone)]
@@ -11,44 +16,27 @@ pub struct OrderRepo {
    pool: PgPool,
 }
 
+/// For User
 impl OrderRepo {
    pub fn new(pool: PgPool) -> Self {
       Self { pool }
    }
 
-   pub async fn get_user_order(&self, user_id: Uuid) -> Result<Vec<OrderModel>, AppError> {
-      let orders = sqlx::query_as::<_, OrderModel>(
-         r#"
-            SELECT
-               id, user_id, total_price, order_status, created_at, updated_at
-            FROM orders
-            WHERE user_id = $1
-         "#,
-      )
-      .bind(user_id)
-      .fetch_all(&self.pool)
-      .await?;
-
-      if orders.is_empty() {
-         return Ok(vec![]);
-      }
-
-      Ok(orders)
-   }
-
-   pub async fn get_order_detail(
+   pub async fn get_order_detail_by_id(
       &self,
       user_id: Uuid,
       order_id: Uuid,
-   ) -> Result<Vec<OrderItemDetail>, AppError> {
-      let items_detail = sqlx::query_as::<_, OrderItemDetail>(
+   ) -> Result<OrderDetail, AppError> {
+      let items_detail = sqlx::query_as::<_, OrderDetailModel>(
          r#"
             SELECT
-               oi.id, oi.book_id, b.genre, b.description, b.image_id, oi.quantity, oi.price_at_purchase
+	            o.id, o.created_at, o.updated_at, o.total_price, o.order_status, oi.book_id, b.title,
+					b.genre, b.image_id, oi.quantity, oi.price_at_purchase
             FROM order_items oi
             JOIN orders o ON o.id = oi.order_id
             JOIN books b ON b.id = oi.book_id
-            WHERE o.user_id = $1 AND oi.order_id = $2
+            WHERE o.user_id = $1 AND o.order_id = $2
+            ORDER BY oi.updated_at DESC
          "#,
       )
       .bind(user_id)
@@ -56,35 +44,63 @@ impl OrderRepo {
       .fetch_all(&self.pool)
       .await?;
 
+      Self::convert_order_items(items_detail)
+         .pop()
+         .ok_or(AppError::NotFound("invalid order item id".to_string()))
+   }
+
+   // get all orders with detail order by latest to earliest
+   pub async fn get_all_orders_detail(&self, user_id: Uuid) -> Result<Vec<OrderDetail>, AppError> {
+      let items_detail = sqlx::query_as::<_, OrderDetailModel>(
+         r#"
+            SELECT
+	            o.id, o.created_at, o.updated_at, o.total_price, o.order_status, oi.book_id, b.title,
+					b.genre, b.image_id, oi.quantity, oi.price_at_purchase
+            FROM order_items oi
+            JOIN orders o ON o.id = oi.order_id
+            JOIN books b ON b.id = oi.book_id
+            WHERE o.user_id = $1
+            ORDER BY oi.updated_at DESC
+         "#,
+      )
+      .bind(user_id)
+      .fetch_all(&self.pool)
+      .await?;
+
       if items_detail.is_empty() {
          return Ok(vec![]);
       }
 
-      Ok(items_detail)
+      Ok(Self::convert_order_items(items_detail))
    }
 
-   pub async fn get_order_item_detail(
+   // get all orders with detail (only pending status) order by earliest
+   pub async fn get_pending_orders_detail(
       &self,
       user_id: Uuid,
-      order_item_id: Uuid,
-   ) -> Result<OrderItemDetail, AppError> {
-      let item_detail = sqlx::query_as::<_, OrderItemDetail>(
+   ) -> Result<Vec<OrderDetail>, AppError> {
+      let items_detail = sqlx::query_as::<_, OrderDetailModel>(
          r#"
             SELECT
-               oi.id, oi.book_id, b.genre, b.description, b.image_id, oi.quantity, oi.price_at_purchase
+	            o.id, o.created_at, o.updated_at, o.total_price, o.order_status, oi.book_id, b.title,
+					b.genre, b.image_id, oi.quantity, oi.price_at_purchase
             FROM order_items oi
             JOIN orders o ON o.id = oi.order_id
             JOIN books b ON b.id = oi.book_id
-            WHERE o.user_id = $1 AND oi.id = $2
+            WHERE o.user_id = $1 AND o.order_status = $2
+            ORDER BY o.updated_at
          "#,
       )
       .bind(user_id)
-      .bind(order_item_id)
-      .fetch_optional(&self.pool)
-      .await?
-      .ok_or(AppError::NotFound("invalid order item id".to_string()))?;
+      .bind(OrderStatus::Pending.to_string())
+      .fetch_all(&self.pool)
+      .await?;
 
-      Ok(item_detail)
+      if items_detail.is_empty() {
+         return Ok(vec![]);
+      }
+
+      Ok(Self::convert_order_items(items_detail))
    }
 
    pub async fn pay_order(&self, user_id: Uuid, order_id: Uuid) -> Result<(), AppError> {
@@ -190,7 +206,7 @@ impl OrderRepo {
       .bind(order_id)
       .execute(&mut *tx)
       .await?;
-      
+
       // 3. Update order status
       sqlx::query(
          r#"
@@ -208,5 +224,58 @@ impl OrderRepo {
       tx.commit().await?;
 
       Ok(())
+   }
+
+   fn convert_order_items(models: Vec<OrderDetailModel>) -> Vec<OrderDetail> {
+      // Use IdexMap to preserves order
+      let mut order_map: IndexMap<Uuid, OrderDetail> = IndexMap::new();
+
+      for model in models {
+         let book = BookAtPurchase {
+            book_id: model.book_id,
+            title: model.title,
+            genre: model.genre,
+            img_path: get_img_path_by_id(model.image_id),
+            quantity: model.quantity,
+            price_at_purchase: model.price_at_purchase,
+         };
+
+         order_map
+            .entry(model.id)
+            .or_insert_with(|| OrderDetail {
+               id: model.id,
+               total_price: model.total_price,
+               order_status: model.order_status,
+               created_at: model.created_at,
+               updated_at: model.updated_at,
+               items: Vec::new(),
+            })
+            .items
+            .push(book);
+      }
+
+      order_map.into_values().collect()
+   }
+}
+
+// For admin only
+impl OrderRepo {
+   pub async fn get_all_order(&self) -> Result<Vec<Order>, AppError> {
+      let order_models = sqlx::query_as::<_, OrderModel>(
+         r#"
+            SELECT
+               id, user_id, total_price, order_status, created_at, updated_at
+            FROM orders
+            WHERE user_id = $1
+         "#,
+      )
+      .fetch_all(&self.pool)
+      .await?;
+
+      if order_models.is_empty() {
+         return Ok(vec![]);
+      }
+
+      Ok(order_models.into_iter().map(|order| Order::from(order)).collect())
    }
 }
