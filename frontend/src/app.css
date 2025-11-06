@@ -13,10 +13,14 @@
 	--color-background-dark: #101c22;
 	--color-card-light: #ffffff;
 	--color-card-dark: #1a2a33;
+	--color-surface-light: #ffffff;
+	--color-surface-dark: #182832;
 	--color-text-light: #101c22;
 	--color-text-dark: #f6f7f8;
 	--color-muted-light: #6b7280;
 	--color-muted-dark: #9ca3af;
+	--color-border-light: #e7eff3;
+	--color-border-dark: #2a3b47;
 
 	--font-display: 'Work Sans', sans-serif;
 

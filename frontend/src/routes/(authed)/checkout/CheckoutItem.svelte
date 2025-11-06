@@ -24,7 +24,15 @@
 		<h3 class="text-lg">
 			<a href="/books/{item.book.id}">{item.book.title}</a>
 		</h3>
-		<p class="ml-4">${price}</p>
 	</div>
-	<p class="mt-1 text-[#4c809a] dark:text-slate-400">Qty: {item.quantity}</p>
+	<div class="flex flex-col sm:flex-row justify-between">
+		<div class="grid grid-cols-1 sm:grid-cols-[100px_180px]">
+			<p class="mt-1 text-[#4c809a] dark:text-slate-400">Qty: {item.quantity}</p>
+			<p class="mt-1 text-[#4c809a] dark:text-slate-400">Unit Price: ${item.book.price_in_pound}</p>
+		</div>
+		<div class="grid grid-cols-2 mt-2 sm:mt-0">
+			<p class="text-[#4c809a] dark:text-slate-400">Subtotal:</p>
+			<p class="ml-2 text-end font-medium">${price}</p>
+		</div>
+	</div>
 </div>

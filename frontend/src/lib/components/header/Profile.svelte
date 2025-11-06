@@ -38,7 +38,14 @@
 			</a>
 			<a
 				class="flex items-center gap-1 w-full font-medium px-4 py-2 text-sm text-text-light dark:text-text-dark hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-				href="settings"
+				href="/payment"
+			>
+				<span class="icon-[fluent--payment-32-regular] size-4"></span>
+				<span>My Payment</span>
+			</a>
+			<a
+				class="flex items-center gap-1 w-full font-medium px-4 py-2 text-sm text-text-light dark:text-text-dark hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+				href="/orders"
 			>
 				<Logs size={16} />
 				<span>My Orders</span>
