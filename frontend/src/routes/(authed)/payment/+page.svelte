@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components';
-	import { orderStore } from '$lib/store/order.svelte';
 	import type { PageProps } from './$types';
 	import OrderCard from './OrderCard.svelte';
 

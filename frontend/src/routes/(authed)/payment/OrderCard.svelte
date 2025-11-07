@@ -27,17 +27,20 @@
 <div
 	class="p-4 @container bg-background-light dark:bg-background-dark rounded-lg border border-border-light dark:border-border-dark flex flex-col"
 >
-	<div class="flex flex-col lg:flex-row">
-		<p class="text-text-muted-light dark:text-muted-dark text-xl font-medium leading-normal">
-			Order Id #{order.id}
-		</p>
-		<p class="text-text-muted-light dark:text-muted-dark text-xl font-normal hidden lg:block">
-			&nbsp;|&nbsp;
-		</p>
-		<p class="text-text-muted-light dark:text-muted-dark text-lg lg:text-xl font-normal">
-			Placed on: {date}
-			{time}
-		</p>
+	<div class="flex flex-col sm:flex-row sm:items-center gap-x-8 gap-y-2 flex-wrap">
+		<div class="flex flex-col">
+			<p class="text-base text-slate-500 dark:text-slate-400">Order ID</p>
+			<p class="text-slate-800 dark:text-slate-200 text-lg font-medium leading-normal">
+				#{order.id}
+			</p>
+		</div>
+		<div class="flex flex-col">
+			<p class="text-base text-slate-500 dark:text-slate-400">Date</p>
+			<p class="text-slate-800 dark:text-slate-200 text-lg font-medium leading-normal">
+				{date}
+				{time}
+			</p>
+		</div>
 	</div>
 	<div class="border-b border-border-light dark:border-border-dark my-2"></div>
 	<ul class="-my-4 divide-y divide-gray-200 dark:divide-gray-700">

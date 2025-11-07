@@ -60,7 +60,7 @@ impl OrderRepo {
             JOIN orders o ON o.id = oi.order_id
             JOIN books b ON b.id = oi.book_id
             WHERE o.user_id = $1
-            ORDER BY oi.updated_at DESC
+            ORDER BY o.updated_at DESC
          "#,
       )
       .bind(user_id)
