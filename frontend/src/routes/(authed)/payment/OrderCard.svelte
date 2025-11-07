@@ -1,11 +1,27 @@
 <script lang="ts">
 	import { PUBLIC_API_BASE } from '$env/static/public';
-	import { Button } from '$lib/components';
+	import { Alert, Button } from '$lib/components';
+	import { orderStore } from '$lib/store/order.svelte';
 	import type { OrderDetail } from '$lib/types/order';
 	import { getThailandDatetime } from '$lib/utils';
+	import { Check, X } from '@lucide/svelte';
 
 	let { order }: { order: OrderDetail } = $props();
+	let isPopupError = $state(false);
+	let isPopupPay = $state(false);
+
 	const { date, time } = getThailandDatetime(order.created_at);
+
+	async function handlePay(order_id: string) {
+		const result = await orderStore.pay(order_id);
+		if (result.success) {
+			isPopupPay = true;
+			setTimeout(() => (isPopupPay = false), 3000);
+		} else {
+			isPopupError = true;
+			setTimeout(() => (isPopupError = false), 5000);
+		}
+	}
 </script>
 
 <div
@@ -13,9 +29,11 @@
 >
 	<div class="flex flex-col lg:flex-row">
 		<p class="text-text-muted-light dark:text-muted-dark text-xl font-medium leading-normal">
-			Order Id #{order.id} 
+			Order Id #{order.id}
 		</p>
-		<p class="text-text-muted-light dark:text-muted-dark text-xl font-normal hidden lg:block">&nbsp;|&nbsp;</p>
+		<p class="text-text-muted-light dark:text-muted-dark text-xl font-normal hidden lg:block">
+			&nbsp;|&nbsp;
+		</p>
 		<p class="text-text-muted-light dark:text-muted-dark text-lg lg:text-xl font-normal">
 			Placed on: {date}
 			{time}
@@ -65,7 +83,37 @@
 			</p>
 		</div>
 		<div class="flex items-end gap-3 mt-5">
-			<Button class="font-bold text-xl">Pay Now</Button>
+			<Button class="font-bold text-xl" onclick={() => handlePay(order.id)}>Pay Now</Button>
 		</div>
 	</div>
 </div>
+
+<Alert bind:open={isPopupPay}>
+	{#snippet title()}
+		<div
+			class="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/50"
+		>
+			<Check class="text-green-500 dark:text-green-400 size-7" />
+		</div>
+	{/snippet}
+
+	{#snippet description()}
+		<p class="mt-4 text-lg text-text-light dark:text-text-dark">Pay order successfully</p>
+	{/snippet}
+</Alert>
+
+<Alert bind:open={isPopupError}>
+	{#snippet title()}
+		<div
+			class="flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/50"
+		>
+			<X class="text-red-500 dark:text-red-400 size-7" />
+		</div>
+	{/snippet}
+
+	{#snippet description()}
+		<p class="mt-4 text-lg text-error">
+			{orderStore.error}
+		</p>
+	{/snippet}
+</Alert>

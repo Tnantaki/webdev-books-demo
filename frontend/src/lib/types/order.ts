@@ -1,3 +1,5 @@
+import type { FieldError } from ".";
+
 export interface BookAtPurchase {
 	book_id: string;
 	title: string;
@@ -14,4 +16,10 @@ export interface OrderDetail {
 	created_at: string;
 	updated_at: Date;
 	items: BookAtPurchase[];
+}
+
+export interface OrderResult {
+	success: boolean;
+	message?: string
+	errors?: FieldError[];
 }

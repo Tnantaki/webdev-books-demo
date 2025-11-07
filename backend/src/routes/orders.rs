@@ -21,6 +21,11 @@ use crate::{
 
 pub fn router(state: &AppState) -> Router<AppState> {
    Router::new()
+      .route("/list", get(get_orders))
+      .route_layer(middleware::from_fn_with_state(
+         state.jwt_service.clone(),
+         auth_cookie_admin,
+      ))
       .route("/", get(get_orders_detail))
       .route("/pending", get(get_pending_orders_detail))
       .route("/{id}", get(get_order_by_id))
@@ -29,11 +34,6 @@ pub fn router(state: &AppState) -> Router<AppState> {
       .route_layer(middleware::from_fn_with_state(
          state.jwt_service.clone(),
          auth_cookie,
-      ))
-      .route("/list", get(get_orders))
-      .route_layer(middleware::from_fn_with_state(
-         state.jwt_service.clone(),
-         auth_cookie_admin,
       ))
 }
 
@@ -96,4 +96,3 @@ async fn get_orders(State(state): State<AppState>) -> JsonResult<Vec<Order>> {
 
    Ok((StatusCode::OK, Json(orders)))
 }
-

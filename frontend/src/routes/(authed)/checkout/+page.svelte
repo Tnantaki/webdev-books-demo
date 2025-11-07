@@ -7,12 +7,12 @@
 
 	let cart = $derived(cartStore.cart);
 	let isPopupError = $state(false);
-	let isPopupPay = $state(false);
+	let isPopupCheckout = $state(false);
 
 	async function handleCheckout() {
 		const result = await cartStore.checkout();
 		if (result.success) {
-			isPopupPay = true;
+			isPopupCheckout = true;
 		} else {
 			isPopupError = true;
 			setTimeout(() => (isPopupError = false), 5000);
@@ -119,7 +119,7 @@
 	{/snippet}
 </Alert>
 
-<Alert bind:open={isPopupPay}>
+<Alert bind:open={isPopupCheckout}>
 	{#snippet title()}
 		<div
 			class="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/50"

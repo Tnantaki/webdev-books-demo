@@ -1,12 +1,14 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { Button } from '$lib/components';
+	import { orderStore } from '$lib/store/order.svelte';
 	import type { PageProps } from './$types';
 	import OrderCard from './OrderCard.svelte';
 
 	let { data }: PageProps = $props();
-	console.log(data);
 </script>
 
-{#if data.orders}
+{#if data.orders && data.orders.length > 0}
 	<div
 		class="flex flex-col gap-6 p-4 sm:p-6 md:p-10 bg-surface-light dark:bg-surface-dark rounded-lg"
 	>
@@ -45,11 +47,7 @@
 					All your orders are up to date. Ready to find your next read?
 				</p>
 			</div>
-			<button
-				class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary/20 text-primary text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/30 transition-colors"
-			>
-				<span class="truncate">Browse Books</span>
-			</button>
+			<Button class="min-w-[84px] max-w-[360px]" onclick={() => goto('/')}>Browse Books</Button>
 		</div>
 	</div>
 {/if}
