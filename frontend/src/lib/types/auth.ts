@@ -24,6 +24,5 @@ export interface AuthResponse {
 
 export interface AuthResult {
 	success: boolean;
-	message?: string
 	errors?: FieldError[];
 }

@@ -5,18 +5,14 @@
 	import { authStore } from '$lib/store/auth.svelte';
 
 	let form = $state({ email: '', password: '' });
-	let error = $state('');
 
 	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
-		error = '';
 
 		const result = await authStore.login(form.email, form.password);
 		if (result.success) {
 			const redirectTo = page.url.searchParams.get('redirectTo') ?? '/';
 			await goto(redirectTo, { replaceState: true });
-		} else {
-			error = result.message || 'An error occured';
 		}
 	}
 </script>
@@ -52,9 +48,9 @@
 					required
 				/>
 			</div>
-			{#if error}
+			{#if authStore.error}
 				<div class="text-sm font-medium text-error pl-1 mb-2">
-					{error}
+					{authStore.error}
 				</div>
 			{/if}
 			<div>

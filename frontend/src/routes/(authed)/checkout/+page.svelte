@@ -4,6 +4,7 @@
 	import { BanknoteArrowUp, X } from '@lucide/svelte';
 	import CheckoutItem from './CheckoutItem.svelte';
 	import InputRadio from './InputRadio.svelte';
+	import { goto } from '$app/navigation';
 
 	let cart = $derived(cartStore.cart);
 	let isPopupError = $state(false);
@@ -20,7 +21,7 @@
 	}
 </script>
 
-{#if cart}
+{#if cart && cart.items.length > 0}
 	<div class="max-w-7xl mx-auto">
 		<div class="flex flex-wrap justify-between gap-6 p-4">
 			<div class="flex min-w-72 flex-col gap-3">
@@ -101,6 +102,13 @@
 			</div>
 		</div>
 	</div>
+{:else}
+	<!-- Empty State -->
+	<div class="text-center py-20">
+		<p class="mt-2 text-lg sm:text-xl text-gray-500 dark:text-gray-400">
+			There aren't orders for checkout
+		</p>
+	</div>
 {/if}
 
 <Alert bind:open={isPopupError}>
@@ -129,7 +137,16 @@
 	{/snippet}
 
 	{#snippet description()}
-		<p class="mt-4 text-lg text-text-light dark:text-text-dark">Checkout success, Pay your order</p>
+		<p class="mt-4 text-lg text-text-light dark:text-text-dark">Checkout successfully</p>
+		<div class="mt-8">
+			<button
+				class="w-full justify-center rounded-lg border border-transparent bg-primary py-2 px-4 text-sm font-medium text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-card-dark cursor-pointer"
+				type="button"
+				onclick={() => goto('/payment')}
+			>
+				Continue to pay
+			</button>
+		</div>
 	{/snippet}
 </Alert>
 

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { PUBLIC_API_BASE } from '$env/static/public';
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
 	import type { OrderDetail } from '$lib/types/order';
 	import { getThailandDatetime } from '$lib/utils';

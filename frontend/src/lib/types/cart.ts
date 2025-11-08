@@ -25,6 +25,5 @@ export interface EditCartItem {
 
 export interface CartResult {
 	success: boolean;
-	message?: string
 	errors?: FieldError[];
 }

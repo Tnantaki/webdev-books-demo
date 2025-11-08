@@ -58,7 +58,7 @@ export const authAPI = {
 		}
 	},
 
-	async refreshToken(): Promise<void> {
+	async refreshToken(fetch: typeof window.fetch = window.fetch): Promise<void> {
 		const res = await fetch(`${PUBLIC_API_BASE}/auth/refresh`, {
 			method: 'POST',
 			credentials: 'include' // CRITICAL: This sends/receives cookies
@@ -71,7 +71,7 @@ export const authAPI = {
 	},
 
 	// Get current user info (validates JWT cookie)
-	async getCurrentUser(): Promise<User> {
+	async getCurrentUser(fetch: typeof window.fetch = window.fetch): Promise<User> {
 		const res = await fetch(`${PUBLIC_API_BASE}/auth/me`, {
 			method: 'GET',
 			credentials: 'include' // Sends JWT cookie for validation

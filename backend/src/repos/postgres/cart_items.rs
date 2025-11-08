@@ -61,7 +61,11 @@ impl CartItemRepo {
       .await?;
 
       if cart_item.is_empty() {
-         return Err(AppError::NotFound("Cart is empty".to_string()));
+         return Ok(Cart {
+            items: vec![],
+            total_price: dec!(0),
+            shipping_price: dec!(0),
+         });
       }
 
       // Get all book detail

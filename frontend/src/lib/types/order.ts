@@ -20,6 +20,5 @@ export interface OrderDetail {
 
 export interface OrderResult {
 	success: boolean;
-	message?: string
 	errors?: FieldError[];
 }

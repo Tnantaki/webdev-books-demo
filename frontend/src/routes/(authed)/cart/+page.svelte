@@ -25,11 +25,10 @@
 			setTimeout(() => (isPopupError = false), 3000);
 		}
 	}
-	
 </script>
 
 <div class="max-w-7xl mx-auto">
-	{#if cart}
+	{#if cart && cart.items.length > 0}
 		<div class="flex flex-wrap justify-between gap-6 p-4">
 			<div class="flex min-w-72 flex-col gap-3">
 				<p
@@ -61,7 +60,7 @@
 				<div class="rounded-xl bg-white dark:bg-card-dark/50 shadow-md p-6 dark:shadow-md">
 					<OrderSummary total_price={cart.total_price} shipping_price={cart.shipping_price} />
 					<div class="mt-6">
-						<Button class="font-bold" onclick={() => goto("/checkout")}>Proceed to Checkout</Button>
+						<Button class="font-bold" onclick={() => goto('/checkout')}>Proceed to Checkout</Button>
 					</div>
 				</div>
 			</div>

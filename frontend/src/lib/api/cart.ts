@@ -3,7 +3,7 @@ import { AppError } from '$lib/types';
 import type { AddCartItem, Cart, EditCartItem } from '$lib/types/cart';
 
 export const cartAPI = {
-	async getCart(): Promise<Cart> {
+	async getCart(fetch: typeof window.fetch): Promise<Cart> {
 		const res = await fetch(`${PUBLIC_API_BASE}/cart`, {
 			credentials: 'include'
 		});
@@ -37,8 +37,8 @@ export const cartAPI = {
 			method: 'DELETE',
 			credentials: 'include'
 		});
-		const data = await res.json();
 		if (!res.ok) {
+			const data = await res.json();
 			throw new AppError(data);
 		}
 	},

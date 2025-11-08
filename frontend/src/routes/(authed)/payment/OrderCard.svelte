@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { invalidateAll } from '$app/navigation';
 	import { PUBLIC_API_BASE } from '$env/static/public';
 	import { Alert, Button } from '$lib/components';
 	import { orderStore } from '$lib/store/order.svelte';
@@ -16,7 +17,10 @@
 		const result = await orderStore.pay(order_id);
 		if (result.success) {
 			isPopupPay = true;
-			setTimeout(() => (isPopupPay = false), 3000);
+			setTimeout(() => {
+				invalidateAll(); // re-run load function in current active pages
+				isPopupPay = false;
+			}, 3000);
 		} else {
 			isPopupError = true;
 			setTimeout(() => (isPopupError = false), 5000);

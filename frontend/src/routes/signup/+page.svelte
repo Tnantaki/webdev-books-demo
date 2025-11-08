@@ -8,12 +8,11 @@
 
 	let form = $state({ email: '', name: '', password: '', confirmPassword: '' });
 	let isOpenPopup = $state(false);
-	let error = $state('');
 	let fieldErrors = $state<Record<string, string>>({});
 
 	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
-		error = '';
+		authStore.error = null;
 		fieldErrors = {};
 
 		// Client-side validation
@@ -39,8 +38,6 @@
 		} else {
 			if (result.errors) {
 				result.errors.map((error) => (fieldErrors[error.field] = error.message));
-			} else {
-				error = result.message || 'An error occured';
 			}
 		}
 	}
@@ -119,9 +116,9 @@
 				</div>
 			</div>
 			<div class="mt-8">
-				{#if error}
+				{#if Object.keys(fieldErrors).length === 0 && authStore.error}
 					<div class="text-sm font-medium text-error pl-1 mb-2">
-						{error}
+						{authStore.error}
 					</div>
 				{/if}
 				<Button type="submit" disabled={authStore.isLoading}>

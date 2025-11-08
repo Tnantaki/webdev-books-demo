@@ -7,6 +7,9 @@
 	import { Check, X } from '@lucide/svelte';
 	import BookDescription from './BookDescription.svelte';
 	import QuantityBook from './QuantityBook.svelte';
+	import { authStore } from '$lib/store/auth.svelte';
+	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
 
 	let { book }: { book: Book } = $props();
 	let maxAvailable = book.available - cartStore.getBookQuantity(book.id);
@@ -17,6 +20,10 @@
 	let quantity = $state<number>(maxAvailable > 0 ? 1 : 0);
 
 	async function handleAddToCart() {
+		if (!authStore.user) {
+			goto(`/login?redirectTo=${page.url.pathname}`)
+		}
+		
 		const result = await cartStore.addToCart(book.id, quantity);
 
 		if (result.success) {

@@ -1,106 +1,54 @@
 import { cartAPI } from '$lib/api';
-import { AppError } from '$lib/types';
 import type { Cart, CartResult } from '$lib/types/cart';
+import { AppStore } from './app.svelte';
 
-class CartStore {
+class CartStore extends AppStore {
 	cart = $state<Cart | null>(null);
-	isLoading = $state(false);
-	error = $state<string | null>(null);
 
-	async loadCart() {
-		this.isLoading = true;
-		this.error = null;
+	async loadCart(fetch: typeof window.fetch = window.fetch) {
+		return this.execute(async () => {
+			this.cart = await cartAPI.getCart(fetch);
 
-		try {
-			this.cart = await cartAPI.getCart();
 			return { success: true };
-		} catch (error: unknown) {
-			if (error instanceof AppError) {
-				this.error = error.message;
-			} else {
-				this.error = 'An error occurred';
-			}
-			return { success: false };
-		} finally {
-			this.isLoading = false;
-		}
+		});
 	}
 
 	async addToCart(bookId: string, quantity: number): Promise<CartResult> {
-		this.isLoading = true;
-		this.error = null;
-
-		try {
+		return this.execute(async () => {
 			await cartAPI.addToCart(bookId, quantity);
 			await this.loadCart(); // Refresh cart after adding
+
 			return { success: true };
-		} catch (error: unknown) {
-			if (error instanceof AppError) {
-				this.error = error.message;
-			} else {
-				this.error = 'An error occurred';
-			}
-			return { success: false };
-		} finally {
-			this.isLoading = false;
-		}
+		});
 	}
 
 	async removeItemFromCart(id: string): Promise<CartResult> {
-		this.isLoading = true;
-
-		try {
+		return this.execute(async () => {
 			await cartAPI.removeItemFromCart(id);
 			await this.loadCart(); // Refresh cart after adding
+
 			return { success: true };
-		} catch (error: unknown) {
-			if (error instanceof AppError) {
-				this.error = error.message;
-			} else {
-				this.error = 'An error occurred';
-			}
-			return { success: false };
-		} finally {
-			this.isLoading = false;
-		}
+		});
 	}
 
 	async editCartItem(id: string, quantity: number): Promise<CartResult> {
-		this.isLoading = true;
-
-		try {
+		return this.execute(async () => {
 			await cartAPI.editCartItem(id, quantity);
 			await this.loadCart(); // Refresh cart after adding
-			return { success: true };
-		} catch (error: unknown) {
-			if (error instanceof AppError) {
-				this.error = error.message;
-			} else {
-				this.error = 'An error occurred';
-			}
-			return { success: false };
-		} finally {
-			this.isLoading = false;
-		}
-	}
-	
-	async checkout(): Promise<CartResult> {
-		this.isLoading = true;
 
-		try {
-			await cartAPI.checkout();
-			await this.loadCart();
 			return { success: true };
-		} catch (error: unknown) {
-			if (error instanceof AppError) {
-				this.error = error.message;
-			} else {
-				this.error = 'An error occurred';
-			}
-			return { success: false };
-		} finally {
-			this.isLoading = false;
-		}
+		});
+	}
+
+	async checkout(): Promise<CartResult> {
+		return this.execute(async () => {
+			await cartAPI.checkout();
+			console.log("reload cart")
+			await this.loadCart();
+			console.log("reload cart success")
+
+			return { success: true };
+		});
 	}
 
 	getBookQuantity(bookId: string) {
