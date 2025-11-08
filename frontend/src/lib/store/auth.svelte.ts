@@ -18,7 +18,7 @@ class AuthStore extends AppStore {
 			if (error instanceof AppError) {
 				try {
 					// Refresh Token
-					await authAPI.refreshToken(fetch);
+					await authAPI.refreshToken();
 					this.user = await authAPI.getCurrentUser(fetch);
 				} catch (error: unknown) {
 					const message = error instanceof AppError ? error.message : 'Token refresh failed';

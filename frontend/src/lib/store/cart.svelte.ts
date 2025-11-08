@@ -43,9 +43,7 @@ class CartStore extends AppStore {
 	async checkout(): Promise<CartResult> {
 		return this.execute(async () => {
 			await cartAPI.checkout();
-			console.log("reload cart")
 			await this.loadCart();
-			console.log("reload cart success")
 
 			return { success: true };
 		});

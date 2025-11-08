@@ -1,6 +1,5 @@
-import { PUBLIC_API_BASE } from '$env/static/public';
-import { AppError } from '$lib/types';
 import type { AuthResponse, LoginCredentials, SignupCredentials, User } from '$lib/types/auth';
+import { apiClient } from './apiClient';
 
 interface RequestSignup {
 	email: string;
@@ -10,77 +9,31 @@ interface RequestSignup {
 
 export const authAPI = {
 	async signup(credentials: SignupCredentials): Promise<AuthResponse> {
-		const res = await fetch(`${PUBLIC_API_BASE}/auth/signup`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				email: credentials.email,
-				password: credentials.password,
-				confirm_password: credentials.confirmPassword
-			} as RequestSignup)
-		});
+		const body = {
+			email: credentials.email,
+			password: credentials.password,
+			confirm_password: credentials.confirmPassword
+		} as RequestSignup;
 
-		const data = await res.json();
-		if (!res.ok) {
-			throw new AppError(data);
-		}
-		return data;
+		return apiClient.post('/auth/signup', body);
 	},
 
 	async login(email: string, password: string): Promise<AuthResponse> {
-		const res = await fetch(`${PUBLIC_API_BASE}/auth/login`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			credentials: 'include', // CRITICAL: This sends/receives cookies
-			body: JSON.stringify({ email, password } as LoginCredentials)
-		});
-
-		// Browser will stores cookie automatically
-		const data = await res.json();
-		if (!res.ok) {
-			throw new AppError(data);
-		}
-		return data;
+		const body = { email, password } as LoginCredentials;
+		return apiClient.post('/auth/login', body, { credentials: 'include' });
 	},
 
 	async logout(): Promise<void> {
-		const res = await fetch(`${PUBLIC_API_BASE}/auth/logout`, {
-			method: 'POST',
-			credentials: 'include' // CRITICAL: This sends/receives cookies
-		});
-
-		if (!res.ok) {
-			throw new AppError({ message: 'Logout failed' });
-		}
+		return apiClient.post('/auth/logout', undefined, { credentials: 'include' });
 	},
 
-	async refreshToken(fetch: typeof window.fetch = window.fetch): Promise<void> {
-		const res = await fetch(`${PUBLIC_API_BASE}/auth/refresh`, {
-			method: 'POST',
-			credentials: 'include' // CRITICAL: This sends/receives cookies
-		});
-
-		if (!res.ok) {
-			const error = await res.json();
-			throw new AppError(error);
-		}
+	async refreshToken(): Promise<void> {
+		return apiClient.post('/auth/refresh', undefined, { credentials: 'include' });
 	},
 
 	// Get current user info (validates JWT cookie)
 	async getCurrentUser(fetch: typeof window.fetch = window.fetch): Promise<User> {
-		const res = await fetch(`${PUBLIC_API_BASE}/auth/me`, {
-			method: 'GET',
-			credentials: 'include' // Sends JWT cookie for validation
-		});
-
-		const data = await res.json();
-		if (!res.ok) {
-			throw new AppError(data);
-		}
-		return data;
+		// credentials for sends JWT cookie for validation
+		return apiClient.get('/auth/me', { credentials: 'include' }, fetch);
 	}
 };

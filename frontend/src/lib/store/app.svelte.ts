@@ -13,6 +13,7 @@ export class AppStore {
 		} catch (error: unknown) {
 			if (error instanceof AppError) {
 				const { message, errors } = error;
+				this.error = message;
 				return { success: false, message, errors };
 			}
 			return { success: false, message: 'An error occurred' };
