@@ -12,7 +12,7 @@ export interface Book {
 	title: string;
 	genre: string;
 	description: string;
-	price_in_pound: number;
+	price: number;
 	available: number;
 	img_path: string;
 	average_rating: number;

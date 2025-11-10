@@ -90,12 +90,10 @@
     # 20251011113427/installed init database
     # 20251011145956/pending add updated at triggers
   ```
-- Check migration status
+- Run migration
   ```bash
     sqlx migrate run --database-url postgres://postgres:123456@localhost:5432/book_store_db
   ```
-  
-  psql -h localhost -p 5432 -U postgres -d book_store_db
 
 - Run the SQL directly in psql for inspect error sql script (sqlx migrate run didn't show error detail) 
   ```bash
@@ -112,4 +110,12 @@
     
     -- Delete the failed migration record
     DELETE FROM _sqlx_migrations WHERE version = 20251015101213;
+  ```
+
+### Database Posgres
+- To create Schema from database (this will generate fresh schema from database schema)
+  ```bash
+  	pg_dump --schema-only your_database > current_schema.sql
+   	# For example:
+    pg_dump --schema-only postgres://postgres:123456@localhost:5432/book_store_db > current_schema.sql
   ```

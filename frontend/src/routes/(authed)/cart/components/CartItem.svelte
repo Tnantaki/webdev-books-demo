@@ -11,7 +11,7 @@
 
 	let { item, handleRemoveItem, handleEditQuantityItem }: Props = $props();
 
-	let price = $derived(item.quantity * item.book.price_in_pound);
+	let price = $derived(item.quantity * item.book.price);
 
 	function handleQuantity(value: number) {
 		handleEditQuantityItem(item.id, value);

@@ -6,7 +6,7 @@ pub mod services;
 pub mod startup;
 
 use crate::startup::{
-   command::{Cli, Commands, create_admin, mockup_data},
+   command::{Cli, Commands, DatabaseCommands, clean, create_admin, seed},
    config::{self, ConfigError},
    server,
 };
@@ -28,6 +28,9 @@ pub enum ServerError {
 
    #[error("Fail to mockup data: {0}")]
    SeedDataError(String),
+
+   #[error("Fail to clean database: {0}")]
+   CleanDataError(String),
 }
 
 impl From<ConfigError> for ServerError {
@@ -49,9 +52,14 @@ pub async fn run(cli: Cli) -> Result<(), ServerError> {
       Some(Commands::CreateAdmin) => {
          create_admin::run(pool).await?;
       }
-      Some(Commands::Seed) => {
-         mockup_data::propagate_books(pool).await?;
-      }
+      Some(Commands::Database { command }) => match command {
+         DatabaseCommands::Seed => {
+            seed::propagate_books(pool).await?;
+         }
+         DatabaseCommands::Clean => {
+            clean::empty_all_tables(pool).await?;
+         }
+      },
       None => {
          server::run(config, pool).await?;
       }

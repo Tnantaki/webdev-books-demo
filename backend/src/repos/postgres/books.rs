@@ -21,7 +21,7 @@ impl BookRepo {
       let book_models = sqlx::query_as::<_, BookModel>(
          r#"
             SELECT
-               id, title, genre, description, price_in_pound, available, image_id,
+               id, title, genre, description, price, available, image_id,
                average_rating, total_ratings, created_at, updated_at
             FROM books
          "#,
@@ -41,7 +41,7 @@ impl BookRepo {
       let book_model = sqlx::query_as::<_, BookModel>(
          r#"
             SELECT
-               id, title, genre, description, price_in_pound, available, image_id,
+               id, title, genre, description, price, available, image_id,
                average_rating, total_ratings, created_at, updated_at
             FROM books WHERE id = $1
          "#,
@@ -58,17 +58,17 @@ impl BookRepo {
       let book_model = sqlx::query_as::<_, BookModel>(
          r#"
             INSERT INTO books
-               (title, genre, description, price_in_pound, available, image_id)
+               (title, genre, description, price, available, image_id)
             VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING
-               id, title, genre, description, price_in_pound, available, image_id,
+               id, title, genre, description, price, available, image_id,
                average_rating, total_ratings, created_at, updated_at
          "#,
       )
       .bind(&new_book.title)
       .bind(&new_book.genre)
       .bind(&new_book.description)
-      .bind(&new_book.price_in_pound)
+      .bind(&new_book.price)
       .bind(new_book.available.unwrap_or(0)) // not reference because i32 is copy type
       .bind(&new_book.image_id)
       .fetch_one(&self.pool)
@@ -84,19 +84,19 @@ impl BookRepo {
                title = COALESCE($1, title),
                genre = COALESCE($2, genre),
                description = COALESCE($3, description),
-               price_in_pound = COALESCE($4, price_in_pound),
+               price = COALESCE($4, price),
                available = COALESCE($5, available),
                image_id = COALESCE($6, image_id)
             WHERE id = $7
             RETURNING
-               id, title, genre, description, price_in_pound, available, image_id,
+               id, title, genre, description, price, available, image_id,
                average_rating, total_ratings, created_at, updated_at
          "#,
       )
       .bind(edit_book.title.as_ref())
       .bind(edit_book.genre.as_ref())
       .bind(edit_book.description.as_ref())
-      .bind(edit_book.price_in_pound.as_ref())
+      .bind(edit_book.price.as_ref())
       .bind(edit_book.available.as_ref())
       .bind(edit_book.image_id.as_ref())
       .bind(id)
@@ -128,7 +128,7 @@ impl BookRepo {
       let mut query = sqlx::QueryBuilder::new(
          r#"
             SELECT
-               id, title, genre, description, price_in_pound, available, image_id,
+               id, title, genre, description, price, available, image_id,
                average_rating, total_ratings, created_at, updated_at
             FROM books
       "#,

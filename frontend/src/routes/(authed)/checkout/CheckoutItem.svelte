@@ -7,7 +7,7 @@
 	}
 
 	let { item }: Props = $props();
-	let price = item.quantity * item.book.price_in_pound;
+	let price = item.quantity * item.book.price;
 </script>
 
 <div
@@ -28,7 +28,7 @@
 	<div class="flex flex-col sm:flex-row justify-between">
 		<div class="grid grid-cols-1 sm:grid-cols-[100px_180px]">
 			<p class="mt-1 text-[#4c809a] dark:text-slate-400">Qty: {item.quantity}</p>
-			<p class="mt-1 text-[#4c809a] dark:text-slate-400">Unit Price: ${item.book.price_in_pound}</p>
+			<p class="mt-1 text-[#4c809a] dark:text-slate-400">Unit Price: ${item.book.price}</p>
 		</div>
 		<div class="grid grid-cols-2 mt-2 sm:mt-0">
 			<p class="text-[#4c809a] dark:text-slate-400">Subtotal:</p>

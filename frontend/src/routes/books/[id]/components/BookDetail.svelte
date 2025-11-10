@@ -58,7 +58,7 @@
 	</div>
 	<BookDescription description={book.description} />
 	<div class="flex items-center justify-between mb-6">
-		<p class="text-3xl font-bold dark:text-text-dark">${book.price_in_pound}</p>
+		<p class="text-3xl font-bold dark:text-text-dark">${book.price}</p>
 		<StockStatus bookAvailable={book.available} />
 	</div>
 	<div>

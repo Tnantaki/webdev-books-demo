@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { BookCard, BookFilter, Pagination } from '$lib/components/home';
-	import { mockup_genres } from '$lib/data/mockup_books';
 	import type { PageProps } from './$types';
 	import type { Book, BookFilterParams } from '$lib/types/book';
 	import { goto } from '$app/navigation';
@@ -40,7 +39,7 @@
 
 <div class="flex items-center justify-between mb-8">
 	<h2 class="text-2xl font-bold">List Books</h2>
-	<BookFilter genres={mockup_genres} />
+	<!-- <BookFilter genres={mockup_genres} /> -->
 </div>
 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
 	{#each data.books as book}

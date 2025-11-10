@@ -73,7 +73,7 @@ impl CartItemRepo {
       let books = sqlx::query_as::<_, BookModel>(
          r#"
 	         SELECT
-	            id, title, genre, description, price_in_pound, available, image_id,
+	            id, title, genre, description, price, available, image_id,
 	            average_rating, total_ratings, created_at, updated_at
 	         FROM books
 				WHERE id = ANY($1)
@@ -102,7 +102,7 @@ impl CartItemRepo {
 
       let total_price: Decimal = items
          .iter()
-         .map(|item| item.book.price_in_pound * Decimal::new(item.quantity as i64, 0))
+         .map(|item| item.book.price * Decimal::new(item.quantity as i64, 0))
          .sum();
 
       let shipping_price = match total_price > MIN_FREE_SHIPPING {
@@ -204,7 +204,7 @@ impl CartItemRepo {
       // 3. calculate total price
       let total_price: Decimal = sqlx::query_scalar(
          r#"
-            SELECT SUM(ci.quantity * b.price_in_pound)
+            SELECT SUM(ci.quantity * b.price)
             FROM cart_items ci
             JOIN books b ON b.id = ci.book_id
             WHERE ci.user_id = $1
@@ -234,7 +234,7 @@ impl CartItemRepo {
          r#"
             INSERT INTO order_items
                (order_id, book_id, quantity, price_at_purchase)
-            SELECT $1, ci.book_id, ci.quantity, b.price_in_pound
+            SELECT $1, ci.book_id, ci.quantity, b.price
             FROM cart_items ci
             JOIN books b ON b.id = ci.book_id
             WHERE ci.user_id = $2

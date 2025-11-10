@@ -15,7 +15,7 @@ pub struct BookModel {
    pub title: String,
    pub genre: String,
    pub description: String,
-   pub price_in_pound: Decimal,
+   pub price: Decimal,
    pub available: i32,
    pub image_id: Uuid,
    pub average_rating: f64,
@@ -57,7 +57,7 @@ impl fmt::Display for SortBy {
       match self {
          SortBy::Title => write!(f, "title"),
          SortBy::Genre => write!(f, "genre"),
-         SortBy::Price => write!(f, "price_in_pound"),
+         SortBy::Price => write!(f, "price"),
          SortBy::Rating => write!(f, "average_rating"),
       }
    }

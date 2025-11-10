@@ -10,7 +10,7 @@
 		title: string;
 		available: number;
 		average_rating: number;
-		price_in_pound: number;
+		price: number;
 		total_ratings: number;
 	}
 
@@ -30,7 +30,7 @@
 	<div class="flex flex-grow flex-col p-4">
 		<h3 class="flex-grow text-base leading-tight font-bold">{book.title}</h3>
 		<Star rating={book.average_rating} />
-		<p class="text-primary mt-2 text-lg font-bold">${book.price_in_pound}</p>
+		<p class="text-primary mt-2 text-lg font-bold">${book.price}</p>
 	</div>
 	<a aria-label="View details for {book.title}" class="absolute inset-0" href="/books/{book.id}"
 	></a>

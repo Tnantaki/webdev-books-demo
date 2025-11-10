@@ -27,7 +27,7 @@ struct MockupBook {
    description: String,
    avaiable: i32,
    #[serde(rename = "priceInPound")]
-   price_in_pound: Decimal,
+   price: Decimal,
    #[allow(unused)]
    rating: i16,
    #[serde(rename = "imgPath")]
@@ -48,7 +48,7 @@ pub async fn propagate_books(pool: Pool<Postgres>) -> Result<(), ServerError> {
 
    display_process(&format!("Deserialize JSON found {} books", books.len()));
 
-   books.truncate(10); // DEBUG: test
+   books.truncate(100); // DEBUG: test
 
    // Read all image files to memory
    let mut image_datas: Vec<(String, ImgType, Vec<u8>)> = vec![];
@@ -98,7 +98,7 @@ pub async fn propagate_books(pool: Pool<Postgres>) -> Result<(), ServerError> {
          title: book.title,
          genre: book.genre,
          description: book.description,
-         price_in_pound: book.price_in_pound,
+         price: book.price,
          image_id: img_ids[idx],
          available: Some(book.avaiable),
       };

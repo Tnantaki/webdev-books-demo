@@ -1,5 +1,6 @@
+pub mod clean;
 pub mod create_admin;
-pub mod mockup_data;
+pub mod seed;
 
 use clap::{
    Parser, Subcommand,
@@ -29,8 +30,19 @@ pub enum Commands {
    Serve,
    /// Create an admin user interactively
    CreateAdmin,
+   /// Database Management
+   Database {
+      #[command(subcommand)]
+      command: DatabaseCommands,
+   },
+}
+
+#[derive(Subcommand)]
+pub enum DatabaseCommands {
    /// Mock up book data from mockup directory
    Seed,
+   /// Empty all tables in database
+   Clean,
 }
 
 pub fn display_error(error: &str) {

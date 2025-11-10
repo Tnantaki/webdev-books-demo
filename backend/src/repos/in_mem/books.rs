@@ -17,7 +17,7 @@ impl BookModel {
          title: new_book.title,
          genre: new_book.genre,
          description: new_book.description,
-         price_in_pound: new_book.price_in_pound,
+         price: new_book.price,
          available: new_book.available.unwrap_or(0),
          image_id: new_book.image_id,
          average_rating: 0f64,
@@ -37,8 +37,8 @@ impl BookModel {
       if let Some(description) = edit_book.description {
          self.description = description;
       }
-      if let Some(price_in_pound) = edit_book.price_in_pound {
-         self.price_in_pound = price_in_pound;
+      if let Some(price) = edit_book.price {
+         self.price = price;
       }
       if let Some(available) = edit_book.available {
          self.available = available;
