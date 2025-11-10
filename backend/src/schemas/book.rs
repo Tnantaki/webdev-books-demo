@@ -54,6 +54,45 @@ pub struct EditBook {
    pub image_id: Option<Uuid>,
 }
 
+// Pagination query parameters
+#[derive(Debug, Deserialize)]
+pub struct PaginationParams {
+   #[serde(default = "default_page")]
+   pub page: i64,
+   #[serde(default = "default_per_page")]
+   pub per_page: i64,
+   #[serde(default)]
+   pub sort_by: SortBy,
+   #[serde(default)]
+   pub order: SortOrder,
+   #[serde(default)]
+   pub genre: Option<String>,
+}
+
+// Pagination response
+#[derive(Debug, Serialize)]
+pub struct PaginationResponse<T> {
+   pub books: Vec<T>,
+   pub pagination: PaginationMeta,
+}
+
+#[derive(Debug, Serialize)]
+pub struct PaginationMeta {
+   pub current_page: i64, // the current page number which data response
+   pub per_page: i64,     // number of items per a page
+   pub total_items: i64,  // number of items in database
+   pub total_pages: i64,  // total pages ((total_items / per_page) and ceiling)
+   pub has_next: bool,
+   pub has_previous: bool,
+}
+
+fn default_page() -> i64 {
+   1
+}
+fn default_per_page() -> i64 {
+   12
+}
+
 impl From<BookModel> for Book {
    fn from(book: BookModel) -> Self {
       Self {
@@ -106,42 +145,3 @@ fn validate_price(price: &Decimal) -> Result<(), ValidationError> {
 //    }
 //    Ok(())
 // }
-
-// Pagination query parameters
-#[derive(Debug, Deserialize)]
-pub struct PaginationParams {
-   #[serde(default = "default_page")]
-   pub page: i64,
-   #[serde(default = "default_per_page")]
-   pub per_page: i64,
-   #[serde(default)]
-   pub sort_by: SortBy,
-   #[serde(default)]
-   pub order: SortOrder,
-   #[serde(default)]
-   pub genre: Option<String>,
-}
-
-fn default_page() -> i64 {
-   1
-}
-fn default_per_page() -> i64 {
-   12
-}
-
-// Pagination response
-#[derive(Debug, Serialize)]
-pub struct PaginationResponse<T> {
-   pub books: Vec<T>,
-   pub pagination: PaginationMeta,
-}
-
-#[derive(Debug, Serialize)]
-pub struct PaginationMeta {
-   pub current_page: i64,  // the current page number which data response
-   pub per_page: i64,      // number of items per a page
-   pub total_items: i64,   // number of items in database
-   pub total_pages: i64,   // total pages ((total_items / per_page) and ceiling)
-   pub has_next: bool,
-   pub has_previous: bool,
-}

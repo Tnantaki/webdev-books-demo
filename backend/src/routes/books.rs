@@ -25,6 +25,7 @@ pub fn router(state: &AppState) -> Router<AppState> {
          auth_cookie_admin,
       ))
       .route("/", get(view_books))
+      .route("/genre", get(get_book_genre))
       .route("/page", get(get_book_pages))
       .route("/{id}", get(view_book_by_id))
 }
@@ -124,4 +125,10 @@ async fn get_book_pages(
    };
 
    Ok((StatusCode::OK, Json(response)))
+}
+
+async fn get_book_genre(State(state): State<AppState>) -> JsonResult<Vec<String>> {
+   let genre = state.postgres.book_repo.get_book_genre().await?;
+
+   Ok((StatusCode::OK, Json(genre)))
 }

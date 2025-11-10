@@ -170,4 +170,17 @@ impl BookRepo {
       let books = book_models.into_iter().map(|book| Book::from(book)).collect();
       Ok((total_items, books))
    }
+   
+   pub async fn get_book_genre(&self) -> Result<Vec<String>, AppError> {
+      let book_genre: Vec<String> = sqlx::query_scalar(
+         r#"
+	         SELECT DISTINCT genre
+	         FROM books
+	      "#,
+      )
+      .fetch_all(&self.pool)
+      .await?;
+
+      Ok(book_genre)
+   }
 }
