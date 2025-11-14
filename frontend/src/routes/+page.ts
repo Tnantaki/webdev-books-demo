@@ -5,6 +5,7 @@ import type { BookPage } from '$lib/types/book';
 
 // Fetch books from API
 export const load: PageLoad = async ({ url, fetch }) => {
+	// request book page
 	const response = await fetch(`${PUBLIC_API_BASE}/books/page?${url.searchParams.toString()}`);
 
 	if (!response.ok) {

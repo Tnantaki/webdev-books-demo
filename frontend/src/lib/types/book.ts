@@ -26,11 +26,14 @@ export interface BookPage {
 	books: Book[];
 }
 
+export type BookSort = 'title' | 'genre' | 'price' | 'average_rating';
+export type BookOrder = 'asc' | 'desc';
+
 export interface BookFilterParams {
 	page: number;
 	per_page: number;
-	sort_by: 'title' | 'genre' | 'price' | 'rating';
-	order: 'asc' | 'desc';
+	sort_by: BookSort;
+	order: BookOrder;
 	genre?: string;
 }
 

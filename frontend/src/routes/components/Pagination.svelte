@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { BookPagination } from '$lib/types';
+	import type { BookPagination } from '$lib/types/book';
 	import { Pagination } from 'bits-ui';
 
 	interface Props {
