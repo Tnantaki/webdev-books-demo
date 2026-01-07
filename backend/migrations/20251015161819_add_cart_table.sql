@@ -4,7 +4,7 @@ BEGIN;
 
 -- Cart items (temporary, can be modified)
 CREATE TABLE cart_items (
-    id UUID PRIMARY KEY DEFAULT uuidv7(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     book_id UUID NOT NULL REFERENCES books(id) ON DELETE CASCADE,
     quantity INTEGER NOT NULL CHECK (quantity > 0),

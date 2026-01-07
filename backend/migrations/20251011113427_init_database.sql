@@ -5,7 +5,7 @@ CREATE TYPE user_role AS ENUM ('user', 'admin');
 
 -- Users table
 CREATE TABLE users (
-    id UUID PRIMARY KEY DEFAULT uuidv7(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     role user_role NOT NULL DEFAULT 'user',
@@ -15,7 +15,7 @@ CREATE TABLE users (
 
 -- Books table
 CREATE TABLE books (
-    id UUID PRIMARY KEY DEFAULT uuidv7(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title VARCHAR(500) NOT NULL,
     genre VARCHAR(100) NOT NULL,
     description TEXT,
@@ -28,7 +28,7 @@ CREATE TABLE books (
 
 -- Images table
 CREATE TABLE images (
-    id UUID PRIMARY KEY DEFAULT uuidv7(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     filename VARCHAR(255) NOT NULL,
     content_type VARCHAR(100) NOT NULL,
     data BYTEA NOT NULL,

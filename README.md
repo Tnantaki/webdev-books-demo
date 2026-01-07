@@ -4,6 +4,10 @@
 
 <div align="center">
   <h4>
+  <a href="#prepare-database">
+    Prepare Database
+  </a>
+  <span> | </span>
     <a href="#config">
       Config
     </a>
@@ -18,11 +22,37 @@
   </h4>
 </div>
 
+## Prepare Database
+
+- create database server
+
+```bash
+podman run --name prosgres_db -p 5431:5432 -e POSTGRES_PASSWORD=123456 -d postgres:17 # create container
+
+podman exec -it prosgres_db bash # exec container
+
+psql -U postgres # connect to postgres
+
+CREATE DATABASE book_store_db; # create database
+```
+
+- if can't run `sqlx` command, you must install it first.
+
+```bash
+cargo install sqlx-cli
+```
+
+- run migration
+
+```bash
+sqlx migrate run --database-url postgres://postgres:123456@localhost:5432/book_store_db
+```
+
 ## Config
 
 - inside `backend` directory
 
-```
+```bash
 cargo run -- create-admin
 ```
 
@@ -30,8 +60,14 @@ cargo run -- create-admin
 
 - inside `backend` directory
 
-```rust
+```bash
 cargo run
+```
+
+- inside `frontend` directory
+
+```bash
+bun run
 ```
 
 ## Purchase Flow

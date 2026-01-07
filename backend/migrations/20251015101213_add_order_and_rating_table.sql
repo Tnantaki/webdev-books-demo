@@ -6,7 +6,7 @@ BEGIN;
 
 -- Orders table (purchase history)
 CREATE TABLE orders (
-    id UUID PRIMARY KEY DEFAULT uuidv7(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE SET NULL,
     total_price NUMERIC(10, 2) NOT NULL,
     order_status VARCHAR(50) NOT NULL DEFAULT 'pending', -- pending, paid, completed, cancelled
@@ -16,7 +16,7 @@ CREATE TABLE orders (
 
 -- Order items (books in each order)
 CREATE TABLE order_items (
-    id UUID PRIMARY KEY DEFAULT uuidv7(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     order_id UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
     book_id UUID NOT NULL REFERENCES books(id) ON DELETE RESTRICT,
     quantity INTEGER NOT NULL CHECK (quantity > 0),
@@ -25,7 +25,7 @@ CREATE TABLE order_items (
 
 -- Ratings table (individual user ratings)
 CREATE TABLE ratings (
-    id UUID PRIMARY KEY DEFAULT uuidv7(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     book_id UUID NOT NULL REFERENCES books(id) ON DELETE CASCADE,
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     rating SMALLINT NOT NULL CHECK (rating >= 1 AND rating <= 5),
