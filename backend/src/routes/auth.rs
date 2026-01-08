@@ -164,7 +164,7 @@ fn build_cookie<'c>(key: &'c str, value: String, max_age: time::Duration) -> Coo
    // must add secure method later for https protocols
    Cookie::build((key, value))
       .path("/")
-      .same_site(cookie::SameSite::Lax)
+      .same_site(cookie::SameSite::None)
       .http_only(true)
       .max_age(max_age)
       .build()
