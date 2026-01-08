@@ -17,10 +17,10 @@ FROM oven/bun:1-slim as runtime
 WORKDIR /app
 
 # Copy built application
-COPY --from=build /app/build ./build
+COPY --from=build /app/public ./public
 COPY --from=build /app/package.json .
 COPY --from=build /app/node_modules ./node_modules
 
 EXPOSE 4173
 
-CMD ["bun", "run", "build/index.js"]
+CMD ["bun", "run", "public/index.js"]
