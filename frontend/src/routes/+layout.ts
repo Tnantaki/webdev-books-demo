@@ -4,6 +4,11 @@ import { cartStore } from '$lib/store/cart.svelte';
 import { error } from '@sveltejs/kit';
 import type { LayoutLoad } from './$types';
 
+// Disable prerendering for this layout
+// As build-time, The backend server still not running
+export const prerender = false;
+export const ssr = false;
+
 export const load: LayoutLoad = async ({ fetch }) => {
 	// Initialize auth state when app loads
 	// Use SvelteKit fetch for SSR

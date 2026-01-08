@@ -4,73 +4,64 @@
 
 <div align="center">
   <h4>
-  <a href="#prepare-database">
-    Prepare Database
-  </a>
-  <span> | </span>
     <a href="#config">
       Config
-    </a>
-    <span> | </span>
-    <a href="#usage">
-      Usage
     </a>
     <span> | </span>
     <a href="#stack">
       Stack
     </a>
+    <span> | </span>
+    <a href="#stack">
+      Credit
+    </a>
+    <span> | </span>
+    <a href="#purchase-flow">
+      Purchase Flow
+    </a>
   </h4>
 </div>
 
-## Prepare Database
-
-- create database server
-
-```bash
-podman run --name prosgres_db -p 5431:5432 -e POSTGRES_PASSWORD=123456 -d postgres:17 # create container
-
-podman exec -it prosgres_db bash # exec container
-
-psql -U postgres # connect to postgres
-
-CREATE DATABASE book_store_db; # create database
-```
-
-- if can't run `sqlx` command, you must install it first.
-
-```bash
-cargo install sqlx-cli
-```
-
-- run migration
-
-```bash
-sqlx migrate run --database-url postgres://postgres:123456@localhost:5432/book_store_db
-```
-
 ## Config
 
-- inside `backend` directory
-
+1. create `.env` file in `frontend` directory and specify backend url
 ```bash
-cargo run -- create-admin
+# ./frontend/.env
+PUBLIC_API_BASE="http://localhost:3000/api"
 ```
 
-## Usage
-
-- inside `backend` directory
-
+2. run docker compose
 ```bash
-cargo run
+# ./
+podman compose up
 ```
 
-- inside `frontend` directory
-
+3. [optional] We prepare mockup book data for you by running command.
 ```bash
-bun run
+podman exec backend_server ./book-store database seed
 ```
+
+4. [optional] Running following command for create admin account.
+```bash
+podman exec -it backend_server ./book-store create-admin
+```
+
+5. access via url `http://localhost:4173`
+
+<h2 align="center">Stack</h2>
+
+<p align="center">
+  <a href="https://skillicons.dev">
+    <img src="https://skillicons.dev/icons?i=postgres,rust,svelte,bun" />
+  </a>
+</p>
+
+## Credit
+
+- mockup data from `https://books.toscrape.com`
 
 ## Purchase Flow
+
 ```
 1. User click "Add To Cart"
    └─> add book item to cart_items table
@@ -89,9 +80,11 @@ bun run
    └─> Mark order as 'cancelled'
 5. User can continue shopping
    └─> Cart is empty, ready for new items
-```   
-## Visual Flow
 ```
+
+## Visual Flow
+
+```text
 ┌─────────┐         ┌─────────────┐          ┌──────────────┐
 │ Browser │         │  SvelteKit  │          │ Rust Backend │
 └────┬────┘         └──────┬──────┘          └──────┬───────┘
@@ -124,11 +117,3 @@ bun run
      │<────────────────────┤                        │
      │                     │                        │
 ```
-
-<h2 align="center">Stack</h2>
-
-<p align="center">
-  <a href="https://skillicons.dev">
-    <img src="https://skillicons.dev/icons?i=postgres,rust,svelte,bun" />
-  </a>
-</p>

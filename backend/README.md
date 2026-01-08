@@ -1,5 +1,39 @@
 # Reminer
 
+## To run back-end in localhost
+1. Prepare database server by running it in `podman`
+```bash
+# on path ./backend
+podman run --name prosgres_db -p 5431:5432 -e POSTGRES_PASSWORD=123456 -d postgres:17 # create container
+
+podman exec -it prosgres_db bash # exec container
+
+psql -U postgres # connect to postgres
+
+CREATE DATABASE book_store_db; # create database
+```
+
+2. if didn't have `sqlx` command, you must install it by run the command. on
+```bash
+# on path ./backend
+cargo install sqlx-cli
+```
+
+3. run migration for create tables in databases server
+```bash
+sqlx migrate run --database-url postgres://postgres:123456@localhost:5432/book_store_db
+```
+
+4. [Optional] mockup book data
+```bash
+cargo run -- database seed
+```
+
+5. compile as dev mode and run
+```bash
+cargo run
+```
+
 ## API
 ### Authentication
 - [x] POST /api/auth/signup  # Register new user
@@ -77,7 +111,7 @@
 - [ ] GET /api/admin/stats/books # Book statistics (admin only)
 - [ ] GET /api/books/:id/stats # Individual book statistics
 
-### Database Migration Management
+## Database Migration Management
 - Create a new migration
   ```bash
     sqlx migrate add <name_migration_file>
@@ -112,7 +146,7 @@
     DELETE FROM _sqlx_migrations WHERE version = 20251015101213;
   ```
 
-### Database Posgres
+## Database Posgres
 - To create Schema from database (this will generate fresh schema from database schema)
   ```bash
   	pg_dump --schema-only your_database > current_schema.sql

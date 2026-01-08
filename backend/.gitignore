@@ -21,4 +21,4 @@ target
 #.idea/
 
 # not push yet
-mockup
+.env

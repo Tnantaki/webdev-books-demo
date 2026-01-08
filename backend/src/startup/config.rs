@@ -31,7 +31,7 @@ pub struct Config {
 
 impl Config {
    pub fn build() -> Result<Config, ConfigError> {
-      load_env_file(".env.sample")?;
+      load_env_file(".env.example")?;
 
       let server = Server {
          port: get_env_value(SERVER_PORT_KEY)?.parse().map_err(|_| {

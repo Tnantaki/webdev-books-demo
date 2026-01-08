@@ -1,3 +1,15 @@
+# Reminer
+
+## To run front-end in localhost
+1. install dependecies
+```bash
+bun install
+```
+
+2. run server as dev mode
+```bash
+bun run dev
+```
 
 ## Front end Hybrid rendering
 

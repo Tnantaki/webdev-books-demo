@@ -48,7 +48,7 @@ pub async fn propagate_books(pool: Pool<Postgres>) -> Result<(), ServerError> {
 
    display_process(&format!("Deserialize JSON found {} books", books.len()));
 
-   books.truncate(100); // DEBUG: test
+   books.truncate(1000);
 
    // Read all image files to memory
    let mut image_datas: Vec<(String, ImgType, Vec<u8>)> = vec![];

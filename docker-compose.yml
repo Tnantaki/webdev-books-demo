@@ -1,0 +1,59 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:17
+    container_name: postgres_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: book_store_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  migrate:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.migrate
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - ./backend/.env.example
+    restart: "no"
+
+  backend:
+    build:
+      context: ./backend
+    container_name: backend_server
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    env_file:
+      - ./backend/.env.example
+    ports:
+      - "3000:3000"
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend_server
+    restart: unless-stopped
+    depends_on:
+      - backend
+    env_file:
+      - ./frontend/.env.example
+    ports:
+      - "4173:4173"
+
+volumes:
+  postgres_data:

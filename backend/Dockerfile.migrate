@@ -1,0 +1,11 @@
+FROM rust:1.91
+
+WORKDIR /app
+
+# Install sqlx-cli (Postgres only)
+RUN cargo install sqlx-cli --no-default-features --features postgres
+
+# Copy only what migrations need
+COPY ./migrations ./migrations
+
+CMD ["sqlx", "migrate", "run"]
