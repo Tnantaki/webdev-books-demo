@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { Button, Input } from '$lib/components';
+	import { Alert, Button, Input } from '$lib/components';
 	import { authStore } from '$lib/store/auth.svelte';
+	import { CircleAlert } from '@lucide/svelte';
 
 	let form = $state({ email: '', password: '' });
 
@@ -15,6 +16,8 @@
 			await goto(redirectTo, { replaceState: true });
 		}
 	}
+	
+	let googleButton = $state(false);
 </script>
 
 <div class="max-w-md w-full mx-auto py-12">
@@ -76,6 +79,7 @@
 		<div class="mt-6">
 			<button
 				class="w-full flex items-center justify-center py-2.5 px-4 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm text-sm sm:text-base font-medium text-text-light dark:text-text-dark bg-card-light dark:bg-card-dark hover:bg-background-light dark:hover:bg-background-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary cursor-pointer"
+				onclick={() => googleButton = true}
 			>
 				<svg
 					class="size-7 mr-3"
@@ -109,3 +113,19 @@
 		</div>
 	</div>
 </div>
+
+<Alert bind:open={googleButton}>
+	{#snippet title()}
+		<div
+			class="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-800/50"
+		>
+			<CircleAlert class="text-amber-500 dark:text-amber-400 size-7" />
+		</div>
+	{/snippet}
+
+	{#snippet description()}
+		<p class="mt-4 text-lg text-accent">
+			Sorry, This feature are not support yet
+		</p>
+	{/snippet}
+</Alert>

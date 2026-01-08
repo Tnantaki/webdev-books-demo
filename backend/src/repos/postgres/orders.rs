@@ -92,7 +92,7 @@ impl OrderRepo {
          "#,
       )
       .bind(user_id)
-      .bind(OrderStatus::Pending.to_string())
+      .bind(OrderStatus::Pending)
       .fetch_all(&self.pool)
       .await?;
 
@@ -245,7 +245,7 @@ impl OrderRepo {
             .or_insert_with(|| OrderDetail {
                id: model.id,
                total_price: model.total_price,
-               order_status: model.order_status,
+               order_status: model.order_status.to_string(),
                created_at: model.created_at,
                updated_at: model.updated_at,
                items: Vec::new(),
