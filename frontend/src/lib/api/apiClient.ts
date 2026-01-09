@@ -1,4 +1,4 @@
-import { env } from '$env/dynamic/public';
+import { PUBLIC_API_BASE } from '$env/static/public';
 import { AppError } from '$lib/types';
 
 type MethodWithData = 'POST' | 'PUT' | 'PATCH';
@@ -26,7 +26,7 @@ async function methodWithData<T = any, B = any>(
 	body?: B,
 	options?: RequestInit
 ): Promise<T> {
-	const res = await fetch(env.PUBLIC_API_BASE + url, {
+	const res = await fetch(PUBLIC_API_BASE + url, {
 		method,
 		headers: {
 			...(body && { 'Content-Type': 'application/json' }),
@@ -44,12 +44,12 @@ export const apiClient = {
 		options?: RequestInit,
 		fetch: typeof window.fetch = window.fetch
 	): Promise<T> {
-		const res = await fetch(env.PUBLIC_API_BASE + url, { method: 'GET', ...options });
+		const res = await fetch(PUBLIC_API_BASE + url, { method: 'GET', ...options });
 		return deserializeData<T>(res);
 	},
 
 	async delete<T = any>(url: string, options?: RequestInit): Promise<T> {
-		const res = await fetch(env.PUBLIC_API_BASE + url, { ...options });
+		const res = await fetch(PUBLIC_API_BASE + url, { ...options });
 		return deserializeData<T>(res);
 	},
 
