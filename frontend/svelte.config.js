@@ -16,8 +16,7 @@ const config = {
 			precompress: false,
 			envPrefix: '',
 			polyfill: false
-		}),
-		trailingSlash: 'ignore'
+		})
 	}
 };
 
