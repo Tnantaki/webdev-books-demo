@@ -46,7 +46,6 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.backup
     container_name: frontend_server
     restart: unless-stopped
     depends_on:
